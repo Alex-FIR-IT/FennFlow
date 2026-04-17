@@ -13,8 +13,7 @@ The Type-Safe Unit of Work for S3. Simplify your cloud storage logic with Pydant
 ## Overview
 
 Working with aiobotocore often feels like handling raw bytes and dicts. `s3uow` wraps S3 operations into a high-level Unit of Work pattern, providing:
-- Type Safety: Use Pydantic models for different file types (Texts, Images, JSON, Video, etc.).
-- Atomic-ish Operations: Manage multiple S3 actions in a single session with a "Best Effort" rollback mechanism.
+- Atomic-like Operations: "Best-effort compensation logic to keep your S3 bucket clean if a multi-step operation fails using Saga Pattern."
 - Clean Architecture: Decouple your business logic from infrastructure using repositories and mixins.
 
 ## Quick Start
