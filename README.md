@@ -56,7 +56,7 @@ class UOW(UnitOfWork):
     config = ConfigDict(storage='in-memory')
 
 async def main():
-    async with UOW() as uow:
+    async with UOW() as uow: # uow.commit() is called after __aexit__
         file1 = TextContent.from_text("Hello, World!")
         file2 = TextContent.from_text("Hello, World2!")
 
