@@ -2,8 +2,8 @@ from typing import Iterator, Sequence, overload
 
 from pydantic import BaseModel, field_validator
 
-from foxflow.files.media import TextContent, ImageContent, AudioContent, VideoContent, PdfContent
-from foxflow.files.types import Media
+from fennflow.files.media import TextContent, ImageContent, AudioContent, VideoContent, PdfContent
+from fennflow.files.types import Media
 
 
 class MediaResponse(BaseModel):

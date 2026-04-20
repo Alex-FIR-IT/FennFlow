@@ -1,5 +1,5 @@
-name: 🐛 FoxFlow Bug
-description: Report a bug or unexpected behavior in FoxFlow
+name: 🐛 fennflow Bug
+description: Report a bug or unexpected behavior in fennflow
 labels: ["bug"]
 assignees: ["Alex-FIR-IT"]
 
@@ -7,7 +7,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thank you for contributing to FoxFlow! ✊
+        Thank you for contributing to fennflow! ✊
 
         Please provide as much information as possible to help us reproduce and fix your issue quickly.
 
@@ -17,9 +17,9 @@ body:
       label: Initial Checks
       description: Just making sure we're on the same page.
       options:
-        - label: I'm using the [latest version](https://github.com/Alex-FIR-IT/FoxFlow/releases/latest) of FoxFlow
+        - label: I'm using the [latest version](https://github.com/Alex-FIR-IT/fennflow/releases/latest) of fennflow
           required: true
-        - label: I've searched for my issue in [the issue tracker](https://github.com/Alex-FIR-IT/FoxFlow/issues) before opening this issue
+        - label: I've searched for my issue in [the issue tracker](https://github.com/Alex-FIR-IT/fennflow/issues) before opening this issue
           required: true
 
   - type: textarea
@@ -54,7 +54,7 @@ body:
         (This will be automatically formatted as code, so no need for backticks.)
 
       placeholder: |
-        from foxflow import ...
+        from fennflow import ...
 
         ...
       render: Python
@@ -62,12 +62,12 @@ body:
   - type: textarea
     id: version
     attributes:
-      label: Python, FoxFlow & packages that used by FoxFlow version
+      label: Python, fennflow & packages that used by fennflow version
       description: |
-        Which version of Python, FoxFlow, and packages that used by FoxFlow are you using?
+        Which version of Python, fennflow, and packages that used by fennflow are you using?
       value: |
         - Python:
-        - FoxFlow:
+        - fennflow:
         - aiobotocore: 
         - pydantic:
     validations:

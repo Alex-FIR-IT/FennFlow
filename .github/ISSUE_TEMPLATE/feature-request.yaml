@@ -1,12 +1,12 @@
-name: 🚀 FoxFlow Feature Request
-description: "Suggest a new feature for FoxFlow"
+name: 🚀 fennflow Feature Request
+description: "Suggest a new feature for fennflow"
 labels: ["enhancement"]
 assignees: ["Alex-FIR-IT"]
 
 body:
   - type: markdown
     attributes:
-      value: Thank you for contributing to FoxFlow! ✊
+      value: Thank you for contributing to fennflow! ✊
 
   - type: textarea
     id: description

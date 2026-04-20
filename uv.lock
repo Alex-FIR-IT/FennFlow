@@ -151,7 +151,7 @@ wheels = [
 ]
 
 [[package]]
-name = "foxflow"
+name = "fennflow"
 source = { editable = "." }
 dependencies = [
     { name = "aiobotocore" },

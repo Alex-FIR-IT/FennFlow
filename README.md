@@ -1,14 +1,14 @@
-# FoxFlow  &middot; [![License: MIT](https://img.shields.io/badge/license-MIT-brightgreen)](https://github.com/Alex-FIR-IT/foxflow/blob/master/LICENSE) [![Static Badge](https://img.shields.io/badge/Roadmap-green?logo=github)](https://github.com/users/Alex-FIR-IT/projects/2/views/2) [![last commit](https://img.shields.io/github/last-commit/Alex-FIR-IT/foxflow?logo=github)](https://github.com/Alex-FIR-IT/foxflow/commits/master/)
+# FennFlow  &middot; [![License: MIT](https://img.shields.io/badge/license-MIT-brightgreen)](https://github.com/Alex-FIR-IT/fennflow/blob/master/LICENSE) [![Static Badge](https://img.shields.io/badge/Roadmap-green?logo=github)](https://github.com/users/Alex-FIR-IT/projects/2/views/2) [![last commit](https://img.shields.io/github/last-commit/Alex-FIR-IT/fennflow?logo=github)](https://github.com/Alex-FIR-IT/fennflow/commits/master/)
 
 
-### <em>FoxFlow is a Python s3 framework designed to help you quickly, confidently, and painlessly manipulate files in your object storage implementing Saga-like compensation flow.</em>
+### <em>FennFlow is a Python s3 framework designed to help you quickly, confidently, and painlessly manipulate files in your object storage implementing Saga-like compensation flow.</em>
 
 > ⚠️ Project Status: Experimental / Work in Progress  
 > This library is in early development (Alpha). The API is subject to change. **NOT READY** for production use yet.
 
-## Why use FoxFlow?
+## Why use FennFlow?
 
-Working with aiobotocore often feels like handling raw bytes and dicts. `FoxFlow` wraps S3 operations into a high-level Unit of Work pattern, providing:
+Working with aiobotocore often feels like handling raw bytes and dicts. `FennFlow` wraps S3 operations into a high-level Unit of Work pattern, providing:
 - **Atomic-like multi-step operations** — if something fails, previous actions are automatically compensated (Saga Pattern).
 - **Clean Architecture** — treat S3 as proper repositories using mixins (`PutRepository`, `GetRepository`, etc.).
 - **Pydantic-powered models** — work with `TextContent`, `JsonContent`, `ImageContent` and others instead of raw bytes.
@@ -16,11 +16,11 @@ Working with aiobotocore often feels like handling raw bytes and dicts. `FoxFlow
 
 ### Backend Comparison
 
-FoxFlow supports multiple backends for saga metadata and locking, just like Celery.
+FennFlow supports multiple backends for saga metadata and locking, just like Celery.
 
 - **In-Memory** — default, great for and tests and development
 - **Redis** — balanced choice for most production workloads  
-- **SQLAlchemy** — maximum durability using your existing database (via SQLAlchemy). Just pass your DB URL — FoxFlow handles the rest.
+- **SQLAlchemy** — maximum durability using your existing database (via SQLAlchemy). Just pass your DB URL — FennFlow handles the rest.
 
 
 | Parameter       | Raw aiobotocore                                      | In-Memory (default)                                      | Redis                                                    | SQLAlchemy                                  |
@@ -31,15 +31,15 @@ FoxFlow supports multiple backends for saga metadata and locking, just like Cele
 | **Complexity**  | ❌ None (raw code as you like)                       | ✅ **Lowest**<br>No extra infrastructure required        | 🟡 Medium<br>Just provide Redis connection URL           | 🟡 Medium<br>Provide your DB connection string (library handles tables) |
 ## Quick Start
 
-Here's a minimal example of FoxFlow:
+Here's a minimal example of FennFlow:
 ```python3
 import asyncio
-from foxflow import UnitOfWork, ConfigDict
-from foxflow.repositories import (
+from fennflow import UnitOfWork, ConfigDict
+from fennflow.repositories import (
     PutRepository, DeletedRepository, GetRepository,
     GeneratePresignedURLRepository
 )
-from foxflow.files import TextContent
+from fennflow.files import TextContent
 
 # 1. Define your scoped repository with Mixins
 class UserFiles(

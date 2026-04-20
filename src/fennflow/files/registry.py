@@ -3,10 +3,10 @@ from functools import cache
 
 from pydantic import ValidationError
 
-from foxflow.files.media import TextContent, ImageContent, AudioContent, BinaryContent, VideoContent, PdfContent, \
+from fennflow.files.media import TextContent, ImageContent, AudioContent, BinaryContent, VideoContent, PdfContent, \
     JsonContent
-from foxflow.files.media.url_content import UrlContent
-from foxflow.files.types import Media
+from fennflow.files.media.url_content import UrlContent
+from fennflow.files.types import Media
 
 content_registry: dict[str, type[Media]] = {
     "text/plain": TextContent,

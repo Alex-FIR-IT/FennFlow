@@ -8,12 +8,12 @@ from pydantic import (
     BaseModel, model_validator, ConfigDict,
 )
 
-from foxflow.files.exceptions.cannot_parse_extension import CannotParseExtensionException
-from foxflow.files.exceptions.filename_and_mediatype_both_none import FileNameAndMediaTypeBothNoneException
-from foxflow.files.exceptions.extension_cannot_be_guessed import ExtensionCannotBeGuessed
-from foxflow.files.exceptions.media_type_cannot_be_guessed import MediaTypeCannotBeGuessed
-from foxflow.files.protocols.has_data_and_ext_obj import FileDataExtNamingFactoryProtocol
-from foxflow.files.utils.determine_filename import get_determined_filename_by_obj
+from fennflow.files.exceptions.cannot_parse_extension import CannotParseExtensionException
+from fennflow.files.exceptions.filename_and_mediatype_both_none import FileNameAndMediaTypeBothNoneException
+from fennflow.files.exceptions.extension_cannot_be_guessed import ExtensionCannotBeGuessed
+from fennflow.files.exceptions.media_type_cannot_be_guessed import MediaTypeCannotBeGuessed
+from fennflow.files.protocols.has_data_and_ext_obj import FileDataExtNamingFactoryProtocol
+from fennflow.files.utils.determine_filename import get_determined_filename_by_obj
 
 logger = logging.getLogger(__name__)
 

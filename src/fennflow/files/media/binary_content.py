@@ -2,7 +2,7 @@ from typing import Literal, Any
 import base64
 
 from pydantic import Field, field_serializer, field_validator, computed_field
-from foxflow.files.media.base import BaseContent
+from fennflow.files.media.base import BaseContent
 
 
 class BinaryContent(BaseContent):
