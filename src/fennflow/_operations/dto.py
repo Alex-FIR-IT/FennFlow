@@ -11,6 +11,7 @@ from fennflow._operations.context.abstract import BaseContext
 from fennflow._operations.enums import OperationStatusEnum, OperationTypeEnum
 from fennflow._operations.tmp_path_builder import TmpPathBuilder
 from fennflow._sentinel import NOT_GIVEN
+from fennflow.backends.enums import OnConflictDoEnum
 
 if TYPE_CHECKING:
     from fennflow._new_types import Namespace, StoragePath
@@ -28,7 +29,7 @@ class OperationRecord:
     status: OperationStatusEnum
     context: Context = field(default_factory=BaseContext)
     operation_id: uuid.UUID = field(default_factory=uuid.uuid4)
-
+    on_conflict: OnConflictDoEnum = OnConflictDoEnum.RAISE
     created_at: datetime.datetime = field(
         default_factory=now,
     )
@@ -92,3 +93,40 @@ class OperationRecord:
 
     def generate_tmp_path(self) -> StoragePath:
         return TmpPathBuilder.from_operation(self)
+
+    def mark_done(
+        self,
+    ) -> None:
+        if self.operation_type in {
+            OperationTypeEnum.CREATE,
+            OperationTypeEnum.PUT,
+        }:
+            self.status = OperationStatusEnum.UPLOADED
+        elif self.operation_type == OperationTypeEnum.DELETE:
+            self.status = OperationStatusEnum.DELETED
+        else:
+            raise NotImplementedError(
+                f"mark_done is not supported for {self.operation_type=}"
+            )
+
+    def mark_failed(
+        self,
+        error: str | None = None,
+    ) -> None:
+        self.status = OperationStatusEnum.FAILED
+        self.error = error
+
+    def mark_compensation_failed(
+        self,
+        error: str | None = None,
+    ):
+        self.status = OperationStatusEnum.COMPENSATION_FAILED
+        self.error = error
+
+    def mark_pending(
+        self,
+    ) -> None:
+        self.status = OperationStatusEnum.PENDING
+
+    def __hash__(self):
+        return hash(self.storage_path)

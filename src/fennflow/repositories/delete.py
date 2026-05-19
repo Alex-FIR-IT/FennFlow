@@ -6,6 +6,7 @@ from fennflow._operations.context.delete import DeleteContext
 from fennflow._operations.dto import OperationRecord
 from fennflow._operations.enums import OperationStatusEnum, OperationTypeEnum
 
+from .._query_specs.select.get_visible import GetVisibleQuerySpec
 from ..backends.enums import OnConflictDoEnum
 from .at import AtRepository
 
@@ -28,9 +29,13 @@ class DeleteRepository(AtRepository):
 
         """
         storage_path = self._join_path(path)
-        operation = await self._uow.backend.get(storage_path)
-
-        if operation is None or not operation.is_visible(self._uow._session_id):
+        operation = await self._uow._backend.backend_engine.select(
+            GetVisibleQuerySpec(
+                storage_path=storage_path,
+                current_session_id=self._uow._session_id,
+            )
+        )
+        if operation is None:
             return False
 
         operation = OperationRecord(
@@ -41,7 +46,7 @@ class DeleteRepository(AtRepository):
             session_id=self._uow._session_id,
             repo_extra=self.repo_extra,
         )
-        await self._uow.backend.add(
+        await self._uow.backend.insert(
             operation,
             on_conflict=OnConflictDoEnum.REPLACE,
         )
@@ -50,7 +55,7 @@ class DeleteRepository(AtRepository):
             operation,
             **provider_extra,
         )
-        await self._uow.backend.flush()
+        await self._uow.backend.flush(operations=[operation])
         return True
 
     def __get_context(self, operation: OperationRecord) -> DeleteContext:

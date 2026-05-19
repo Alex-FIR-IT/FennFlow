@@ -1,4 +1,5 @@
 import pytest
+import pytest_asyncio
 
 from fennflow import ConfigDict
 from fennflow.backends import InMemoryBackend, InMemoryBackendConfig
@@ -47,8 +48,10 @@ def text_files():
     ]
 
 
-@pytest.fixture(autouse=True)
-def reset_inmemory_state():
-    InMemoryBackend.drop_all()
+@pytest_asyncio.fixture(autouse=True)
+async def reset_inmemory_state(uow_cls):
+    async with uow_cls() as uow:
+        uow._backend.backend_engine.clear()
+
     InMemoryConnector.drop_all()
     ReconcileOrchestrator._reconciled_on_startup = set()

@@ -72,7 +72,9 @@ class InMemoryBackend(AbstractBackend):
 
         if existing_record is not None:
             if on_conflict == OnConflictDoEnum.RAISE:
-                raise RecordAlreadyExistsException()
+                raise RecordAlreadyExistsException(
+                    storage_path=existing_record.storage_path,
+                )
             elif on_conflict == OnConflictDoEnum.DO_NOTHING:
                 return
             elif on_conflict == OnConflictDoEnum.REPLACE:
