@@ -2,7 +2,7 @@ import pytest
 import pytest_asyncio
 
 from fennflow import ConfigDict
-from fennflow.backends import InMemoryBackend, InMemoryBackendConfig
+from fennflow.backends import InMemoryBackendConfig
 from fennflow.connectors import InMemoryConnector, InMemoryConnectorConfig
 from fennflow.files import TextContent
 from fennflow.reconciler._orchestrator import ReconcileOrchestrator

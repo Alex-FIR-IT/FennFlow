@@ -1,4 +1,3 @@
-import datetime
 import uuid
 
 import pytest
@@ -7,7 +6,6 @@ from fennflow import ConfigDict, UnitOfWork
 from fennflow._datetime import AwareDatetime, now
 from fennflow._operations.dto import OperationRecord
 from fennflow._operations.enums import OperationStatusEnum, OperationTypeEnum
-from fennflow._sentinel import OMIT
 from fennflow.backends import InMemoryBackendConfig
 from fennflow.connectors import InMemoryConnectorConfig
 from fennflow.files import TextContent
