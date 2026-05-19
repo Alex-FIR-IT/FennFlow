@@ -18,8 +18,8 @@ if TYPE_CHECKING:
 
     from fennflow import ConfigDict
     from fennflow._operations.dto import OperationRecord
-    from fennflow.backends.core import BackendOrchestrator
-    from fennflow.connectors.abstract import AbstractConnector
+    from fennflow.backends._core import BackendOrchestrator
+    from fennflow.connectors._abstract import AbstractConnector
 
 
 logger = logging.getLogger(__name__)

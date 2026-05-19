@@ -8,7 +8,7 @@ from fennflow._operations.flows.abstract import AbstractFlow
 if TYPE_CHECKING:
     from fennflow._operations.context.create import CreateContext
     from fennflow._operations.dto import OperationRecord
-    from fennflow.connectors.abstract import AbstractConnector
+    from fennflow.connectors._abstract import AbstractConnector
 
 
 class CreateFlow(AbstractFlow):

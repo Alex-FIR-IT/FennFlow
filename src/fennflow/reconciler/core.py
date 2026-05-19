@@ -17,8 +17,8 @@ if TYPE_CHECKING:
     from uuid import UUID
 
     from fennflow import UnitOfWork
-    from fennflow.backends.core import BackendOrchestrator
-    from fennflow.connectors.abstract import AbstractConnector
+    from fennflow.backends._core import BackendOrchestrator
+    from fennflow.connectors._abstract import AbstractConnector
     from fennflow.files.responses.list import ListResponse
     from fennflow.repositories.fields.base import RepoExtra
 

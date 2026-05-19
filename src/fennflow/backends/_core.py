@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
 
     from fennflow._sessions.abstract import AbstractSessionBuffer
-    from fennflow.backends.abstract.core import AbstractBackend
+    from fennflow.backends._abstract.core import AbstractBackend
 
 
 class BackendOrchestrator:

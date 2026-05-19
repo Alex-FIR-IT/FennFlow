@@ -9,6 +9,7 @@ from fennflow._query_specs.select.get_visible import GetVisibleQuerySpec
 from fennflow._query_specs.select.is_empty import IsEmptyQuerySpec
 from fennflow._query_specs.select.select_visible import SelectVisibleQuerySpec
 from fennflow._query_specs.update.merge import MergeQuerySpec
+from fennflow.backends.in_memory._core import InMemoryBackend
 from fennflow.backends.in_memory._query_flows.get_by_storage_path import (
     GetByStoragePathFlow,
 )
@@ -16,7 +17,6 @@ from fennflow.backends.in_memory._query_flows.get_visible import GetVisibleFlow
 from fennflow.backends.in_memory._query_flows.is_empty import IsEmptyFlow
 from fennflow.backends.in_memory._query_flows.merge import MergeFlow
 from fennflow.backends.in_memory._query_flows.select_visible import SelectVisibleFlow
-from fennflow.backends.in_memory.core import InMemoryBackend
 
 if TYPE_CHECKING:
     from fennflow.backends import InMemoryBackendConfig

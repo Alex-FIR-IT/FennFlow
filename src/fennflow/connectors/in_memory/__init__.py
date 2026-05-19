@@ -4,4 +4,4 @@ __all__ = [
 ]
 
 from .config import InMemoryConnectorConfig
-from .connector import InMemoryConnector
+from .core import InMemoryConnector

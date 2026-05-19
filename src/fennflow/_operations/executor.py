@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from .registry import flow_registry
 
 if TYPE_CHECKING:
-    from fennflow.connectors.abstract import AbstractConnector
+    from fennflow.connectors._abstract import AbstractConnector
 
     from .dto import OperationRecord
 

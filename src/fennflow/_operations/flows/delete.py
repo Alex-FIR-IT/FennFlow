@@ -10,7 +10,7 @@ from fennflow.connectors.exceptions import NoSuchKeyException
 if TYPE_CHECKING:
     from fennflow._operations.context.delete import DeleteContext
     from fennflow._operations.dto import OperationRecord
-    from fennflow.connectors.abstract import AbstractConnector
+    from fennflow.connectors._abstract import AbstractConnector
 
 
 class DeleteFlow(AbstractFlow):

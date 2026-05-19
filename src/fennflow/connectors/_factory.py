@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from .registry import connector_registry
+from ._registry import connector_registry
 
 if TYPE_CHECKING:
-    from .abstract import AbstractConnector
-    from .types.config import ConnectorConfig
+    from ._abstract import AbstractConnector
+    from ._types.config import ConnectorConfig
 
 
 class ConnectorFactory:
@@ -35,6 +35,6 @@ class ConnectorFactory:
         """
         connector_cls = connector_registry.get(config.__class__.__name__)
         if not connector_cls:
-            raise ValueError(f"Unknown connector for : {type(config)=}")
+            raise KeyError(f"Unknown connector for : {type(config)=}")
 
         return connector_cls(config=config)

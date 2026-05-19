@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar, TypeVar
 
-from fennflow.backends.abstract.core import AbstractBackend
+from fennflow.backends._abstract.core import AbstractBackend
 from fennflow.backends.enums import OnConflictDoEnum
 from fennflow.backends.exceptions import (
     RecordAlreadyExistsInBackendException,

@@ -1,7 +1,7 @@
 from typing_extensions import TypedDict
 
-from fennflow.backends.types.config import BackendConfig
-from fennflow.connectors.types.config import ConnectorConfig
+from fennflow.backends._types.config import BackendConfig
+from fennflow.connectors._types.config import ConnectorConfig
 from fennflow.reconciler import ReconcileConfig
 
 

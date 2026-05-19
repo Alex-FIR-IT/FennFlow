@@ -3,5 +3,5 @@ __all__ = [
     "InMemoryBackend",
     "InMemoryBackendConfig",
 ]
-from .factory import BackendFactory
+from ._factory import BackendFactory
 from .in_memory import InMemoryBackend, InMemoryBackendConfig

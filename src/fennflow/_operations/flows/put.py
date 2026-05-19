@@ -11,7 +11,7 @@ from fennflow.connectors.exceptions import NoSuchKeyException
 if TYPE_CHECKING:
     from fennflow._operations.context.put import PutContext
     from fennflow._operations.dto import OperationRecord
-    from fennflow.connectors.abstract import AbstractConnector
+    from fennflow.connectors._abstract import AbstractConnector
 
 
 class PutFlow(AbstractFlow):
