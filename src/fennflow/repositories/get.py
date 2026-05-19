@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 
+from fennflow._query_specs.select.get_visible import GetVisibleQuerySpec
 from fennflow.files.responses.base import MediaResponse
 from fennflow.repositories.at import AtRepository
 
@@ -55,9 +56,14 @@ class GetRepository(AtRepository):
         tasks = []
         for path in paths:
             storage_path = self._join_path(path)
-            operation = await self._uow.backend.get(storage_path)
+            operation = await self._uow._backend.backend_engine.select(
+                GetVisibleQuerySpec(
+                    storage_path=storage_path,
+                    current_session_id=self._uow._session_id,
+                )
+            )
 
-            if operation and operation.is_visible(self._uow._session_id):
+            if operation:
                 tasks.append(
                     self._uow.connector.get(
                         storage_path=storage_path,

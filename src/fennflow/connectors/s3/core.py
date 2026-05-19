@@ -8,9 +8,9 @@ from botocore.exceptions import ClientError
 
 from fennflow._decorators import reraise_with
 from fennflow._sentinel import OMIT, Omittable
-from fennflow.connectors.abstract import AbstractConnector
+from fennflow.connectors._abstract import AbstractConnector
 from fennflow.connectors.exceptions import NoSuchKeyException
-from fennflow.connectors.s3.client import S3Client
+from fennflow.connectors.s3._client import S3Client
 from fennflow.files import ContentFactory
 from fennflow.files.responses.base import MediaResponse
 from fennflow.files.responses.list import ListResponse
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from fennflow._new_types import Namespace, StoragePath
-    from fennflow.connectors.abstract.base import RepoExtraType
+    from fennflow.connectors._abstract.base import RepoExtraType
     from fennflow.connectors.s3 import S3ConnectorConfig
     from fennflow.files.types import BinaryMedia
 

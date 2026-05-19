@@ -21,9 +21,9 @@ async def test_operation_context_is_cleared_with_commit(uow_cls):
 
         await uow.commit()
 
-        assert len(await uow.backend.list_pending()) == 0
+        assert len(uow.backend.session_buffer.get_all()) == 0
 
-        backend: InMemoryBackend = uow.backend
+        backend: InMemoryBackend = uow.backend.backend_engine
 
         for operation in backend.scoped_storage.values():
             assert type(operation.context) is BaseContext
@@ -38,9 +38,9 @@ async def test_operation_context_is_cleared_in_new_session(uow_cls):
             )
 
     async with uow_cls() as uow:
-        assert len(await uow.backend.list_pending()) == 0
+        assert len(uow.backend.session_buffer.get_all()) == 0
 
-        backend: InMemoryBackend = uow.backend
+        backend: InMemoryBackend = uow.backend.backend_engine
 
         for operation in backend.scoped_storage.values():
             assert type(operation.context) is BaseContext

@@ -4,4 +4,4 @@ __all__ = [
 ]
 
 from .config import S3ConnectorConfig
-from .connector import S3Connector
+from .core import S3Connector

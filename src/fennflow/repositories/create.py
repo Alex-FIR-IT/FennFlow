@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING
 from fennflow._operations.context.create import CreateContext
 from fennflow._operations.dto import OperationRecord
 from fennflow._operations.enums import OperationStatusEnum, OperationTypeEnum
+from fennflow._query_specs.select.get_visible import GetVisibleQuerySpec
+from fennflow.backends.enums import OnConflictDoEnum
 from fennflow.backends.exceptions import RecordAlreadyExistsException
 from fennflow.repositories._validation_mixins.validate_duplicate import (
     ValidateDuplicatesMixin,
@@ -51,13 +53,21 @@ class CreateRepository(
     ) -> None:
         self.validate_duplicates_from_files(files)
         tasks = []
+        operations = []
         for file in files:
             file._storage_prefix = self.cwd
 
-            operation = await self._uow.backend.get(storage_path=file.storage_path)
+            operation = await self._uow._backend.backend_engine.select(
+                GetVisibleQuerySpec(
+                    storage_path=file.storage_path,
+                    current_session_id=self._uow._session_id,
+                )
+            )
 
             if operation:
-                raise RecordAlreadyExistsException()
+                raise RecordAlreadyExistsException(
+                    storage_path=operation.storage_path,
+                )
 
             operation = OperationRecord(
                 operation_type=OperationTypeEnum.CREATE,
@@ -68,12 +78,18 @@ class CreateRepository(
                 repo_extra=self.repo_extra,
             )
 
-            await self._uow.backend.add(operation)
+            await self._uow.backend.insert(
+                operation,
+                on_conflict=OnConflictDoEnum.REPLACE,
+            )
             tasks.append(
                 self._uow._operation_executor.execute(
                     operation,
                     **provider_extra,
                 ),
             )
-        await self._uow.backend.flush()
+            operations.append(operation)
+            # await self._uow.backend.flush(operations=[operation])
+
+        await self._uow.backend.flush(operations=operations)
         await asyncio.gather(*tasks)

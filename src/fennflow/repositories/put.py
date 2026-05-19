@@ -44,14 +44,13 @@ class PutRepository(AtRepository, ValidateDuplicatesMixin):
         *files: BinaryMedia,
         **provider_extra,
     ) -> None:
-        tasks = []
         self.validate_duplicates_from_files(files)
+        tasks = []
+        operations = []
         for file in files:
             file._storage_prefix = self.cwd
 
-            operation = await self._uow.backend.get_from_current_session(
-                file.storage_path
-            )
+            operation = await self._uow.backend.get(file.storage_path)
 
             operation = OperationRecord(
                 operation_type=OperationTypeEnum.PUT,
@@ -62,7 +61,7 @@ class PutRepository(AtRepository, ValidateDuplicatesMixin):
                 repo_extra=self.repo_extra,
             )
 
-            await self._uow.backend.add(
+            await self._uow.backend.insert(
                 operation,
                 on_conflict=OnConflictDoEnum.REPLACE,
             )
@@ -72,7 +71,8 @@ class PutRepository(AtRepository, ValidateDuplicatesMixin):
                     **provider_extra,
                 ),
             )
-        await self._uow.backend.flush()
+            operations.append(operation)
+        await self._uow.backend.flush(operations=operations)
         await asyncio.gather(*tasks)
 
     def __get_context(

@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any
 
 from fennflow._decorators import reraise_with
 from fennflow._sentinel import OMIT, Omittable
-from fennflow.connectors.abstract import AbstractConnector
+from fennflow.connectors._abstract import AbstractConnector
 from fennflow.connectors.exceptions import NoSuchKeyException
 from fennflow.files import ContentFactory
 from fennflow.files.responses.base import MediaResponse
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from fennflow._new_types import Namespace, StoragePath
-    from fennflow.connectors.abstract.base import RepoExtraType
+    from fennflow.connectors._abstract.base import RepoExtraType
     from fennflow.connectors.in_memory.config import InMemoryConnectorConfig
     from fennflow.files.types import BinaryMedia
     from fennflow.repositories.fields.base import RepoExtra

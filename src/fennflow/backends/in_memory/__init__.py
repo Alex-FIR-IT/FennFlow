@@ -3,5 +3,5 @@ __all__ = [
     "InMemoryBackendConfig",
 ]
 
-from .base import InMemoryBackend
+from ._core import InMemoryBackend
 from .config import InMemoryBackendConfig

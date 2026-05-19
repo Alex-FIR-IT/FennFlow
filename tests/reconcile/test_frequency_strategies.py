@@ -189,7 +189,7 @@ async def test_reconcile_on_non_empty_connector(
         )
 
     if prefill_backend:
-        InMemoryBackend._storage[backend_namespace][text_files[0].filename] = (
+        InMemoryBackend._instance.scoped_storage[text_files[0].filename] = (
             OperationRecord(
                 session_id=uuid4(),
                 storage_path=text_files[0].filename,

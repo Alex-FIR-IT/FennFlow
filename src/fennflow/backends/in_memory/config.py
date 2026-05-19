@@ -1,4 +1,4 @@
-from fennflow.backends.abstract.config import AbstractBackendConfig
+from fennflow.backends._abstract.config import AbstractBackendConfig
 
 
 class InMemoryBackendConfig(AbstractBackendConfig):

@@ -3,21 +3,23 @@ from __future__ import annotations
 import asyncio
 import logging
 import uuid
+from contextlib import suppress
 from typing import TYPE_CHECKING
 
 from fennflow._operations.executor import OperationExecutor
+from fennflow._query_specs.update.merge import MergeQuerySpec
 from fennflow._resolver import ConfigResolver
 from fennflow.backends import BackendFactory
 from fennflow.connectors import ConnectorFactory
 from fennflow.reconciler._orchestrator import ReconcileOrchestrator
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Iterable
 
     from fennflow import ConfigDict
     from fennflow._operations.dto import OperationRecord
-    from fennflow.backends.abstract.base import AbstractBackend
-    from fennflow.connectors.abstract import AbstractConnector
+    from fennflow.backends._core import BackendOrchestrator
+    from fennflow.connectors._abstract import AbstractConnector
 
 
 logger = logging.getLogger(__name__)
@@ -93,7 +95,7 @@ class UnitOfWork:
         )
 
     @property
-    def backend(self) -> AbstractBackend:
+    def backend(self) -> BackendOrchestrator:
         """Direct access to the backend for read-only inspection.
 
         Warning: mutating backend state directly bypasses Saga guarantees.
@@ -154,7 +156,7 @@ class UnitOfWork:
                 exc_info=True,
             )
 
-    async def _finalize_operations(self, operations: Sequence[OperationRecord]) -> None:
+    async def _finalize_operations(self, operations: Iterable[OperationRecord]) -> None:
         await asyncio.gather(
             *(self._finalize_operation(op) for op in operations),
             return_exceptions=True,
@@ -163,25 +165,25 @@ class UnitOfWork:
     async def commit(
         self,
     ) -> None:
-        operations = await self.backend.list_pending()
+        operations = self.backend.session_buffer.get_all()
 
         for operation in operations:
-            await self.backend.mark_done(operation)
+            operation.mark_done()
 
-        await self.backend.flush()
-
-        await self._finalize_operations(operations)
-        await self.backend.clear_session()
+        await self.backend.backend_engine.update(MergeQuerySpec(operations=operations))
+        with suppress(Exception):
+            await self._finalize_operations(operations)
+        await self.backend.commit()
 
     async def rollback(
         self,
     ) -> None:
-        operations = await self.backend.list_pending()
+        operations = self.backend.session_buffer.get_all()
         finalize_operations = []
-        for operation in reversed(operations):
+        for operation in reversed(tuple(operations)):
             try:
                 await self._operation_executor.compensate(operation)
-            except Exception:
+            except Exception as e:
                 logger.exception(
                     "Compensation failed.",
                     extra={
@@ -189,15 +191,14 @@ class UnitOfWork:
                         "session_id": operation.session_id,
                     },
                 )
-                await self.backend.mark_compensation_failed(operation)
+                operation.mark_compensation_failed(error=str(e))
 
             else:
                 finalize_operations.append(operation)
 
-        await self.backend.flush()
-
-        await self._finalize_operations(finalize_operations)
-        await self.backend.clear_session()
+        with suppress(Exception):
+            await self._finalize_operations(finalize_operations)
+        await self.backend.commit()
 
     async def _cleanup(self) -> None:
         await asyncio.gather(

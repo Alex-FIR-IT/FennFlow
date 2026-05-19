@@ -6,7 +6,23 @@ class BaseBackendException(FennFlowException):
 
 
 class RecordAlreadyExistsException(BaseBackendException):
+    """Raised when attempting to add a record that already exists.
+
+    Raised for both backend and session
+    """
+
+    def __init__(self, storage_path: str) -> None:
+        msg = f"A record for the file at path '{storage_path}' already exists."
+        super().__init__(msg)
+        self._storage_path = storage_path
+
+
+class RecordAlreadyExistsInBackendException(RecordAlreadyExistsException):
     """Raised when attempting to add a record that already exists in the backend."""
+
+
+class RecordAlreadyExistsInSessionException(RecordAlreadyExistsException):
+    """Raised when attempting to add a record that already exists in the session."""
 
 
 class RecordLockedException(BaseBackendException):

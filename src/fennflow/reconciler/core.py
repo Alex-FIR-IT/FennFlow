@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from fennflow._decorators import reraise_with
 from fennflow._operations.dto import OperationRecord
 from fennflow._operations.enums import OperationStatusEnum, OperationTypeEnum
+from fennflow._query_specs.select.is_empty import IsEmptyQuerySpec
 from fennflow.backends.enums import OnConflictDoEnum
 from fennflow.reconciler.enums import ReconcileStrategyEnum
 from fennflow.reconciler.exceptions import ReconcileFailedException
@@ -16,8 +17,8 @@ if TYPE_CHECKING:
     from uuid import UUID
 
     from fennflow import UnitOfWork
-    from fennflow.backends.abstract.base import AbstractBackend
-    from fennflow.connectors.abstract import AbstractConnector
+    from fennflow.backends._core import BackendOrchestrator
+    from fennflow.connectors._abstract import AbstractConnector
     from fennflow.files.responses.list import ListResponse
     from fennflow.repositories.fields.base import RepoExtra
 
@@ -78,7 +79,7 @@ class Reconciler:
     def __init__(
         self,
         uow_fields: Iterable[RepoField],
-        backend: AbstractBackend,
+        backend: BackendOrchestrator,
         connector: AbstractConnector,
     ) -> None:
         self.uow_fields = uow_fields
@@ -114,18 +115,20 @@ class Reconciler:
             on_conflict = reconcile_to_on_conflict_strategy[strategy]
 
             async for page in self._iter_pages(repo, batch_size=batch_size):
-                await self.backend.insert(
-                    operations=self._records_from_page(
-                        session_id=session_id,
-                        page=page,
-                        repo_extra=repo.repo_extra,
+                await self.backend.backend_engine.insert(
+                    *tuple(
+                        self._records_from_page(
+                            session_id=session_id,
+                            page=page,
+                            repo_extra=repo.repo_extra,
+                        )
                     ),
                     on_conflict=on_conflict,
                 )
 
     async def _should_reconcile(self, strategy: ReconcileStrategyEnum) -> bool:
         if strategy == ReconcileStrategyEnum.FILL_IF_EMPTY:
-            return await self.backend.is_empty()
+            return await self.backend.backend_engine.select(IsEmptyQuerySpec())
         return True
 
     async def _iter_pages(

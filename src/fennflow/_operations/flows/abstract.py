@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from fennflow._operations.dto import OperationRecord
-    from fennflow.connectors.abstract import AbstractConnector
+    from fennflow.connectors._abstract import AbstractConnector
 
 
 class AbstractFlow(ABC):

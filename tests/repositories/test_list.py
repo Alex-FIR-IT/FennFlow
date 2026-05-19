@@ -18,7 +18,7 @@ async def test_list_returns_empty_before_commit(uow_cls, text_files):
         await uow.user_files.at("folder1/").create(text_files[0])
 
         async with uow_cls() as other_uow:
-            result = await other_uow.user_files.at("").list("folder1/")
+            result = await other_uow.user_files.at("folder1").list()
             assert len(result) == 0
 
 
