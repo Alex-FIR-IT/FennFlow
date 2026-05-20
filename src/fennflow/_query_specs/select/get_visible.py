@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from fennflow._operations.dto import OperationRecord
+from fennflow._operations.dto import Record
 from fennflow._query_specs.select.base import SelectQuerySpec
 
 if TYPE_CHECKING:
@@ -13,6 +13,6 @@ if TYPE_CHECKING:
 
 
 @dataclass(slots=True, frozen=True)
-class GetVisibleQuerySpec(SelectQuerySpec[OperationRecord | None]):
+class GetVisibleQuerySpec(SelectQuerySpec[Record | None]):
     storage_path: StoragePath
     current_session_id: UUID

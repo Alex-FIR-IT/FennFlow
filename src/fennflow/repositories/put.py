@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from fennflow._operations.context.put import PutContext
 from fennflow._operations.dto import OperationRecord
-from fennflow._operations.enums import OperationStatusEnum, OperationTypeEnum
+from fennflow._operations.enums import OperationTypeEnum
 from fennflow.backends.enums import OnConflictDoEnum
 from fennflow.repositories._validation_mixins.validate_duplicate import (
     ValidateDuplicatesMixin,
@@ -52,12 +52,11 @@ class PutRepository(AtRepository, ValidateDuplicatesMixin):
 
             operation = await self._uow.backend.get(file.storage_path)
 
-            operation = OperationRecord(
+            operation = OperationRecord.from_uow(
+                uow=self._uow,
                 operation_type=OperationTypeEnum.PUT,
-                status=OperationStatusEnum.PENDING,
                 storage_path=file.storage_path,
                 context=self.__get_context(operation, file),
-                session_id=self._uow._session_id,
                 repo_extra=self.repo_extra,
             )
 
@@ -82,9 +81,9 @@ class PutRepository(AtRepository, ValidateDuplicatesMixin):
     ) -> PutContext:
         if (
             operation
-            and operation.is_pending
-            and operation.session_id == self._uow._session_id
-            and operation.is_put_type
+            and operation.record.is_pending
+            and operation.record.session_id == self._uow._session_id
+            and operation.record.is_put_type
         ):
             tmp_path = operation.context.tmp_path
             ctx = PutContext(

@@ -43,7 +43,7 @@ from fennflow.reconciler import Reconciler, ReconcileStrategyEnum
 @pytest.mark.asyncio
 async def test_should_reconcile(strategy, is_empty_val, expected):
     mock_self = MagicMock()
-    mock_self.backend.backend_engine.select = AsyncMock(return_value=is_empty_val)
+    mock_self.backend.backend_engine.execute = AsyncMock(return_value=is_empty_val)
 
     result = await Reconciler._should_reconcile(mock_self, strategy)
 

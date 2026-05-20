@@ -3,14 +3,8 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, TypeVar
 
-from fennflow.backends.enums import OnConflictDoEnum
-
 if TYPE_CHECKING:
-
-    from fennflow._operations.dto import OperationRecord
-    from fennflow._query_specs.delete.base import DeleteQuerySpec
-    from fennflow._query_specs.select.base import SelectQuerySpec
-    from fennflow._query_specs.update.base import UpdateQuerySpec
+    from fennflow._query_specs.base import BaseQuerySpec
 
 
 ReturnType = TypeVar("ReturnType")
@@ -18,20 +12,7 @@ ReturnType = TypeVar("ReturnType")
 
 class AbstractBackend(ABC):
     @abstractmethod
-    async def select(self, query: SelectQuerySpec[ReturnType]) -> ReturnType: ...
-
-    @abstractmethod
-    async def insert(
-        self,
-        *records: OperationRecord,
-        on_conflict: OnConflictDoEnum = OnConflictDoEnum.RAISE,
-    ) -> None: ...
-
-    @abstractmethod
-    async def update(self, query: UpdateQuerySpec) -> None: ...
-
-    @abstractmethod
-    async def delete(self, query: DeleteQuerySpec) -> None: ...
+    async def execute(self, query: BaseQuerySpec[ReturnType]) -> ReturnType: ...
 
     @abstractmethod
     async def commit(self): ...

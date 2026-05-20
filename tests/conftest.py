@@ -35,9 +35,26 @@ class TestUOW(UnitOfWork):
     )
 
 
-@pytest.fixture
-def uow_cls():
-    return TestUOW
+class TestSqliteUOW(UnitOfWork):
+    user_files = RepoField(UserFiles, namespace="user_files")
+    config = ConfigDict(
+        backend=InMemoryBackendConfig(),
+        connector=InMemoryConnectorConfig(),
+    )
+
+
+@pytest.fixture(
+    params=[
+        TestUOW,
+        # TestSqliteUOW,
+    ],
+    ids=[
+        "memory",
+        # "sqlite",
+    ],
+)
+def uow_cls(request):
+    return request.param
 
 
 @pytest.fixture

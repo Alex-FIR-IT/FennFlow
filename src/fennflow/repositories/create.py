@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from fennflow._operations.context.create import CreateContext
 from fennflow._operations.dto import OperationRecord
-from fennflow._operations.enums import OperationStatusEnum, OperationTypeEnum
+from fennflow._operations.enums import OperationTypeEnum
 from fennflow._query_specs.select.get_visible import GetVisibleQuerySpec
 from fennflow.backends.enums import OnConflictDoEnum
 from fennflow.backends.exceptions import RecordAlreadyExistsException
@@ -57,24 +57,23 @@ class CreateRepository(
         for file in files:
             file._storage_prefix = self.cwd
 
-            operation = await self._uow._backend.backend_engine.select(
+            record = await self._uow._backend.backend_engine.execute(
                 GetVisibleQuerySpec(
                     storage_path=file.storage_path,
                     current_session_id=self._uow._session_id,
                 )
             )
 
-            if operation:
+            if record:
                 raise RecordAlreadyExistsException(
-                    storage_path=operation.storage_path,
+                    storage_path=record.storage_path,
                 )
 
-            operation = OperationRecord(
+            operation = OperationRecord.from_uow(
+                uow=self._uow,
                 operation_type=OperationTypeEnum.CREATE,
-                status=OperationStatusEnum.PENDING,
                 storage_path=file.storage_path,
                 context=CreateContext(file=file),
-                session_id=self._uow._session_id,
                 repo_extra=self.repo_extra,
             )
 
@@ -89,7 +88,6 @@ class CreateRepository(
                 ),
             )
             operations.append(operation)
-            # await self._uow.backend.flush(operations=[operation])
 
         await self._uow.backend.flush(operations=operations)
         await asyncio.gather(*tasks)

@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from typing_extensions import Self
 
 from fennflow._operations.dto import OperationRecord
+from fennflow._query_specs.insert.insert import InsertQuerySpec
 from fennflow._query_specs.select.get_by_storage_path import GetByStoragePathQuerySpec
 from fennflow._query_specs.update.merge import MergeQuerySpec
 from fennflow._sentinel import OMIT, Omittable, is_given
@@ -40,11 +41,13 @@ class BackendOrchestrator:
         if session_obj is not None:
             return session_obj
 
-        backend_obj = await self.backend_engine.select(
+        backend_record = await self.backend_engine.execute(
             GetByStoragePathQuerySpec(storage_path=storage_path)
         )
+        if backend_record is not None:
+            return OperationRecord.from_record(backend_record)
 
-        return backend_obj
+        return None
 
     async def insert(
         self,
@@ -71,12 +74,17 @@ class BackendOrchestrator:
             operations = self.session_buffer.get_all()
 
         for on_conflict, batch in groupby(operations, lambda op: op.on_conflict):
-            await self.backend_engine.insert(*batch, on_conflict=on_conflict)
+            await self.backend_engine.execute(
+                InsertQuerySpec(
+                    operations=batch,
+                    on_conflict=on_conflict,
+                )
+            )
 
         await self.backend_engine.commit()
 
     async def commit(self):
         operations = self.session_buffer.get_all()
-        await self.backend_engine.update(MergeQuerySpec(operations=operations))
+        await self.backend_engine.execute(MergeQuerySpec.from_operations(operations))
         await self.backend_engine.commit()
         self.session_buffer.clear()

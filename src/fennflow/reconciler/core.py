@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from fennflow._decorators import reraise_with
 from fennflow._operations.dto import OperationRecord
 from fennflow._operations.enums import OperationStatusEnum, OperationTypeEnum
+from fennflow._query_specs.insert.insert import InsertQuerySpec
 from fennflow._query_specs.select.is_empty import IsEmptyQuerySpec
 from fennflow.backends.enums import OnConflictDoEnum
 from fennflow.reconciler.enums import ReconcileStrategyEnum
@@ -70,6 +71,7 @@ class Reconciler:
                     session_id=uow._session_id,
                     batch_size=500,
                     strategy=ReconcileStrategyEnum.REPLACE,
+                    backend_scope=uow.config["connector"].scope
                     )
 
         if __name__ == "__main__":
@@ -92,6 +94,7 @@ class Reconciler:
         session_id: UUID,
         strategy: ReconcileStrategyEnum,
         batch_size: int,
+        backend_scope: str,
     ) -> None:
         """Reconcile all registered repository fields against the connector.
 
@@ -104,6 +107,7 @@ class Reconciler:
             strategy: Controls whether to skip reconciliation, overwrite existing
                 records, or only insert missing ones. See ``ReconcileStrategyEnum``.
             batch_size: Number of objects to fetch per page from the connector.
+            backend_scope: Scope to assign to inserted records in the backend.
 
         Raises:
             ReconcileFailedException: If any error occurs during reconciliation.
@@ -115,20 +119,21 @@ class Reconciler:
             on_conflict = reconcile_to_on_conflict_strategy[strategy]
 
             async for page in self._iter_pages(repo, batch_size=batch_size):
-                await self.backend.backend_engine.insert(
-                    *tuple(
-                        self._records_from_page(
+                await self.backend.backend_engine.execute(
+                    InsertQuerySpec(
+                        operations=self._records_from_page(
                             session_id=session_id,
                             page=page,
                             repo_extra=repo.repo_extra,
-                        )
-                    ),
-                    on_conflict=on_conflict,
+                            backend_scope=backend_scope,
+                        ),
+                        on_conflict=on_conflict,
+                    )
                 )
 
     async def _should_reconcile(self, strategy: ReconcileStrategyEnum) -> bool:
         if strategy == ReconcileStrategyEnum.FILL_IF_EMPTY:
-            return await self.backend.backend_engine.select(IsEmptyQuerySpec())
+            return await self.backend.backend_engine.execute(IsEmptyQuerySpec())
         return True
 
     async def _iter_pages(
@@ -156,14 +161,16 @@ class Reconciler:
         session_id: UUID,
         page: ListResponse,
         repo_extra: RepoExtra,
+        backend_scope: str,
     ) -> Generator[OperationRecord, None, None]:
         for storage_path in page:
-            yield OperationRecord(
+            yield OperationRecord.create(
                 session_id=session_id,
                 storage_path=storage_path,
                 operation_type=OperationTypeEnum.PUT,
                 status=OperationStatusEnum.UPLOADED,
                 repo_extra=repo_extra,
+                scope=backend_scope,
             )
 
     @staticmethod

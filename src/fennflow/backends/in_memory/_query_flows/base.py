@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from abc import ABC
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Generic
 
+from fennflow._query_specs._types import QuerySpecT_contra, ReturnType_co
 from fennflow._query_specs.protocols import HasRunMethodProtocol
 
 if TYPE_CHECKING:
@@ -15,7 +15,10 @@ if TYPE_CHECKING:
 
 
 @dataclass(slots=True)
-class BaseInMemoryBackendQueryFlow(HasRunMethodProtocol, ABC):
+class BaseInMemoryBackendQueryFlow(
+    HasRunMethodProtocol[QuerySpecT_contra, ReturnType_co],
+    Generic[QuerySpecT_contra, ReturnType_co],
+):
     storage: InMemoryStorageType
     config: InMemoryBackendConfig
 

@@ -150,8 +150,8 @@ class UnitOfWork:
             logger.warning(
                 "Finalization failed.",
                 extra={
-                    "operation_id": operation.operation_id,
-                    "session_id": operation.session_id,
+                    "operation_id": operation.record.operation_id,
+                    "session_id": operation.record.session_id,
                 },
                 exc_info=True,
             )
@@ -168,9 +168,11 @@ class UnitOfWork:
         operations = self.backend.session_buffer.get_all()
 
         for operation in operations:
-            operation.mark_done()
+            operation.record.mark_done()
 
-        await self.backend.backend_engine.update(MergeQuerySpec(operations=operations))
+        await self.backend.backend_engine.execute(
+            MergeQuerySpec.from_operations(operations)
+        )
         with suppress(Exception):
             await self._finalize_operations(operations)
         await self.backend.commit()
@@ -187,11 +189,11 @@ class UnitOfWork:
                 logger.exception(
                     "Compensation failed.",
                     extra={
-                        "operation_id": operation.operation_id,
-                        "session_id": operation.session_id,
+                        "operation_id": operation.record.operation_id,
+                        "session_id": operation.record.session_id,
                     },
                 )
-                operation.mark_compensation_failed(error=str(e))
+                operation.record.mark_compensation_failed(error=str(e))
 
             else:
                 finalize_operations.append(operation)

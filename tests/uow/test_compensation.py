@@ -97,8 +97,8 @@ async def test_partial_put_failure_compensates_deletes(
         operation1 = await uow.backend.get(text_files[0].storage_path)
         operation2 = await uow.backend.get(text_files[1].storage_path)
 
-        assert operation1.is_failed is True
-        assert operation2.is_failed is True
+        assert operation1.record.is_failed is True
+        assert operation2.record.is_failed is True
 
 
 @pytest.mark.asyncio
@@ -126,4 +126,4 @@ async def test_file_recovery_after_deleting_on_rollback(
 
         operation = await uow.backend.get(text_files[0].storage_path)
 
-        assert operation.is_uploaded is True
+        assert operation.record.is_uploaded is True

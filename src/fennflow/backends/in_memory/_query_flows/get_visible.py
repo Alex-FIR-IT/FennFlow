@@ -1,21 +1,18 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
 
+from fennflow._operations.dto import Record
+from fennflow._query_specs.select.get_visible import GetVisibleQuerySpec
 from fennflow.backends.in_memory._query_flows.base import BaseInMemoryBackendQueryFlow
-
-if TYPE_CHECKING:
-    from fennflow._operations.dto import OperationRecord
-    from fennflow._query_specs.select.get_visible import GetVisibleQuerySpec
 
 
 @dataclass(slots=True)
-class GetVisibleFlow(BaseInMemoryBackendQueryFlow):
+class GetVisibleFlow(BaseInMemoryBackendQueryFlow[GetVisibleQuerySpec, Record | None]):
     async def run(
         self,
         query_spec: GetVisibleQuerySpec,
-    ) -> OperationRecord | None:
+    ) -> Record | None:
         db_record = self.scoped_storage.get(query_spec.storage_path)
 
         if db_record is not None and (

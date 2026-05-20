@@ -75,7 +75,7 @@ async def test_status_pending_before_commit(uow_cls):
         assert len(operations) == 1
 
         for operation in operations:
-            assert operation.status == OperationStatusEnum.PENDING
+            assert operation.record.status == OperationStatusEnum.PENDING
 
 
 @pytest.mark.asyncio

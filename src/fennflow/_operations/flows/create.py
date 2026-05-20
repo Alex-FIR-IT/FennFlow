@@ -35,11 +35,11 @@ class CreateFlow(AbstractFlow):
     ):
 
         result = await connector.delete(
-            storage_path=operation.storage_path,
+            storage_path=operation.record.storage_path,
             repo_extra=operation.repo_extra,
             **provider_extra,
         )
-        operation.status = OperationStatusEnum.FAILED
+        operation.record.status = OperationStatusEnum.FAILED
         return result
 
     @staticmethod

@@ -190,13 +190,14 @@ async def test_reconcile_on_non_empty_connector(
 
     if prefill_backend:
         InMemoryBackend._instance.scoped_storage[text_files[0].filename] = (
-            OperationRecord(
+            OperationRecord.create(
                 session_id=uuid4(),
                 storage_path=text_files[0].filename,
                 status=OperationStatusEnum.UPLOADED,
                 operation_type=OperationTypeEnum.CREATE,
                 repo_extra=TestUOW.user_files.repo_extra,
-            )
+                scope=TestUOW.config["backend"].scope,
+            ).record
         )
 
     for text_file in text_files:

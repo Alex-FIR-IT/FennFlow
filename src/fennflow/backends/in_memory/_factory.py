@@ -4,6 +4,7 @@ from collections import defaultdict
 from typing import TYPE_CHECKING
 
 from fennflow._query_specs.dispatcher import Dispatcher
+from fennflow._query_specs.insert.insert import InsertQuerySpec
 from fennflow._query_specs.select.get_by_storage_path import GetByStoragePathQuerySpec
 from fennflow._query_specs.select.get_visible import GetVisibleQuerySpec
 from fennflow._query_specs.select.is_empty import IsEmptyQuerySpec
@@ -14,6 +15,7 @@ from fennflow.backends.in_memory._query_flows.get_by_storage_path import (
     GetByStoragePathFlow,
 )
 from fennflow.backends.in_memory._query_flows.get_visible import GetVisibleFlow
+from fennflow.backends.in_memory._query_flows.insert import InsertFlow
 from fennflow.backends.in_memory._query_flows.is_empty import IsEmptyFlow
 from fennflow.backends.in_memory._query_flows.merge import MergeFlow
 from fennflow.backends.in_memory._query_flows.select_visible import SelectVisibleFlow
@@ -38,6 +40,7 @@ class InMemoryBackendFactory:
             (GetVisibleQuerySpec, GetVisibleFlow),
             (IsEmptyQuerySpec, IsEmptyFlow),
             (MergeQuerySpec, MergeFlow),
+            (InsertQuerySpec, InsertFlow),
         )
         return {
             query_spec: flow(

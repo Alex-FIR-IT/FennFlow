@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 from fennflow._operations.context.abstract import BaseContext
+from fennflow._operations.dto import Record
 from fennflow.files import TextContent
 
 if TYPE_CHECKING:
@@ -12,7 +13,7 @@ if TYPE_CHECKING:
 
 
 @pytest.mark.asyncio
-async def test_operation_context_is_cleared_with_commit(uow_cls):
+async def test_record_without_context_in_backend(uow_cls):
     async with uow_cls() as uow:
         for i in range(5):
             await uow.user_files.at("folder1/").create(
@@ -25,22 +26,6 @@ async def test_operation_context_is_cleared_with_commit(uow_cls):
 
         backend: InMemoryBackend = uow.backend.backend_engine
 
-        for operation in backend.scoped_storage.values():
-            assert type(operation.context) is BaseContext
-
-
-@pytest.mark.asyncio
-async def test_operation_context_is_cleared_in_new_session(uow_cls):
-    async with uow_cls() as uow:
-        for i in range(5):
-            await uow.user_files.at("folder1/").create(
-                TextContent.from_content(f"file{i}")
-            )
-
-    async with uow_cls() as uow:
-        assert len(uow.backend.session_buffer.get_all()) == 0
-
-        backend: InMemoryBackend = uow.backend.backend_engine
-
-        for operation in backend.scoped_storage.values():
-            assert type(operation.context) is BaseContext
+        for record in backend.scoped_storage.values():
+            assert isinstance(record, Record) is True
+            assert getattr(record, "context", None) is None

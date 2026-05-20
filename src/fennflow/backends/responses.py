@@ -6,11 +6,11 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
-    from fennflow._operations.dto import OperationRecord
+    from fennflow._operations.dto import Record
 
 
 @dataclass(slots=True)
-class OperationPage:
+class RecordPage:
     """Response returned for pagination by backends.
 
     Attributes:
@@ -20,13 +20,13 @@ class OperationPage:
 
     """
 
-    operations: tuple[OperationRecord, ...]
+    operations: tuple[Record, ...]
     continuation_token: str | None = None
 
-    def __iter__(self) -> Iterator[OperationRecord]:
+    def __iter__(self) -> Iterator[Record]:
         return iter(self.operations)
 
-    def __getitem__(self, item) -> OperationRecord:
+    def __getitem__(self, item) -> Record:
         return self.operations[item]
 
     def __len__(self) -> int:
