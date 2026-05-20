@@ -10,8 +10,8 @@ from typing_extensions import Self
 from fennflow._datetime import AwareDatetime, now
 from fennflow._operations.context.abstract import BaseContext
 from fennflow._operations.enums import OperationStatusEnum, OperationTypeEnum
-from fennflow._operations.tmp_path_builder import TmpPathBuilder
 from fennflow._sentinel import NOT_GIVEN, OMIT, Omittable, is_given
+from fennflow._tmp_path_builder import TmpPathBuilder
 from fennflow.backends.enums import OnConflictDoEnum
 
 if TYPE_CHECKING:
