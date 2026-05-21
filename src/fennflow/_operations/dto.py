@@ -10,7 +10,7 @@ from typing_extensions import Self
 from fennflow._datetime import AwareDatetime, now
 from fennflow._operations.context.abstract import BaseContext
 from fennflow._operations.enums import OperationStatusEnum, OperationTypeEnum
-from fennflow._sentinel import NOT_GIVEN, OMIT, Omittable, is_given
+from fennflow._sentinel import OMIT, Omittable, is_given
 from fennflow._tmp_path_builder import TmpPathBuilder
 from fennflow.backends.enums import OnConflictDoEnum
 
@@ -18,7 +18,6 @@ if TYPE_CHECKING:
     from fennflow import UnitOfWork
     from fennflow._new_types import BackendScope, Namespace, StoragePath
     from fennflow._operations.context.types import Context
-    from fennflow._sentinel import NotGiven
     from fennflow.repositories.fields.base import RepoExtra
 
 
@@ -37,7 +36,7 @@ class Record:
     expired_at: AwareDatetime = field(
         default_factory=lambda: now() + datetime.timedelta(seconds=30)
     )
-    error: str | None | NotGiven = NOT_GIVEN
+    error: str | None = None
 
     @property
     def is_pending(self) -> bool:
