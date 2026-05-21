@@ -15,6 +15,12 @@ if TYPE_CHECKING:
 
 @dataclass(slots=True, frozen=True)
 class MergeQuerySpec(UpdateQuerySpec[None]):
+    """Used to merge multiple records into a single record.
+
+    INSERT OR REPLACE INTO <table> (<record fields>)
+    VALUES (<record values>), (<record values>), ...
+    """
+
     records: Iterable[Record]
 
     @classmethod
