@@ -1,7 +1,7 @@
-from enum import IntEnum, auto
+from enum import StrEnum, auto
 
 
-class OperationTypeEnum(IntEnum):
+class OperationTypeEnum(StrEnum):
     """Enum for operation types."""
 
     CREATE = auto()
@@ -10,7 +10,7 @@ class OperationTypeEnum(IntEnum):
     DELETE = auto()
 
 
-class OperationStatusEnum(IntEnum):
+class OperationStatusEnum(StrEnum):
     """Enum for operation status."""
 
     PENDING = auto()
