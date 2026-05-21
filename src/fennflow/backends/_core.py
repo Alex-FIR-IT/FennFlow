@@ -15,6 +15,7 @@ from fennflow.backends.enums import OnConflictDoEnum
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
+    from fennflow._new_types import BackendScope, Namespace, StoragePath
     from fennflow._sessions.abstract import AbstractSessionBuffer
     from fennflow.backends._abstract.core import AbstractBackend
 
@@ -35,14 +36,23 @@ class BackendOrchestrator:
     async def close(self):
         await self.backend_engine.close()
 
-    async def get(self, storage_path) -> OperationRecord | None:
+    async def get(
+        self,
+        storage_path: StoragePath,
+        namespace: Namespace,
+        scope: BackendScope,
+    ) -> OperationRecord | None:
         session_obj = self.session_buffer.get(storage_path)
 
         if session_obj is not None:
             return session_obj
 
         backend_record = await self.backend_engine.execute(
-            GetByStoragePathQuerySpec(storage_path=storage_path)
+            GetByStoragePathQuerySpec(
+                scope=scope,
+                namespace=namespace,
+                storage_path=storage_path,
+            )
         )
         if backend_record is not None:
             return OperationRecord.from_record(backend_record)

@@ -13,4 +13,4 @@ class MergeFlow(BaseInMemoryBackendQueryFlow[MergeQuerySpec, None]):
         query_spec: MergeQuerySpec,
     ) -> None:
         for record in query_spec.records:
-            self.scoped_storage[record.storage_path] = record
+            self.storage[record.scope][(record.namespace, record.storage_path)] = record

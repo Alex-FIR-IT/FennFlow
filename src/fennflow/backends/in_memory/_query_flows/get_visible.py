@@ -13,13 +13,14 @@ class GetVisibleFlow(BaseInMemoryBackendQueryFlow[GetVisibleQuerySpec, Record | 
         self,
         query_spec: GetVisibleQuerySpec,
     ) -> Record | None:
-        db_record = self.scoped_storage.get(query_spec.storage_path)
+        scoped_storage = self.storage.get(query_spec.scope, {})
+        db_record = scoped_storage.get((query_spec.namespace, query_spec.storage_path))
 
         if db_record is not None and (
             db_record.is_uploaded
             or (
                 db_record.is_pending
-                and db_record.session_id == query_spec.current_session_id
+                and db_record.session_id == query_spec.session_id
                 and db_record.is_upserting_type
             )
         ):

@@ -59,8 +59,10 @@ class CreateRepository(
 
             record = await self._uow._backend.backend_engine.execute(
                 GetVisibleQuerySpec(
+                    scope=self._uow._resolved_config.backend.scope,
+                    namespace=self.repo_extra["namespace"],
                     storage_path=file.storage_path,
-                    current_session_id=self._uow._session_id,
+                    session_id=self._uow._session_id,
                 )
             )
 

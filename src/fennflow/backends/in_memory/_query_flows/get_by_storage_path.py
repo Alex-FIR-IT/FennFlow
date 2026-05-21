@@ -13,4 +13,5 @@ class GetByStoragePathFlow(
         self,
         query_spec: GetByStoragePathQuerySpec,
     ) -> Record | None:
-        return self.scoped_storage.get(query_spec.storage_path)
+        scoped_storage = self.storage.get(query_spec.scope, {})
+        return scoped_storage.get((query_spec.namespace, query_spec.storage_path))

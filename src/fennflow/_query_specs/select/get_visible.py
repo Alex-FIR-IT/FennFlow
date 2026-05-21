@@ -9,10 +9,10 @@ from fennflow._query_specs.select.base import SelectQuerySpec
 if TYPE_CHECKING:
     from uuid import UUID
 
-    from fennflow._new_types import StoragePath
+    from fennflow._new_types import BackendScope, Namespace, StoragePath
 
 
 @dataclass(slots=True, frozen=True)
 class GetVisibleQuerySpec(SelectQuerySpec[Record | None]):
     storage_path: StoragePath
-    current_session_id: UUID
+    session_id: UUID

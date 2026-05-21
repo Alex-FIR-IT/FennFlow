@@ -47,6 +47,8 @@ class ListRepository(AtRepository):
 
         record_page = await self._uow.backend.backend_engine.execute(
             SelectVisibleQuerySpec(
+                scope=self._uow._resolved_config.backend.scope,
+                namespace=self.repo_extra["namespace"],
                 prefix=storage_prefix,
                 continuation_token=continuation_token,
                 limit=limit,

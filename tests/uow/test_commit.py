@@ -50,7 +50,12 @@ async def test_commit_empty_transaction(uow_cls):
 
 
 @pytest.mark.asyncio
-async def test_backend_marks_done_after_commit(uow_cls, text_files):
+async def test_backend_marks_done_after_commit(
+    uow_cls,
+    text_files,
+    scope,
+    namespace,
+):
     async with uow_cls() as uow:
         await uow.user_files.at("user/").create(*text_files)
 
@@ -58,5 +63,7 @@ async def test_backend_marks_done_after_commit(uow_cls, text_files):
     for file in text_files:
         operation = await uow.backend.get(
             storage_path=f"user/{file.filename}",
+            scope=scope,
+            namespace=namespace,
         )
         assert operation.record.status == OperationStatusEnum.UPLOADED

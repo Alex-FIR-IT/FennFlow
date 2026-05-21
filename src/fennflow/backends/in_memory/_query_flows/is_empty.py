@@ -12,4 +12,5 @@ class IsEmptyFlow(BaseInMemoryBackendQueryFlow[IsEmptyQuerySpec, bool]):
         self,
         query_spec: IsEmptyQuerySpec,  # noqa: ARG002
     ) -> bool:
-        return len(self.scoped_storage) == 0
+        scoped_storage = self.storage.get(query_spec.scope, {})
+        return len(scoped_storage) == 0

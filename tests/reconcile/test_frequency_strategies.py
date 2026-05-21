@@ -19,7 +19,7 @@ from tests.conftest import UserFiles
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "frequency, strategy, prefill_backend, response_len, files_assertion, expected_exception",
+    "frequency, strategy, prefill_backend, response_len, files_assertion, expected_exception",  # noqa: E501
     [
         # ON_START_APP combinations
         (
@@ -178,27 +178,27 @@ async def test_reconcile_on_non_empty_connector(
     files_assertion,
     expected_exception,
     text_files,
+    namespace,
+    scope,
 ):
-    backend_namespace = "fennflow_backend"
-
     class TestUOW(UnitOfWork):
-        user_files = RepoField(UserFiles, namespace="user_files")
+        user_files = RepoField(UserFiles, namespace=namespace)
         config = ConfigDict(
             reconcile=ReconcileConfig(frequency=frequency, strategy=strategy),
-            backend=InMemoryBackendConfig(namespace=backend_namespace),
+            backend=InMemoryBackendConfig(scope=scope),
         )
 
     if prefill_backend:
-        InMemoryBackend._instance.scoped_storage[text_files[0].filename] = (
-            OperationRecord.create(
-                session_id=uuid4(),
-                storage_path=text_files[0].filename,
-                status=OperationStatusEnum.UPLOADED,
-                operation_type=OperationTypeEnum.CREATE,
-                repo_extra=TestUOW.user_files.repo_extra,
-                scope=TestUOW.config["backend"].scope,
-            ).record
-        )
+        InMemoryBackend._instance.scoped_storage[
+            (namespace, text_files[0].filename)
+        ] = OperationRecord.create(
+            session_id=uuid4(),
+            storage_path=text_files[0].filename,
+            status=OperationStatusEnum.UPLOADED,
+            operation_type=OperationTypeEnum.CREATE,
+            repo_extra=TestUOW.user_files.repo_extra,
+            scope=TestUOW.config["backend"].scope,
+        ).record
 
     for text_file in text_files:
         InMemoryConnector._storage[TestUOW.user_files.repo_extra["namespace"]][

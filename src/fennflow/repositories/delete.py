@@ -31,8 +31,10 @@ class DeleteRepository(AtRepository):
         storage_path = self._join_path(path)
         record = await self._uow._backend.backend_engine.execute(
             GetVisibleQuerySpec(
+                scope=self._uow._resolved_config.backend.scope,
+                namespace=self.repo_extra["namespace"],
                 storage_path=storage_path,
-                current_session_id=self._uow._session_id,
+                session_id=self._uow._session_id,
             )
         )
         if record is None:

@@ -50,7 +50,11 @@ class PutRepository(AtRepository, ValidateDuplicatesMixin):
         for file in files:
             file._storage_prefix = self.cwd
 
-            operation = await self._uow.backend.get(file.storage_path)
+            operation = await self._uow.backend.get(
+                scope=self._uow._resolved_config.backend.scope,
+                namespace=self.repo_extra["namespace"],
+                storage_path=file.storage_path,
+            )
 
             operation = OperationRecord.from_uow(
                 uow=self._uow,

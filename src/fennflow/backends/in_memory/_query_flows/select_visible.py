@@ -16,9 +16,11 @@ class SelectVisibleFlow(
         self,
         query_spec: SelectVisibleQuerySpec,
     ) -> RecordPage:
+        scoped_storage = self.storage.get(query_spec.scope, {})
         return SelectOperation(
             prefix=query_spec.prefix,
             continuation_token=query_spec.continuation_token,
             limit=query_spec.limit,
             visible_for_session_id=query_spec.session_id,
-        ).select(record=self.scoped_storage.values())
+            namespace=query_spec.namespace,
+        ).select(record=scoped_storage.values())

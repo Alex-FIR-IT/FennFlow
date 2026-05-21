@@ -34,6 +34,10 @@ class SelectOperation:
                 or record.storage_path == self.kwargs["path"]
             ),
             lambda record: (
+                self.kwargs["namespace"] is OMIT
+                or record.namespace == self.kwargs["namespace"]
+            ),
+            lambda record: (
                 self.kwargs["prefix"] is OMIT
                 or record.storage_path.startswith(self.kwargs["prefix"])
             ),

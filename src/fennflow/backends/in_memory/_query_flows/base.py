@@ -21,7 +21,3 @@ class BaseInMemoryBackendQueryFlow(
 ):
     storage: InMemoryStorageType
     config: InMemoryBackendConfig
-
-    @property
-    def scoped_storage(self) -> ScopedStorageType:
-        return self.storage[self.config.scope]

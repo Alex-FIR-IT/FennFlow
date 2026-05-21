@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from uuid import UUID
 
     from fennflow import UnitOfWork
+    from fennflow._new_types import BackendScope
     from fennflow.backends._core import BackendOrchestrator
     from fennflow.connectors._abstract import AbstractConnector
     from fennflow.files.responses.list import ListResponse
@@ -94,7 +95,7 @@ class Reconciler:
         session_id: UUID,
         strategy: ReconcileStrategyEnum,
         batch_size: int,
-        backend_scope: str,
+        backend_scope: BackendScope,
     ) -> None:
         """Reconcile all registered repository fields against the connector.
 
@@ -112,7 +113,10 @@ class Reconciler:
         Raises:
             ReconcileFailedException: If any error occurs during reconciliation.
         """
-        if not await self._should_reconcile(strategy=strategy):
+        if not await self._should_reconcile(
+            strategy=strategy,
+            backend_scope=backend_scope,
+        ):
             return
 
         for repo in self.uow_fields:
@@ -131,9 +135,15 @@ class Reconciler:
                     )
                 )
 
-    async def _should_reconcile(self, strategy: ReconcileStrategyEnum) -> bool:
+    async def _should_reconcile(
+        self,
+        strategy: ReconcileStrategyEnum,
+        backend_scope: BackendScope,
+    ) -> bool:
         if strategy == ReconcileStrategyEnum.FILL_IF_EMPTY:
-            return await self.backend.backend_engine.execute(IsEmptyQuerySpec())
+            return await self.backend.backend_engine.execute(
+                IsEmptyQuerySpec(scope=backend_scope)
+            )
         return True
 
     async def _iter_pages(
