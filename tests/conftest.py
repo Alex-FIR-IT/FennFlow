@@ -58,6 +58,16 @@ def uow_cls(request):
 
 
 @pytest.fixture
+def scope(uow_cls) -> BackendScope:
+    return uow_cls.config["backend"].scope
+
+
+@pytest.fixture
+def namespace(uow_cls) -> Namespace:
+    return uow_cls.user_files.repo_extra["namespace"]
+
+
+@pytest.fixture
 def text_files():
     return [
         TextContent.from_content("hello"),
