@@ -46,6 +46,18 @@ class BaseSqlalchemyModel(DeclarativeBase):
         state = inspect(self)
         return {c.key: getattr(self, c.key) for c in state.mapper.columns}
 
+    @property
+    def pk(self):
+        """Returns the primary key of the model."""
+        pk_columns = inspect(self.__class__).primary_key
+
+        pk_values = tuple(getattr(self, col.key) for col in pk_columns)
+
+        if len(pk_values) == 1:
+            return pk_values[0]
+
+        return pk_values
+
 
 class AbstractOperationRecordModel(BaseSqlalchemyModel):
     """Abstract model for fennflow metadata table.
