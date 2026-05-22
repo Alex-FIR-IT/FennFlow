@@ -7,7 +7,6 @@ from contextlib import suppress
 from typing import TYPE_CHECKING
 
 from fennflow._operations.executor import OperationExecutor
-from fennflow._query_specs.update.merge import MergeQuerySpec
 from fennflow._resolver import ConfigResolver
 from fennflow.backends import BackendFactory
 from fennflow.connectors import ConnectorFactory
@@ -167,14 +166,12 @@ class UnitOfWork:
     ) -> None:
         operations = self.backend.session_buffer.get_all()
 
-        for operation in operations:
-            operation.record.mark_done()
+        if operations:
+            for operation in operations:
+                operation.record.mark_done()
 
-        await self.backend.backend_engine.execute(
-            MergeQuerySpec.from_operations(operations)
-        )
-        with suppress(Exception):
-            await self._finalize_operations(operations)
+            with suppress(Exception):
+                await self._finalize_operations(operations)
         await self.backend.commit()
 
     async def rollback(
