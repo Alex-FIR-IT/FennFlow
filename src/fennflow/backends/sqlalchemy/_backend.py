@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import suppress
 from typing import TYPE_CHECKING, TypeVar
 
 from fennflow._query_specs.dispatcher import Dispatcher
@@ -100,7 +101,10 @@ class SqlalchemyBackend(AbstractBackend):
     async def close(
         self,
     ) -> None:
-        if self._session is not None:
-            await self._session.close()
+        with suppress(Exception):
+            await self.session.close()
+        with suppress(Exception):
+            await self._engine.dispose()
+
         self._session = None
         self._dispatcher = None
