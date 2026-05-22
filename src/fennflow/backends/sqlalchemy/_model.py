@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from fennflow._shared import unique_constraint
 from fennflow.backends.sqlalchemy._enums import Dialect
 
 if TYPE_CHECKING:
@@ -15,14 +16,14 @@ _MODEL_CACHE: dict[str, type[AbstractOperationRecordModel]] = {}
 
 
 def create_operation_record_model(
-        table_name: str,
-        dialect: str | Dialect,
-        schema: str | None = None,
-        ) -> type[AbstractOperationRecordModel]:
+    table_name: str,
+    dialect: str | Dialect,
+    schema: str | None = None,
+) -> type[AbstractOperationRecordModel]:
     from ._base import (
         AbstractOperationRecordModel,
         UniqueConstraint,
-        )
+    )
 
     if table_name in _MODEL_CACHE:
         return _MODEL_CACHE[table_name]
@@ -31,12 +32,10 @@ def create_operation_record_model(
 
     table_args: list[Any] = [
         UniqueConstraint(
-            "scope",
-            "namespace",
-            "storage_path",
+            *unique_constraint,
             name=f"uq_{table_name}_scope_namespace_storage_path",
-            ),
-        ]
+        ),
+    ]
 
     if schema and dialect != Dialect.SQLITE:
         table_args.append({"schema": schema})
@@ -47,15 +46,15 @@ def create_operation_record_model(
         {
             "__tablename__": table_name,
             "__table_args__": tuple(table_args),
-            },
-        )
+        },
+    )
     return _MODEL_CACHE[table_name]
 
 
 async def create_all(
-        engine: AsyncEngine,
-        schema: str | None = None,
-        ) -> None:
+    engine: AsyncEngine,
+    schema: str | None = None,
+) -> None:
     from ._base import BaseSqlalchemyModel, text
 
     async with engine.begin() as conn:
