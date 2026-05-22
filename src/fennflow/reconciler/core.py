@@ -124,7 +124,7 @@ class Reconciler:
 
             async for page in self._iter_pages(repo, batch_size=batch_size):
                 await self.backend.backend_engine.execute(
-                    InsertQuerySpec(
+                    InsertQuerySpec.from_operations(
                         operations=self._records_from_page(
                             session_id=session_id,
                             page=page,
@@ -160,6 +160,10 @@ class Reconciler:
                 repo_extra=repo.repo_extra,
                 continuation_token=continuation_token,
             )
+
+            if not page.storage_paths:
+                break
+
             yield page
 
             if page.continuation_token is None:
