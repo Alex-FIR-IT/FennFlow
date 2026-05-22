@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
@@ -11,8 +13,8 @@ class AbstractFlow(ABC):
     @abstractmethod
     async def execute(
         *,
-        operation: "OperationRecord",
-        connector: "AbstractConnector",
+        operation: OperationRecord,
+        connector: AbstractConnector,
         **provider_extra,
     ): ...
 
@@ -20,14 +22,14 @@ class AbstractFlow(ABC):
     @abstractmethod
     async def compensate(
         *,
-        operation: "OperationRecord",
-        connector: "AbstractConnector",
+        operation: OperationRecord,
+        connector: AbstractConnector,
     ): ...
 
     @staticmethod
     @abstractmethod
     async def finalize(
         *,
-        operation: "OperationRecord",
-        connector: "AbstractConnector",
+        operation: OperationRecord,
+        connector: AbstractConnector,
     ): ...
