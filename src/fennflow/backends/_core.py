@@ -95,6 +95,11 @@ class BackendOrchestrator:
 
     async def commit(self):
         operations = self.session_buffer.get_all()
-        await self.backend_engine.execute(MergeQuerySpec.from_operations(operations))
+
+        if operations:
+            await self.backend_engine.execute(
+                MergeQuerySpec.from_operations(operations)
+            )
+
         await self.backend_engine.commit()
         self.session_buffer.clear()
