@@ -54,6 +54,8 @@ async def test_partial_put_failure_compensates_deletes(
     uow_cls,
     text_files,
     monkeypatch,
+    scope,
+    namespace,
 ):
     assert len(text_files) >= 2
 
@@ -94,17 +96,27 @@ async def test_partial_put_failure_compensates_deletes(
     # checking statuses for files:
 
     async with uow_cls() as uow:
-        operation1 = await uow.backend.get(text_files[0].storage_path)
-        operation2 = await uow.backend.get(text_files[1].storage_path)
+        operation1 = await uow.backend.get(
+            storage_path=text_files[0].storage_path,
+            scope=scope,
+            namespace=namespace,
+        )
+        operation2 = await uow.backend.get(
+            storage_path=text_files[1].storage_path,
+            scope=scope,
+            namespace=namespace,
+        )
 
-        assert operation1.is_failed is True
-        assert operation2.is_failed is True
+        assert operation1.record.is_failed is True
+        assert operation2.record.is_failed is True
 
 
 @pytest.mark.asyncio
 async def test_file_recovery_after_deleting_on_rollback(
     uow_cls,
     text_files,
+    scope,
+    namespace,
 ):
     async with uow_cls() as uow:
         await uow.user_files.at("user/").create(text_files[0])
@@ -124,6 +136,10 @@ async def test_file_recovery_after_deleting_on_rollback(
         assert len(response) == 1, f"Expected 1 file, got {len(response)}"
         assert response[0].data == text_files[0].data
 
-        operation = await uow.backend.get(text_files[0].storage_path)
+        operation = await uow.backend.get(
+            storage_path=text_files[0].storage_path,
+            scope=scope,
+            namespace=namespace,
+        )
 
-        assert operation.is_uploaded is True
+        assert operation.record.is_uploaded is True

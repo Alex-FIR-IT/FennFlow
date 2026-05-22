@@ -25,11 +25,11 @@ class PutFlow(AbstractFlow):
         ctx: PutContext = operation.context
 
         if not is_given(ctx.tmp_path):
-            tmp_path = operation.generate_tmp_path()
+            tmp_path = operation.record.generate_tmp_path()
 
             with suppress(NoSuchKeyException):
                 await connector.copy_object(
-                    from_storage_path=operation.storage_path,
+                    from_storage_path=operation.record.storage_path,
                     to_storage_path=tmp_path,
                     to_namespace=operation.repo_extra["namespace"],
                     repo_extra=operation.repo_extra,
@@ -56,19 +56,19 @@ class PutFlow(AbstractFlow):
         if is_given(ctx.tmp_path):
             await connector.copy_object(
                 from_storage_path=ctx.tmp_path,
-                to_storage_path=operation.storage_path,
-                to_namespace=operation.namespace,
+                to_storage_path=operation.record.storage_path,
+                to_namespace=operation.record.namespace,
                 repo_extra=operation.repo_extra,
                 **provider_extra,
             )
-            operation.status = OperationStatusEnum.UPLOADED
+            operation.record.status = OperationStatusEnum.UPLOADED
         else:
             await connector.delete(
-                storage_path=operation.storage_path,
+                storage_path=operation.record.storage_path,
                 repo_extra=operation.repo_extra,
                 **provider_extra,
             )
-            operation.status = OperationStatusEnum.FAILED
+            operation.record.status = OperationStatusEnum.FAILED
 
     @staticmethod
     async def finalize(

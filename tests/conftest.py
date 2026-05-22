@@ -1,11 +1,16 @@
+import uuid
+
 import pytest
 import pytest_asyncio
 
 from fennflow import ConfigDict
-from fennflow.backends import InMemoryBackend, InMemoryBackendConfig
-from fennflow.connectors import InMemoryConnector, InMemoryConnectorConfig
+from fennflow._new_types import BackendScope, Namespace
+from fennflow._operations.dto import OperationRecord, Record
+from fennflow._operations.enums import OperationStatusEnum, OperationTypeEnum
+from fennflow.backends import InMemoryBackendConfig
+from fennflow.backends.sqlalchemy.config import SqlalchemyBackendConfig
+from fennflow.connectors import InMemoryConnectorConfig
 from fennflow.files import TextContent
-from fennflow.reconciler._orchestrator import ReconcileOrchestrator
 from fennflow.repositories import (
     CreateRepository,
     DeleteRepository,
@@ -15,6 +20,8 @@ from fennflow.repositories import (
 from fennflow.repositories.list import ListRepository
 from fennflow.repositories.put import PutRepository
 from fennflow.uow import UnitOfWork
+from tests.shared import NAMESPACE, SCOPE
+from tests.utils import reset_state
 
 
 class UserFiles(
@@ -28,16 +35,43 @@ class UserFiles(
 
 
 class TestUOW(UnitOfWork):
-    user_files = RepoField(UserFiles, namespace="user_files")
+    user_files = RepoField(UserFiles, namespace=NAMESPACE)
     config = ConfigDict(
-        backend=InMemoryBackendConfig(),
+        backend=InMemoryBackendConfig(scope=SCOPE),
         connector=InMemoryConnectorConfig(),
     )
 
 
+class TestSqliteUOW(UnitOfWork):
+    user_files = RepoField(UserFiles, namespace=NAMESPACE)
+    config = ConfigDict(
+        backend=SqlalchemyBackendConfig(scope=SCOPE),
+        connector=InMemoryConnectorConfig(),
+    )
+
+
+@pytest.fixture(
+    params=[
+        TestUOW,
+        TestSqliteUOW,
+    ],
+    ids=[
+        "memory",
+        "sqlite",
+    ],
+)
+def uow_cls(request):
+    return request.param
+
+
 @pytest.fixture
-def uow_cls():
-    return TestUOW
+def scope() -> BackendScope:
+    return SCOPE
+
+
+@pytest.fixture
+def namespace() -> Namespace:
+    return NAMESPACE
 
 
 @pytest.fixture
@@ -49,9 +83,22 @@ def text_files():
 
 
 @pytest_asyncio.fixture(autouse=True)
-async def reset_inmemory_state(uow_cls):
-    async with uow_cls() as uow:
-        uow._backend.backend_engine.clear()
+async def reset_state_fixture(uow_cls, scope):
+    await reset_state(uow_cls, scope)
 
-    InMemoryConnector.drop_all()
-    ReconcileOrchestrator._reconciled_on_startup = set()
+
+@pytest_asyncio.fixture
+def operations(namespace: str, scope: str):
+    operations = []
+    for i in range(10):
+        record = Record(
+            session_id=uuid.uuid4(),
+            storage_path=f"path/{i}.txt",
+            scope=scope,
+            namespace=namespace,
+            operation_type=OperationTypeEnum.CREATE,
+            status=OperationStatusEnum.PENDING,
+        )
+        operations.append(OperationRecord.from_record(record))
+
+    return operations

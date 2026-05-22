@@ -1,8 +1,11 @@
 from dataclasses import dataclass
+from typing import Generic, TypeVar
 
 from fennflow._query_specs.base import BaseQuerySpec
 
+ReturnType = TypeVar("ReturnType")
+
 
 @dataclass(slots=True, frozen=True)
-class DeleteQuerySpec(BaseQuerySpec):
+class DeleteQuerySpec(BaseQuerySpec[ReturnType], Generic[ReturnType]):
     pass

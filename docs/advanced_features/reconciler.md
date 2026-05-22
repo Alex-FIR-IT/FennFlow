@@ -16,15 +16,16 @@ from fennflow.uow import UowInspector
 async def main():
     async with UOW() as uow:
         uow_inspector = UowInspector(uow=uow)
-        reconcile = Reconciler(
+        reconciler = Reconciler(
             uow_fields=uow_inspector.get_repo_fields(),
             connector=uow.connector,
             backend=uow.backend,
             )
-        await reconcile.reconcile(
+        await reconciler.reconcile(
             session_id=uow._session_id,
             batch_size=500,
             strategy=ReconcileStrategyEnum.REPLACE,
+            backend_scope=uow.config["backend"].scope
             )
 
 

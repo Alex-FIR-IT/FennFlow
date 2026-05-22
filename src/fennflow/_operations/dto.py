@@ -4,39 +4,40 @@ import datetime
 import uuid
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
-from uuid import UUID
 
-from fennflow._datetime import now
+from typing_extensions import Self
+
+from fennflow._datetime import AwareDatetime, now
 from fennflow._operations.context.abstract import BaseContext
 from fennflow._operations.enums import OperationStatusEnum, OperationTypeEnum
-from fennflow._operations.tmp_path_builder import TmpPathBuilder
-from fennflow._sentinel import NOT_GIVEN
+from fennflow._sentinel import OMIT, Omittable, is_given
+from fennflow._shared import inserting_types
+from fennflow._tmp_path_builder import TmpPathBuilder
 from fennflow.backends.enums import OnConflictDoEnum
 
 if TYPE_CHECKING:
-    from fennflow._new_types import Namespace, StoragePath
+    from fennflow import UnitOfWork
+    from fennflow._new_types import BackendScope, Namespace, StoragePath
     from fennflow._operations.context.types import Context
-    from fennflow._sentinel import NotGiven
     from fennflow.repositories.fields.base import RepoExtra
 
 
 @dataclass(slots=True)
-class OperationRecord:
+class Record:
     session_id: uuid.UUID
     storage_path: StoragePath
-    repo_extra: RepoExtra
+    scope: BackendScope
+    namespace: Namespace
     operation_type: OperationTypeEnum
     status: OperationStatusEnum
-    context: Context = field(default_factory=BaseContext)
     operation_id: uuid.UUID = field(default_factory=uuid.uuid4)
-    on_conflict: OnConflictDoEnum = OnConflictDoEnum.RAISE
-    created_at: datetime.datetime = field(
+    created_at: AwareDatetime = field(
         default_factory=now,
     )
-    expired_at: datetime.datetime = field(
+    expired_at: AwareDatetime = field(
         default_factory=lambda: now() + datetime.timedelta(seconds=30)
     )
-    error: str | None | NotGiven = NOT_GIVEN
+    error: str | None = None
 
     @property
     def is_pending(self) -> bool:
@@ -55,44 +56,19 @@ class OperationRecord:
         return self.status == OperationStatusEnum.DELETED
 
     @property
-    def namespace(self) -> Namespace:
-        return self.repo_extra["namespace"]
-
-    @property
     def is_expired(self):
         return self.expired_at < now()
 
     @property
-    def is_dangling(self) -> bool:
-        return self.is_expired and not self.is_uploaded
-
-    def is_locked(self, current_session_id: UUID) -> bool:
-        return (
-            self.session_id != current_session_id
-            and self.is_pending
-            and not self.is_expired
-        )
-
-    def is_visible(self, requested_from_session_id: UUID) -> bool:
-        return self.is_uploaded or (
-            self.is_pending
-            and self.session_id == requested_from_session_id
-            and self.is_upserting_type
-        )
-
-    @property
     def is_upserting_type(self) -> bool:
-        return self.operation_type in {
-            OperationTypeEnum.CREATE,
-            OperationTypeEnum.PUT,
-        }
+        return self.operation_type in inserting_types
 
     @property
     def is_put_type(self) -> bool:
         return self.operation_type == OperationTypeEnum.PUT
 
     def generate_tmp_path(self) -> StoragePath:
-        return TmpPathBuilder.from_operation(self)
+        return TmpPathBuilder.from_record(self)
 
     def mark_done(
         self,
@@ -130,3 +106,62 @@ class OperationRecord:
 
     def __hash__(self):
         return hash(self.storage_path)
+
+
+@dataclass(slots=True)
+class OperationRecord:
+    record: Record
+    repo_extra: RepoExtra
+    context: Context = field(default_factory=BaseContext)
+    on_conflict: OnConflictDoEnum = OnConflictDoEnum.RAISE
+
+    @classmethod
+    def create(
+        cls,
+        session_id: uuid.UUID,
+        scope: BackendScope,
+        storage_path: StoragePath,
+        operation_type: OperationTypeEnum,
+        repo_extra: RepoExtra,
+        status: OperationStatusEnum = OperationStatusEnum.PENDING,
+        context: Omittable[Context] = OMIT,
+        on_conflict: OnConflictDoEnum = OnConflictDoEnum.RAISE,
+    ) -> Self:
+        record = Record(
+            session_id=session_id,
+            scope=scope,
+            namespace=repo_extra["namespace"],
+            storage_path=storage_path,
+            operation_type=operation_type,
+            status=status,
+        )
+        return cls(
+            record=record,
+            repo_extra=repo_extra,
+            context=context if is_given(context) else BaseContext(),
+            on_conflict=on_conflict,
+        )
+
+    @classmethod
+    def from_uow(
+        cls,
+        uow: UnitOfWork,
+        repo_extra: RepoExtra,
+        storage_path: StoragePath,
+        operation_type: OperationTypeEnum,
+        status: OperationStatusEnum = OperationStatusEnum.PENDING,
+        context: Omittable[Context] = OMIT,
+    ) -> Self:
+        return cls.create(
+            session_id=uow._session_id,
+            repo_extra=repo_extra,
+            scope=uow._resolved_config.backend.scope,
+            storage_path=storage_path,
+            operation_type=operation_type,
+            status=status,
+            context=context,
+        )
+
+    @classmethod
+    def from_record(cls, record: Record) -> Self:
+        return cls(record=record, repo_extra={"namespace": record.namespace})

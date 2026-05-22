@@ -45,8 +45,10 @@ class ListRepository(AtRepository):
         """
         storage_prefix = self._join_path(prefix)
 
-        operation_page = await self._uow.backend.backend_engine.select(
+        record_page = await self._uow.backend.backend_engine.execute(
             SelectVisibleQuerySpec(
+                scope=self._uow._resolved_config.backend.scope,
+                namespace=self.repo_extra["namespace"],
                 prefix=storage_prefix,
                 continuation_token=continuation_token,
                 limit=limit,
@@ -55,6 +57,6 @@ class ListRepository(AtRepository):
         )
 
         return ListResponse(
-            storage_paths=tuple(op.storage_path for op in operation_page),
-            continuation_token=operation_page.continuation_token,
+            storage_paths=tuple(record.storage_path for record in record_page),
+            continuation_token=record_page.continuation_token,
         )

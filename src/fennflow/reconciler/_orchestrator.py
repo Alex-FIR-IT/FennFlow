@@ -60,16 +60,17 @@ class ReconcileOrchestrator:
 
     async def _reconcile(self, uow: UnitOfWork) -> None:
         extractor = UowInspector(uow=uow)
-        reconcile = Reconciler(
+        reconciler = Reconciler(
             uow_fields=extractor.get_repo_fields(),
             connector=uow.connector,
             backend=uow.backend,
         )
 
-        await reconcile.reconcile(
+        await reconciler.reconcile(
             session_id=uow._session_id,
             batch_size=uow._resolved_config.reconcile.batch_size,
             strategy=uow._resolved_config.reconcile.strategy,
+            backend_scope=uow._resolved_config.backend.scope,
         )
 
         logger.debug(

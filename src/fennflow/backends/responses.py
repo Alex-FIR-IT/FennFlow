@@ -6,28 +6,28 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
-    from fennflow._operations.dto import OperationRecord
+    from fennflow._operations.dto import Record
 
 
 @dataclass(slots=True)
-class OperationPage:
+class RecordPage:
     """Response returned for pagination by backends.
 
     Attributes:
-        operations: Operations of the listed files.
+        records: Records of the listed files.
         continuation_token: Opaque token to pass to the next :meth:`ListRepository.list`
             call to retrieve the next page. ``None`` if no more results are available.
 
     """
 
-    operations: tuple[OperationRecord, ...]
+    records: tuple[Record, ...]
     continuation_token: str | None = None
 
-    def __iter__(self) -> Iterator[OperationRecord]:
-        return iter(self.operations)
+    def __iter__(self) -> Iterator[Record]:
+        return iter(self.records)
 
-    def __getitem__(self, item) -> OperationRecord:
-        return self.operations[item]
+    def __getitem__(self, item) -> Record:
+        return self.records[item]
 
     def __len__(self) -> int:
-        return len(self.operations)
+        return len(self.records)

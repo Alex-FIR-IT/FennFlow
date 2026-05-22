@@ -1,13 +1,9 @@
-import datetime
-import uuid
-
 import pytest
 
 from fennflow import ConfigDict, UnitOfWork
 from fennflow._datetime import AwareDatetime, now
 from fennflow._operations.dto import OperationRecord
-from fennflow._operations.enums import OperationStatusEnum, OperationTypeEnum
-from fennflow._sentinel import OMIT
+from fennflow._operations.enums import OperationStatusEnum
 from fennflow.backends import InMemoryBackendConfig
 from fennflow.connectors import InMemoryConnectorConfig
 from fennflow.files import TextContent
@@ -48,17 +44,17 @@ def make_files(*names):
     return [TextContent.from_content("content", filename=name) for name in names]
 
 
-def make_record(**kwargs) -> OperationRecord:
-    defaults = {
-        "session_id": uuid.uuid4(),
-        "storage_path": "folder1/file.txt",
-        "repo_extra": {},
-        "operation_type": OperationTypeEnum.CREATE,
-        "context": {},
-        "status": OperationStatusEnum.PENDING,
-    }
-    defaults.update(kwargs)
-    return OperationRecord(**defaults)
+# def make_record(**kwargs) -> OperationRecord:
+#     defaults = {
+#         "session_id": uuid.uuid4(),
+#         "storage_path": "folder1/file.txt",
+#         "repo_extra": {},
+#         "operation_type": OperationTypeEnum.CREATE,
+#         "context": {},
+#         "status": OperationStatusEnum.PENDING,
+#     }
+#     defaults.update(kwargs)
+#     return OperationRecord(**defaults)
 
 
 def inject(uow, storage_path: str, record: OperationRecord) -> None:
@@ -77,7 +73,7 @@ async def test_status_pending_before_commit(uow_cls):
         assert len(operations) == 1
 
         for operation in operations:
-            assert operation.status == OperationStatusEnum.PENDING
+            assert operation.record.status == OperationStatusEnum.PENDING
 
 
 @pytest.mark.asyncio

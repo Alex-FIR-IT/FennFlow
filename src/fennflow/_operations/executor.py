@@ -19,7 +19,7 @@ class OperationExecutor:
         operation: OperationRecord,
         **provider_extra,
     ):
-        operation_flow = flow_registry[operation.operation_type]
+        operation_flow = flow_registry[operation.record.operation_type]
         return await operation_flow().execute(
             operation=operation,
             connector=self.connector,
@@ -30,7 +30,7 @@ class OperationExecutor:
         self,
         operation: OperationRecord,
     ):
-        operation_flow = flow_registry[operation.operation_type]
+        operation_flow = flow_registry[operation.record.operation_type]
         return await operation_flow().compensate(
             operation=operation,
             connector=self.connector,
@@ -40,7 +40,7 @@ class OperationExecutor:
         self,
         operation: OperationRecord,
     ):
-        operation_flow = flow_registry[operation.operation_type]
+        operation_flow = flow_registry[operation.record.operation_type]
         return await operation_flow().finalize(
             operation=operation,
             connector=self.connector,

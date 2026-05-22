@@ -1,7 +1,7 @@
-from enum import IntEnum, auto
+from fennflow._str_enum import StrEnum
 
 
-class ReconcileFrequencyEnum(IntEnum):
+class ReconcileFrequencyEnum(StrEnum):
     """Controls how often reconciliation is performed.
 
     Attributes:
@@ -10,12 +10,12 @@ class ReconcileFrequencyEnum(IntEnum):
         NEVER: Disable reconciliation.
     """
 
-    ON_START_APP = auto()
-    ON_SESSION_START = auto()
-    NEVER = auto()
+    ON_START_APP = "on_start_app"
+    ON_SESSION_START = "on_session_start"
+    NEVER = "never"
 
 
-class ReconcileStrategyEnum(IntEnum):
+class ReconcileStrategyEnum(StrEnum):
     """Defines how reconciliation updates existing data.
 
     Attributes:
@@ -24,6 +24,6 @@ class ReconcileStrategyEnum(IntEnum):
         INSERT_MISSING: Insert missing data while keeping existing data intact.
     """
 
-    FILL_IF_EMPTY = auto()
-    REPLACE = auto()
-    INSERT_MISSING = auto()
+    FILL_IF_EMPTY = "fill_if_empty"
+    REPLACE = "replace"
+    INSERT_MISSING = "insert_missing"

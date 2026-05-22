@@ -3,8 +3,8 @@ from __future__ import annotations
 from typing import Any
 
 from fennflow._operations.context.delete import DeleteContext
-from fennflow._operations.dto import OperationRecord
-from fennflow._operations.enums import OperationStatusEnum, OperationTypeEnum
+from fennflow._operations.dto import OperationRecord, Record
+from fennflow._operations.enums import OperationTypeEnum
 
 from .._query_specs.select.get_visible import GetVisibleQuerySpec
 from ..backends.enums import OnConflictDoEnum
@@ -29,21 +29,22 @@ class DeleteRepository(AtRepository):
 
         """
         storage_path = self._join_path(path)
-        operation = await self._uow._backend.backend_engine.select(
+        record = await self._uow._backend.backend_engine.execute(
             GetVisibleQuerySpec(
+                scope=self._uow._resolved_config.backend.scope,
+                namespace=self.repo_extra["namespace"],
                 storage_path=storage_path,
-                current_session_id=self._uow._session_id,
+                session_id=self._uow._session_id,
             )
         )
-        if operation is None:
+        if record is None:
             return False
 
-        operation = OperationRecord(
+        operation = OperationRecord.from_uow(
+            uow=self._uow,
             operation_type=OperationTypeEnum.DELETE,
-            status=OperationStatusEnum.PENDING,
-            storage_path=operation.storage_path,
-            context=self.__get_context(operation=operation),
-            session_id=self._uow._session_id,
+            storage_path=record.storage_path,
+            context=self.__get_context(record=record),
             repo_extra=self.repo_extra,
         )
         await self._uow.backend.insert(
@@ -58,13 +59,8 @@ class DeleteRepository(AtRepository):
         await self._uow.backend.flush(operations=[operation])
         return True
 
-    def __get_context(self, operation: OperationRecord) -> DeleteContext:
+    def __get_context(self, record: Record) -> DeleteContext:
         return DeleteContext(
-            to_storage_path=self._join_path(
-                "tmp",
-                f"session_id_{operation.session_id}",
-                f"operation_id_{operation.session_id}",
-                operation.storage_path,
-            ),
+            to_storage_path=record.generate_tmp_path(),
             to_namespace=self.repo_extra["namespace"],
         )

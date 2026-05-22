@@ -7,7 +7,6 @@ from contextlib import suppress
 from typing import TYPE_CHECKING
 
 from fennflow._operations.executor import OperationExecutor
-from fennflow._query_specs.update.merge import MergeQuerySpec
 from fennflow._resolver import ConfigResolver
 from fennflow.backends import BackendFactory
 from fennflow.connectors import ConnectorFactory
@@ -136,12 +135,13 @@ class UnitOfWork:
         exc,
         tb,
     ):
-        if exc_type is not None or not self._auto_commit:
-            await self.rollback()
-        elif self._auto_commit:
-            await self.commit()
-
-        await self._cleanup()
+        try:
+            if exc_type is not None or not self._auto_commit:
+                await self.rollback()
+            elif self._auto_commit:
+                await self.commit()
+        finally:
+            await self._cleanup()
 
     async def _finalize_operation(self, operation: OperationRecord) -> None:
         try:
@@ -150,8 +150,8 @@ class UnitOfWork:
             logger.warning(
                 "Finalization failed.",
                 extra={
-                    "operation_id": operation.operation_id,
-                    "session_id": operation.session_id,
+                    "operation_id": operation.record.operation_id,
+                    "session_id": operation.record.session_id,
                 },
                 exc_info=True,
             )
@@ -167,12 +167,12 @@ class UnitOfWork:
     ) -> None:
         operations = self.backend.session_buffer.get_all()
 
-        for operation in operations:
-            operation.mark_done()
+        if operations:
+            for operation in operations:
+                operation.record.mark_done()
 
-        await self.backend.backend_engine.update(MergeQuerySpec(operations=operations))
-        with suppress(Exception):
-            await self._finalize_operations(operations)
+            with suppress(Exception):
+                await self._finalize_operations(operations)
         await self.backend.commit()
 
     async def rollback(
@@ -187,11 +187,11 @@ class UnitOfWork:
                 logger.exception(
                     "Compensation failed.",
                     extra={
-                        "operation_id": operation.operation_id,
-                        "session_id": operation.session_id,
+                        "operation_id": operation.record.operation_id,
+                        "session_id": operation.record.session_id,
                     },
                 )
-                operation.mark_compensation_failed(error=str(e))
+                operation.record.mark_compensation_failed(error=str(e))
 
             else:
                 finalize_operations.append(operation)

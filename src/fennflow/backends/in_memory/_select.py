@@ -9,12 +9,12 @@ from typing_extensions import Unpack
 from fennflow._datetime import now
 from fennflow._sentinel import OMIT
 from fennflow.backends._abstract.annotations import SelectParams
-from fennflow.backends.responses import OperationPage
+from fennflow.backends.responses import RecordPage
 
 if TYPE_CHECKING:
     from collections.abc import Generator, Iterable
 
-    from fennflow._operations.dto import OperationRecord
+    from fennflow._operations.dto import Record
 
 
 class SelectOperation:
@@ -32,6 +32,10 @@ class SelectOperation:
             lambda record: (
                 self.kwargs["path"] is OMIT
                 or record.storage_path == self.kwargs["path"]
+            ),
+            lambda record: (
+                self.kwargs["namespace"] is OMIT
+                or record.namespace == self.kwargs["namespace"]
             ),
             lambda record: (
                 self.kwargs["prefix"] is OMIT
@@ -70,8 +74,8 @@ class SelectOperation:
 
     def sort_and_filter(
         self,
-        all_records: Iterable[OperationRecord],
-    ) -> Generator[OperationRecord, None, None]:
+        all_records: Iterable[Record],
+    ) -> Generator[Record, None, None]:
 
         continuation_token = self.kwargs["continuation_token"]
 
@@ -100,24 +104,22 @@ class SelectOperation:
 
         return filtered_results
 
-    def apply_limit(
-        self, filtered_results: Iterable[OperationRecord]
-    ) -> tuple[OperationRecord, ...]:
+    def apply_limit(self, filtered_results: Iterable[Record]) -> tuple[Record, ...]:
         return tuple(itertools.islice(filtered_results, self.kwargs["limit"]))
 
     def get_continuation_token(
-        self, filtered_results: Generator[OperationRecord, None, None]
+        self, filtered_results: Generator[Record, None, None]
     ) -> str | None:
         next_item = next(filtered_results, None)
         next_token = str(next_item.operation_id) if next_item else None
         return next_token
 
-    def select(self, record: Iterable[OperationRecord]) -> OperationPage:
+    def select(self, record: Iterable[Record]) -> RecordPage:
         filtered_results = self.sort_and_filter(record)
 
         results = self.apply_limit(filtered_results)
         next_token = self.get_continuation_token(filtered_results)
-        return OperationPage(
-            operations=results,
+        return RecordPage(
+            records=results,
             continuation_token=next_token,
         )

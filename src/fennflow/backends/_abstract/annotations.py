@@ -7,7 +7,7 @@ from typing_extensions import NotRequired
 if TYPE_CHECKING:
     from uuid import UUID
 
-    from fennflow._new_types import StoragePath
+    from fennflow._new_types import Namespace, StoragePath
     from fennflow._operations.enums import OperationStatusEnum
     from fennflow._sentinel import Omittable
 
@@ -20,6 +20,7 @@ class SelectParams(TypedDict):
 
     path: NotRequired[StoragePath]
     prefix: NotRequired[str]
+    namespace: NotRequired[Namespace]
     status: NotRequired[OperationStatusEnum]
     media_type: NotRequired[str]
     session_id: NotRequired[UUID]

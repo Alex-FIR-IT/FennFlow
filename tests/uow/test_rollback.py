@@ -33,7 +33,12 @@ async def test_rollback_on_exception(uow_cls, text_files):
 
 
 @pytest.mark.asyncio
-async def test_backend_marks_failed_after_rollback(uow_cls, text_files):
+async def test_backend_marks_failed_after_rollback(
+    uow_cls,
+    text_files,
+    scope,
+    namespace,
+):
     try:
         async with uow_cls() as uow:
             await uow.user_files.at("user/").create(*text_files)
@@ -41,6 +46,11 @@ async def test_backend_marks_failed_after_rollback(uow_cls, text_files):
     except RuntimeError:
         pass
 
-    for file in text_files:
-        record = await uow.backend.get(storage_path=f"user/{file.filename}")
-        assert record.status == OperationStatusEnum.FAILED
+    async with uow_cls() as uow:
+        for file in text_files:
+            operation = await uow.backend.get(
+                storage_path=f"user/{file.filename}",
+                scope=scope,
+                namespace=namespace,
+            )
+            assert operation.record.status == OperationStatusEnum.FAILED

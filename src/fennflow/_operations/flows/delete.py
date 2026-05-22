@@ -25,14 +25,14 @@ class DeleteFlow(AbstractFlow):
 
         with suppress(NoSuchKeyException):
             await connector.copy_object(
-                from_storage_path=operation.storage_path,
+                from_storage_path=operation.record.storage_path,
                 to_storage_path=ctx.to_storage_path,
                 to_namespace=ctx.to_namespace,
                 repo_extra=operation.repo_extra,
                 **provider_extra,
             )
             return await connector.delete(
-                storage_path=operation.storage_path,
+                storage_path=operation.record.storage_path,
                 repo_extra=operation.repo_extra,
                 **provider_extra,
             )
@@ -47,8 +47,8 @@ class DeleteFlow(AbstractFlow):
         ctx: DeleteContext = operation.context
         await connector.copy_object(
             from_storage_path=ctx.to_storage_path,
-            to_storage_path=operation.storage_path,
-            to_namespace=operation.namespace,
+            to_storage_path=operation.record.storage_path,
+            to_namespace=operation.record.namespace,
             repo_extra=operation.repo_extra,
             **provider_extra,
         )
@@ -56,7 +56,7 @@ class DeleteFlow(AbstractFlow):
             storage_path=ctx.to_storage_path,
             repo_extra=operation.repo_extra,
         )
-        operation.status = OperationStatusEnum.UPLOADED
+        operation.record.status = OperationStatusEnum.UPLOADED
 
     @staticmethod
     async def finalize(

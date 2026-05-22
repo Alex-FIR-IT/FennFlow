@@ -32,26 +32,26 @@ class InMemorySessionBuffer(AbstractSessionBuffer):
 
     def add(
         self,
-        *records: OperationRecord,
+        *operations: OperationRecord,
         on_conflict: OnConflictDoEnum,
     ) -> None:
-        for record in records:
-            storage_record = self.get(record.storage_path)
+        for operation in operations:
+            storage_record = self.get(operation.record.storage_path)
 
             if storage_record:
                 match on_conflict:
                     case OnConflictDoEnum.DO_NOTHING:
                         continue
                     case OnConflictDoEnum.REPLACE:
-                        self._set(record)
+                        self._set(operation)
                     case OnConflictDoEnum.RAISE:
                         raise RecordAlreadyExistsInSessionException(
-                            storage_path=record.storage_path,
+                            storage_path=operation.record.storage_path,
                         )
                     case _:
                         raise AssertionError("Unhandled conflict strategy.")
             else:
-                self._set(record)
+                self._set(operation)
 
-    def _set(self, record: OperationRecord) -> None:
-        self._operations[record.storage_path] = record
+    def _set(self, operation: OperationRecord) -> None:
+        self._operations[operation.record.storage_path] = operation

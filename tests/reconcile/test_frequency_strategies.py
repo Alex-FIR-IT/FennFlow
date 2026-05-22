@@ -6,7 +6,7 @@ import pytest
 from fennflow import ConfigDict, UnitOfWork
 from fennflow._operations.dto import OperationRecord
 from fennflow._operations.enums import OperationStatusEnum, OperationTypeEnum
-from fennflow.backends import InMemoryBackend, InMemoryBackendConfig
+from fennflow._query_specs.insert.insert import InsertQuerySpec
 from fennflow.connectors import InMemoryConnector
 from fennflow.reconciler import (
     ReconcileConfig,
@@ -19,7 +19,7 @@ from tests.conftest import UserFiles
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "frequency, strategy, prefill_backend, response_len, files_assertion, expected_exception",
+    "frequency, strategy, prefill_backend, response_len, files_assertion, expected_exception",  # noqa: E501
     [
         # ON_START_APP combinations
         (
@@ -178,31 +178,37 @@ async def test_reconcile_on_non_empty_connector(
     files_assertion,
     expected_exception,
     text_files,
+    namespace,
+    scope,
+    uow_cls,
 ):
-    backend_namespace = "fennflow_backend"
 
     class TestUOW(UnitOfWork):
-        user_files = RepoField(UserFiles, namespace="user_files")
+        user_files = RepoField(UserFiles, namespace=namespace)
         config = ConfigDict(
             reconcile=ReconcileConfig(frequency=frequency, strategy=strategy),
-            backend=InMemoryBackendConfig(namespace=backend_namespace),
+            backend=uow_cls.config["backend"],
         )
 
     if prefill_backend:
-        InMemoryBackend._instance.scoped_storage[text_files[0].filename] = (
-            OperationRecord(
-                session_id=uuid4(),
-                storage_path=text_files[0].filename,
-                status=OperationStatusEnum.UPLOADED,
-                operation_type=OperationTypeEnum.CREATE,
-                repo_extra=TestUOW.user_files.repo_extra,
+        async with uow_cls() as uow:
+            await uow.backend.backend_engine.execute(
+                InsertQuerySpec.from_operations(
+                    operations=[
+                        OperationRecord.create(
+                            session_id=uuid4(),
+                            storage_path=text_files[0].filename,
+                            status=OperationStatusEnum.UPLOADED,
+                            operation_type=OperationTypeEnum.CREATE,
+                            repo_extra=TestUOW.user_files.repo_extra,
+                            scope=scope,
+                        )
+                    ]
+                )
             )
-        )
 
     for text_file in text_files:
-        InMemoryConnector._storage[TestUOW.user_files.repo_extra["namespace"]][
-            text_file.filename
-        ] = text_file
+        InMemoryConnector._storage[namespace][text_file.filename] = text_file
 
     with expected_exception:
         async with TestUOW() as uow:

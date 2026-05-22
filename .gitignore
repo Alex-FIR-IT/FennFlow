@@ -16,3 +16,4 @@ site
 main.py
 .cache
 .local
+*.db

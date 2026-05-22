@@ -7,5 +7,5 @@ ReturnType = TypeVar("ReturnType")
 
 
 @dataclass(slots=True, frozen=True)
-class SelectQuerySpec(BaseQuerySpec, Generic[ReturnType]):
+class SelectQuerySpec(BaseQuerySpec[ReturnType], Generic[ReturnType]):
     pass
