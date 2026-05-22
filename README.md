@@ -6,7 +6,7 @@
   </a>
 </div>
 <div align="center">
-  <h3>Atomic-like S3 Framework, the Pydantic way</h3>
+  <h3>Atomic-like Agnostic Object Storage Framework, the Pydantic way</h3>
 </div>
 <div align="center">
   <a href="https://github.com/Alex-FIR-IT/FennFlow/actions/workflows/coverage-report.yml"><img src="https://github.com/Alex-FIR-IT/FennFlow/actions/workflows/coverage-report.yml/badge.svg?branch=master" alt="CI"></a>
@@ -25,7 +25,7 @@
 
 ---
 
-### <em>FennFlow is a Python s3 framework designed to help you quickly, confidently, and painlessly manipulate files in your object storage implementing Saga-like compensation flow.</em>
+### <em>FennFlow is a Python s3 framework designed to help you quickly, confidently, and painlessly manipulate files in your object storage implementing SSOT pattern and Saga compensation flow.</em>
 
 ## Why use FennFlow?
 

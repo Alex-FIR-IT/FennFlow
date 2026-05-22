@@ -1,5 +1,5 @@
 site_name: FennFlow
-site_description: Atomic-like S3 Framework, the Pydantic way
+site_description: Atomic-like Agnostic Object Storage Framework, the Pydantic way
 strict: true
 site_url: https://alex-fir-it.github.io
 
