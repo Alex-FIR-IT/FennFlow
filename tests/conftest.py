@@ -76,9 +76,5 @@ def text_files():
 
 
 @pytest_asyncio.fixture(autouse=True)
-async def reset_inmemory_state(uow_cls):
-    async with uow_cls() as uow:
-        uow._backend.backend_engine.clear()
-
-    InMemoryConnector.drop_all()
-    ReconcileOrchestrator._reconciled_on_startup = set()
+async def reset_state_fixture(uow_cls, scope):
+    await reset_state(uow_cls, scope)
