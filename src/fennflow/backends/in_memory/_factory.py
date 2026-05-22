@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import TYPE_CHECKING
 
+from fennflow._query_specs.delete.delete_scope import DeleteScopeQuerySpec
 from fennflow._query_specs.dispatcher import Dispatcher
 from fennflow._query_specs.insert.insert import InsertQuerySpec
 from fennflow._query_specs.select.get_by_storage_path import GetByStoragePathQuerySpec
@@ -11,6 +12,7 @@ from fennflow._query_specs.select.is_empty import IsEmptyQuerySpec
 from fennflow._query_specs.select.select_visible import SelectVisibleQuerySpec
 from fennflow._query_specs.update.merge import MergeQuerySpec
 from fennflow.backends.in_memory._core import InMemoryBackend
+from fennflow.backends.in_memory._query_flows.delete_scope import DeleteScopeFlow
 from fennflow.backends.in_memory._query_flows.get_by_storage_path import (
     GetByStoragePathFlow,
 )
@@ -41,6 +43,7 @@ class InMemoryBackendFactory:
             (IsEmptyQuerySpec, IsEmptyFlow),
             (MergeQuerySpec, MergeFlow),
             (InsertQuerySpec, InsertFlow),
+            (DeleteScopeQuerySpec, DeleteScopeFlow),
         )
         return {
             query_spec: flow(
