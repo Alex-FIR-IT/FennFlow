@@ -2,5 +2,5 @@ from enum import StrEnum
 
 
 class Dialect(StrEnum):
-    POSTGRES = "postgres"
+    POSTGRES = "postgresql"
     SQLITE = "sqlite"
