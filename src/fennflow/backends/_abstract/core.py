@@ -12,7 +12,10 @@ ReturnType = TypeVar("ReturnType")
 
 class AbstractBackend(ABC):
     @abstractmethod
-    async def execute(self, query: BaseQuerySpec[ReturnType]) -> ReturnType: ...
+    async def execute(
+        self,
+        query: BaseQuerySpec[ReturnType],
+    ) -> ReturnType: ...
 
     @abstractmethod
     async def commit(self): ...
