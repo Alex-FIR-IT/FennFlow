@@ -1,9 +1,9 @@
 from pydantic import BaseModel, Field
 
-from fennflow._new_types import BackendScope
+from fennflow._base_pydantic_config import BasePydanticConfig
 
 
-class AbstractConnectorConfig(BaseModel):
+class AbstractConnectorConfig(BasePydanticConfig):
     """Abstract configuration for all FennFlow connectors."""
 
     scope: BackendScope = Field(

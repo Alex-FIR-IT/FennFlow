@@ -1,8 +1,10 @@
 from aiobotocore.config import AioConfig
-from pydantic import BaseModel, ConfigDict
+from pydantic import ConfigDict
+
+from fennflow.connectors._abstract.config import AbstractConnectorConfig
 
 
-class S3ConnectorConfig(BaseModel):
+class S3ConnectorConfig(AbstractConnectorConfig):
     """Configuration for the S3 connector.
 
     Credentials can be provided explicitly via this config or through any method
@@ -35,8 +37,9 @@ class S3ConnectorConfig(BaseModel):
         S3ConnectorConfig()
     """
 
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-
+    model_config = AbstractConnectorConfig.model_config | ConfigDict(
+        arbitrary_types_allowed=True
+    )
     aws_access_key_id: str | None = None
     aws_secret_access_key: str | None = None
     endpoint_url: str | None = None

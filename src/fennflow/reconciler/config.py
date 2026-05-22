@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 
+from fennflow._base_pydantic_config import BasePydanticConfig
 from fennflow.reconciler.enums import ReconcileFrequencyEnum, ReconcileStrategyEnum
 
 
-@dataclass(slots=True, frozen=True)
-class ReconcileConfig:
+class ReconcileConfig(BasePydanticConfig):
     """Configuration for the reconciler."""
 
     frequency: ReconcileFrequencyEnum = ReconcileFrequencyEnum.ON_START_APP
