@@ -55,14 +55,14 @@ No matter what your file storage contains, backend ensures your data is consiste
 
 ### Backend Comparison
 
-|                    | Raw aiobotocore                                   | In-Memory                                                                                     |
-|--------------------|---------------------------------------------------|-----------------------------------------------------------------------------------------------|
-| **Consistency**    | 🔴 None<br>No link between files and metadata     | 🟡 Medium<br>Consistent within process lifetime, lost on crash                                | 
-| **Compensation**   | 🔴 None<br>Orphaned files on failure              | 🟡 Medium<br>Automatic within process, orphaned files possible on crash                       | 
-| **Reliability**    | 🔴 Low<br>Failures leave storage in unknown state | 🟡 Medium<br>Syncs with storage on restart, files uploaded during crash cannot be compensated | 
-| **Latency**        | ✅ Lowest<br>Pure S3 network overhead only         | ✅ Lowest<br>Minimal in-process overhead                                                       | 
-| **Infrastructure** | ✅ None                                            | ✅ None                                                                                        |
-| **Memory usage**   | ✅ None                                            | 🟡 Stores file metadata in-process                                                            |
+|                    | Raw aiobotocore                                   | In-Memory                                                                                               |
+|--------------------|---------------------------------------------------|---------------------------------------------------------------------------------------------------------|
+| **Consistency**    | 🔴 None<br>No link between files and metadata     | 🟡 Medium<br>Consistent within process lifetime, lost on crash                                          | 
+| **Compensation**   | 🔴 None<br>Orphaned files on failure              | 🟡 Medium<br>Automatic within process                                                                   | 
+| **Reliability**    | 🔴 Low<br>Failures leave storage in unknown state | 🟡 Medium<br> Syncs with storage on restart, orphaned files uploaded during crash cannot be compensated | 
+| **Latency**        | ✅ Lowest<br>Pure S3 network overhead only         | ✅ Lowest<br>Minimal in-process overhead                                                                 | 
+| **Infrastructure** | ✅ None                                            | ✅ None                                                                                                  |
+| **Memory usage**   | ✅ None                                            | 🟡 Stores file metadata in-process                                                                      |
 
 ## Quick Start
 
