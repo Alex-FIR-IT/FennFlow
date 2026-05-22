@@ -81,3 +81,20 @@ def text_files():
 @pytest_asyncio.fixture(autouse=True)
 async def reset_state_fixture(uow_cls, scope):
     await reset_state(uow_cls, scope)
+
+
+@pytest_asyncio.fixture
+def operations(namespace: str, scope: str):
+    operations = []
+    for i in range(10):
+        record = Record(
+            session_id=uuid.uuid4(),
+            storage_path=f"path/{i}.txt",
+            scope=scope,
+            namespace=namespace,
+            operation_type=OperationTypeEnum.CREATE,
+            status=OperationStatusEnum.PENDING,
+        )
+        operations.append(OperationRecord.from_record(record))
+
+    return operations
