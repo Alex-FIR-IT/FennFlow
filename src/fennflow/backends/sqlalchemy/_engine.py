@@ -2,19 +2,17 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from sqlalchemy import make_url
-
 from ._enums import Dialect
 
 if TYPE_CHECKING:
-    from . import AsyncEngine
+    from ._base import AsyncEngine
 
 
 def async_engine_factory(
-    url: str,
-    schema: str,
-) -> AsyncEngine:
-    from . import create_async_engine
+        url: str,
+        schema: str,
+        ) -> AsyncEngine:
+    from ._base import create_async_engine, make_url
 
     dialect = make_url(url)
     if Dialect.SQLITE in dialect.drivername:
@@ -25,6 +23,6 @@ def async_engine_factory(
         execution_options={
             "schema_translate_map": {
                 None: schema,
-            }
-        },
-    )
+                },
+            },
+        )

@@ -7,7 +7,6 @@ from fennflow._query_specs.select.select_visible import SelectVisibleQuerySpec
 from fennflow._sentinel import is_given
 from fennflow._shared import inserting_types
 from fennflow.backends.responses import RecordPage
-from fennflow.backends.sqlalchemy import select
 from fennflow.backends.sqlalchemy._query_flows.base import (
     BaseSqlalchemyBackendQueryFlow,
 )
@@ -15,12 +14,14 @@ from fennflow.backends.sqlalchemy._query_flows.base import (
 
 @dataclass(slots=True)
 class SelectVisibleFlow(
-    BaseSqlalchemyBackendQueryFlow[SelectVisibleQuerySpec, RecordPage]
+    BaseSqlalchemyBackendQueryFlow[SelectVisibleQuerySpec, RecordPage],
 ):
     async def run(
         self,
         query_spec: SelectVisibleQuerySpec,
     ) -> RecordPage:
+        from fennflow.backends.sqlalchemy._base import select
+
         model = self.adapter.orm_model
 
         conditions = [

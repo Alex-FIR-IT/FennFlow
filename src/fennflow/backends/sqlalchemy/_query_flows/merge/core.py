@@ -17,7 +17,6 @@ MergeFlowStrategy = Callable[
     Awaitable[None],
 ]
 
-
 fallback_registry = FallbackRegistry[
     Dialect | str,
     MergeFlowStrategy,

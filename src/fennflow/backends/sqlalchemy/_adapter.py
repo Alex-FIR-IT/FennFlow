@@ -7,14 +7,17 @@ from fennflow._operations.dto import Record
 from fennflow._operations.enums import OperationStatusEnum, OperationTypeEnum
 
 if TYPE_CHECKING:
-    from fennflow.backends.sqlalchemy import AbstractOperationRecordModel
+    from fennflow.backends.sqlalchemy._base import AbstractOperationRecordModel
 
 
 @dataclass(slots=True, frozen=True)
 class RecordOrmAdapter:
     orm_model: type[AbstractOperationRecordModel]
 
-    def to_orm(self, record: Record):
+    def to_orm(
+            self,
+            record: Record,
+            ):
         return self.orm_model(
             operation_id=record.operation_id,
             session_id=record.session_id,
@@ -26,10 +29,12 @@ class RecordOrmAdapter:
             created_at=record.created_at,
             expired_at=record.expired_at,
             error=record.error,
-        )
+            )
 
-    def from_orm(self, orm_obj: AbstractOperationRecordModel) -> Record:
-
+    def from_orm(
+            self,
+            orm_obj: AbstractOperationRecordModel,
+            ) -> Record:
         return Record(
             operation_id=orm_obj.operation_id,
             session_id=orm_obj.session_id,
@@ -41,4 +46,4 @@ class RecordOrmAdapter:
             created_at=orm_obj.created_at,
             expired_at=orm_obj.expired_at,
             error=orm_obj.error,
-        )
+            )

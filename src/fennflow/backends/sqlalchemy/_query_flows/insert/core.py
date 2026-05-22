@@ -25,16 +25,16 @@ fallback_registry = FallbackRegistry[
     registry={
         Dialect.POSTGRES: postgres.run,
         Dialect.SQLITE: postgres.run,
-    },
+        },
     default_value=db_agnostic.run,
-)
+    )
 
 
 @dataclass(slots=True)
 class InsertFlow(BaseSqlalchemyBackendQueryFlow[InsertQuerySpec, None]):
     async def run(
-        self,
-        query_spec: InsertQuerySpec,
-    ) -> None:
+            self,
+            query_spec: InsertQuerySpec,
+            ) -> None:
         flow = fallback_registry[self.dialect]
         return await flow(self, query_spec)

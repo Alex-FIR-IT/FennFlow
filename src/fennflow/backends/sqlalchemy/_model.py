@@ -9,20 +9,20 @@ if TYPE_CHECKING:
 
     from sqlalchemy.ext.asyncio import AsyncEngine
 
-    from fennflow.backends.sqlalchemy import AbstractOperationRecordModel
+    from fennflow.backends.sqlalchemy._base import AbstractOperationRecordModel
 
 _MODEL_CACHE: dict[str, type[AbstractOperationRecordModel]] = {}
 
 
 def create_operation_record_model(
-    table_name: str,
-    dialect: str | Dialect,
-    schema: str | None = None,
-) -> type[AbstractOperationRecordModel]:
-    from . import (
+        table_name: str,
+        dialect: str | Dialect,
+        schema: str | None = None,
+        ) -> type[AbstractOperationRecordModel]:
+    from ._base import (
         AbstractOperationRecordModel,
         UniqueConstraint,
-    )
+        )
 
     if table_name in _MODEL_CACHE:
         return _MODEL_CACHE[table_name]
@@ -35,8 +35,8 @@ def create_operation_record_model(
             "namespace",
             "storage_path",
             name=f"uq_{table_name}_scope_namespace_storage_path",
-        )
-    ]
+            ),
+        ]
 
     if schema and dialect != Dialect.SQLITE:
         table_args.append({"schema": schema})
@@ -47,16 +47,16 @@ def create_operation_record_model(
         {
             "__tablename__": table_name,
             "__table_args__": tuple(table_args),
-        },
-    )
+            },
+        )
     return _MODEL_CACHE[table_name]
 
 
 async def create_all(
-    engine: AsyncEngine,
-    schema: str | None = None,
-) -> None:
-    from . import BaseSqlalchemyModel, text
+        engine: AsyncEngine,
+        schema: str | None = None,
+        ) -> None:
+    from ._base import BaseSqlalchemyModel, text
 
     async with engine.begin() as conn:
         if schema and conn.dialect.name != "sqlite":

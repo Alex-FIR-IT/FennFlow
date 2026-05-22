@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from sqlalchemy import insert
-
 from fennflow.backends.enums import OnConflictDoEnum
 
 if TYPE_CHECKING:
@@ -12,9 +10,11 @@ if TYPE_CHECKING:
 
 
 async def run(
-    flow: InsertFlow,
-    query_spec: InsertQuerySpec,
-) -> None:
+        flow: InsertFlow,
+        query_spec: InsertQuerySpec,
+        ) -> None:
+    from fennflow.backends.sqlalchemy._base import insert
+
     records = query_spec.records
     model = flow.adapter.orm_model
     rows = [flow.adapter.to_orm(record) for record in records]
@@ -34,5 +34,5 @@ async def run(
             await flow.session.execute(stmt)
         case _:
             raise AssertionError(
-                f"Unhandled conflict strategy: {query_spec.on_conflict}"
-            )
+                f"Unhandled conflict strategy: {query_spec.on_conflict}",
+                )
