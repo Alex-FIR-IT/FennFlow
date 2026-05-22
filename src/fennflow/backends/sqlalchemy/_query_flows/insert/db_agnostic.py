@@ -10,29 +10,35 @@ if TYPE_CHECKING:
 
 
 async def run(
-        flow: InsertFlow,
-        query_spec: InsertQuerySpec,
-        ) -> None:
+    flow: InsertFlow,
+    query_spec: InsertQuerySpec,
+) -> None:
     from fennflow.backends.sqlalchemy._base import insert
 
     records = query_spec.records
     model = flow.adapter.orm_model
-    rows = [flow.adapter.to_orm(record) for record in records]
+    orm_instances = [flow.adapter.to_orm(record) for record in records]
 
     match query_spec.on_conflict:
         case OnConflictDoEnum.REPLACE:
-            for row in rows:
-                await flow.session.merge(row)
+            for orm_instance in orm_instances:
+                await flow.session.merge(orm_instance)
         case OnConflictDoEnum.DO_NOTHING:
-            for row in rows:
-                existing = await flow.session.get(model, row.pk, with_for_update=True)
+            for orm_instance in orm_instances:
+                existing = await flow.session.get(
+                    model,
+                    orm_instance.pk,
+                    with_for_update=True,
+                )
                 if existing is None:
-                    flow.session.add(row)
+                    flow.session.add(orm_instance)
 
         case OnConflictDoEnum.RAISE:
-            stmt = insert(model).values(rows)
+            stmt = insert(model).values(
+                tuple(orm_model.model_dump() for orm_model in orm_instances)
+            )
             await flow.session.execute(stmt)
         case _:
             raise AssertionError(
                 f"Unhandled conflict strategy: {query_spec.on_conflict}",
-                )
+            )
