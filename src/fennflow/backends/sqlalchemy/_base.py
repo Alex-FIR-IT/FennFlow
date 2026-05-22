@@ -1,3 +1,4 @@
+
 import uuid
 
 from fennflow._datetime import AwareDatetime, now
@@ -8,6 +9,7 @@ try:
         DateTime,
         String,
         Text,
+        UniqueConstraint,
         Uuid,
         delete,
         exists,
