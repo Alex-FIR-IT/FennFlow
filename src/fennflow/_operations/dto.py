@@ -11,6 +11,7 @@ from fennflow._datetime import AwareDatetime, now
 from fennflow._operations.context.abstract import BaseContext
 from fennflow._operations.enums import OperationStatusEnum, OperationTypeEnum
 from fennflow._sentinel import OMIT, Omittable, is_given
+from fennflow._shared import inserting_types
 from fennflow._tmp_path_builder import TmpPathBuilder
 from fennflow.backends.enums import OnConflictDoEnum
 
@@ -60,10 +61,7 @@ class Record:
 
     @property
     def is_upserting_type(self) -> bool:
-        return self.operation_type in {
-            OperationTypeEnum.CREATE,
-            OperationTypeEnum.PUT,
-        }
+        return self.operation_type in inserting_types
 
     @property
     def is_put_type(self) -> bool:
