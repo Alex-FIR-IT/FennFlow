@@ -42,7 +42,6 @@ class SqlalchemyBackend(AbstractBackend):
 
         self._session_maker = async_sessionmaker(
             self._engine,
-            autoflush=False,
         )
 
     async def execute(
