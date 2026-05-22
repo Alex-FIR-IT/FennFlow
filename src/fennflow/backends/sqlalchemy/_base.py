@@ -69,9 +69,26 @@ class AbstractOperationRecordModel(BaseSqlalchemyModel):
 
     __abstract__ = True
 
+    scope: Mapped[BackendScope] = mapped_column(
+        String(255),
+        nullable=False,
+        primary_key=True,
+    )
+
+    namespace: Mapped[Namespace] = mapped_column(
+        String(255),
+        nullable=False,
+        primary_key=True,
+    )
+
+    storage_path: Mapped[StoragePath] = mapped_column(
+        String(2048),
+        nullable=False,
+        primary_key=True,
+    )
+
     operation_id: Mapped[uuid.UUID] = mapped_column(
         Uuid,
-        primary_key=True,
         default=uuid.uuid4,
     )
 
@@ -81,27 +98,9 @@ class AbstractOperationRecordModel(BaseSqlalchemyModel):
         index=True,
     )
 
-    scope: Mapped[BackendScope] = mapped_column(
-        String(255),
-        nullable=False,
-        index=True,
-    )
-
-    namespace: Mapped[Namespace] = mapped_column(
-        String(255),
-        nullable=False,
-        index=True,
-    )
-
-    storage_path: Mapped[StoragePath] = mapped_column(
-        String(2048),
-        nullable=False,
-    )
-
     operation_type: Mapped[str] = mapped_column(
         String(64),
         nullable=False,
-        index=True,
     )
 
     status: Mapped[str] = mapped_column(
@@ -114,14 +113,11 @@ class AbstractOperationRecordModel(BaseSqlalchemyModel):
         DateTime(timezone=True),
         nullable=False,
         default=now,
-        index=True,
     )
 
     expired_at: Mapped[AwareDatetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,
-        default=lambda: now() + datetime.timedelta(seconds=30),
-        index=True,
     )
 
     error: Mapped[str | None] = mapped_column(
