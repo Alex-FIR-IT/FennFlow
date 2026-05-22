@@ -1,4 +1,4 @@
-from enum import StrEnum
+from fennflow._str_enum import StrEnum
 
 
 class Dialect(StrEnum):

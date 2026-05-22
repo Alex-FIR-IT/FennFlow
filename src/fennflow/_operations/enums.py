@@ -1,4 +1,6 @@
-from enum import StrEnum, auto
+from enum import auto
+
+from fennflow._str_enum import StrEnum
 
 
 class OperationTypeEnum(StrEnum):
