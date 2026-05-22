@@ -7,7 +7,6 @@ from fennflow import ConfigDict, UnitOfWork
 from fennflow._operations.dto import OperationRecord
 from fennflow._operations.enums import OperationStatusEnum, OperationTypeEnum
 from fennflow._query_specs.insert.insert import InsertQuerySpec
-from fennflow.backends import InMemoryBackend, InMemoryBackendConfig
 from fennflow.connectors import InMemoryConnector
 from fennflow.reconciler import (
     ReconcileConfig,
@@ -16,7 +15,6 @@ from fennflow.reconciler import (
 )
 from fennflow.repositories import RepoField
 from tests.conftest import UserFiles
-from tests.utils import reset_state
 
 
 @pytest.mark.asyncio

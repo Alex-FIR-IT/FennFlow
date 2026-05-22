@@ -1,5 +1,4 @@
 import uuid
-from collections.abc import Generator
 
 import pytest
 import pytest_asyncio

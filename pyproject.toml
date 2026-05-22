@@ -125,6 +125,7 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = ["D"]
+"src/fennflow/backends/sqlalchemy/_base.py" = ["F401"]
 
 [tool.ruff.lint.isort]
 combine-as-imports = true
