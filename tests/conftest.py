@@ -1,8 +1,13 @@
+import uuid
+from collections.abc import Generator
+
 import pytest
 import pytest_asyncio
 
 from fennflow import ConfigDict
 from fennflow._new_types import BackendScope, Namespace
+from fennflow._operations.dto import OperationRecord, Record
+from fennflow._operations.enums import OperationStatusEnum, OperationTypeEnum
 from fennflow.backends import InMemoryBackendConfig
 from fennflow.backends.sqlalchemy.config import SqlalchemyBackendConfig
 from fennflow.connectors import InMemoryConnectorConfig
@@ -33,7 +38,7 @@ class UserFiles(
 class TestUOW(UnitOfWork):
     user_files = RepoField(UserFiles, namespace=NAMESPACE)
     config = ConfigDict(
-        backend=InMemoryBackendConfig(),
+        backend=InMemoryBackendConfig(scope=SCOPE),
         connector=InMemoryConnectorConfig(),
     )
 
@@ -61,13 +66,13 @@ def uow_cls(request):
 
 
 @pytest.fixture
-def scope(uow_cls) -> BackendScope:
-    return uow_cls.config["backend"].scope
+def scope() -> BackendScope:
+    return SCOPE
 
 
 @pytest.fixture
-def namespace(uow_cls) -> Namespace:
-    return uow_cls.user_files.repo_extra["namespace"]
+def namespace() -> Namespace:
+    return NAMESPACE
 
 
 @pytest.fixture
