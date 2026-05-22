@@ -1,10 +1,7 @@
-import asyncio
-
 import pytest
 
 from fennflow.backends.exceptions import (
     RecordAlreadyExistsException,
-    RecordLockedException,
 )
 from fennflow.repositories.exceptions import FilepathsCollisionError
 

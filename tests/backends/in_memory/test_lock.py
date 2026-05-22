@@ -1,6 +1,5 @@
 import pytest
 
-from fennflow.backends.exceptions import RecordLockedException
 from fennflow.files import TextContent
 
 
