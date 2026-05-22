@@ -60,10 +60,11 @@ async def test_backend_marks_done_after_commit(
         await uow.user_files.at("user/").create(*text_files)
 
     # inspect backend directly
-    for file in text_files:
-        operation = await uow.backend.get(
-            storage_path=f"user/{file.filename}",
-            scope=scope,
-            namespace=namespace,
-        )
-        assert operation.record.status == OperationStatusEnum.UPLOADED
+    async with uow_cls() as uow:
+        for file in text_files:
+            operation = await uow.backend.get(
+                storage_path=f"user/{file.filename}",
+                scope=scope,
+                namespace=namespace,
+            )
+            assert operation.record.status == OperationStatusEnum.UPLOADED

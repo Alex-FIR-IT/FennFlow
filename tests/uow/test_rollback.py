@@ -46,10 +46,11 @@ async def test_backend_marks_failed_after_rollback(
     except RuntimeError:
         pass
 
-    for file in text_files:
-        operation = await uow.backend.get(
-            storage_path=f"user/{file.filename}",
-            scope=scope,
-            namespace=namespace,
-        )
-        assert operation.record.status == OperationStatusEnum.FAILED
+    async with uow_cls() as uow:
+        for file in text_files:
+            operation = await uow.backend.get(
+                storage_path=f"user/{file.filename}",
+                scope=scope,
+                namespace=namespace,
+            )
+            assert operation.record.status == OperationStatusEnum.FAILED

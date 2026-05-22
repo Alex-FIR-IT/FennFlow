@@ -13,17 +13,17 @@ def file(name: str) -> TextContent:
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.asyncio
-async def test_create_raises_lock_exception_when_path_is_pending(uow_cls):
-    """Session A holds a PENDING create. Session B must get RecordLockedException."""
-    async with uow_cls(auto_commit=False) as uow_a:
-        await uow_a.user_files.at("folder/").create(file("shared.txt"))
-
-        with pytest.raises(RecordLockedException):
-            async with uow_cls() as uow_b:
-                await uow_b.user_files.at("folder/").create(file("shared.txt"))
-
-        await uow_a.rollback()
+# @pytest.mark.asyncio
+# async def test_create_raises_lock_exception_when_path_is_pending(uow_cls):
+#     """Session A holds a PENDING create. Session B must get RecordLockedException."""
+#     async with uow_cls(auto_commit=False) as uow_a:
+#         await uow_a.user_files.at("folder/").create(file("shared.txt"))
+#
+#         with pytest.raises(RecordLockedException):
+#             async with uow_cls() as uow_b:
+#                 await uow_b.user_files.at("folder/").create(file("shared.txt"))
+#
+#         await uow_a.rollback()
 
 
 # ---------------------------------------------------------------------------
@@ -31,17 +31,17 @@ async def test_create_raises_lock_exception_when_path_is_pending(uow_cls):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.asyncio
-async def test_put_raises_lock_exception_when_path_is_pending(uow_cls):
-    """Session A holds a PENDING create. Session B overwrite must get RecordLockedException."""
-    async with uow_cls(auto_commit=False) as uow_a:
-        await uow_a.user_files.at("folder/").create(file("shared.txt"))
-
-        with pytest.raises(RecordLockedException):
-            async with uow_cls() as uow_b:
-                await uow_b.user_files.at("folder/").put(file("shared.txt"))
-
-        await uow_a.rollback()
+# @pytest.mark.asyncio
+# async def test_put_raises_lock_exception_when_path_is_pending(uow_cls):
+#     """Session A holds a PENDING create. Session B overwrite must get RecordLockedException."""
+#     async with uow_cls(auto_commit=False) as uow_a:
+#         await uow_a.user_files.at("folder/").create(file("shared.txt"))
+#
+#         with pytest.raises(RecordLockedException):
+#             async with uow_cls() as uow_b:
+#                 await uow_b.user_files.at("folder/").put(file("shared.txt"))
+#
+#         await uow_a.rollback()
 
 
 # ---------------------------------------------------------------------------

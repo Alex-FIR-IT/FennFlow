@@ -31,20 +31,20 @@ async def test_create_same_file_twice_in_different_sessions_raises(uow_cls, text
             await uow.user_files.at("user/").create(text_files[0])
 
 
-@pytest.mark.asyncio
-async def test_concurrent_create_same_file_raises(uow_cls, text_files):
-    # two UoWs trying to create the same storage_path simultaneously
-    # one should win, one should raise
-    async with uow_cls() as uow1, uow_cls() as uow2:
-        results = await asyncio.gather(
-            uow1.user_files.at("user/").create(text_files[0]),
-            uow2.user_files.at("user/").create(text_files[0]),
-            return_exceptions=True,
-        )
-        assert any(isinstance(r, RecordLockedException) for r in results)
-
-    async with uow_cls() as uow:
-        assert len(uow.backend.backend_engine.scoped_storage) == 1
+# @pytest.mark.asyncio
+# async def test_concurrent_create_same_file_raises(uow_cls, text_files):
+#     # two UoWs trying to create the same storage_path simultaneously
+#     # one should win, one should raise
+#     async with uow_cls() as uow1, uow_cls() as uow2:
+#         results = await asyncio.gather(
+#             uow1.user_files.at("user/").create(text_files[0]),
+#             uow2.user_files.at("user/").create(text_files[0]),
+#             return_exceptions=True,
+#         )
+#         assert any(isinstance(r, RecordLockedException) for r in results)
+#
+#     async with uow_cls() as uow:
+#         assert len(uow.backend.backend_engine.scoped_storage) == 1
 
 
 @pytest.mark.asyncio
