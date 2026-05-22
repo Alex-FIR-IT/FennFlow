@@ -135,12 +135,13 @@ class UnitOfWork:
         exc,
         tb,
     ):
-        if exc_type is not None or not self._auto_commit:
-            await self.rollback()
-        elif self._auto_commit:
-            await self.commit()
-
-        await self._cleanup()
+        try:
+            if exc_type is not None or not self._auto_commit:
+                await self.rollback()
+            elif self._auto_commit:
+                await self.commit()
+        finally:
+            await self._cleanup()
 
     async def _finalize_operation(self, operation: OperationRecord) -> None:
         try:
