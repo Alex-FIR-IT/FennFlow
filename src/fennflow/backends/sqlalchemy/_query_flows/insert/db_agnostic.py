@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from fennflow.backends.enums import OnConflictDoEnum
+from fennflow.backends.sqlalchemy._query_flows.utils.agnostic_upsert import upsert
 
 if TYPE_CHECKING:
     from fennflow._query_specs.insert.insert import InsertQuerySpec
@@ -22,7 +23,7 @@ async def run(
     match query_spec.on_conflict:
         case OnConflictDoEnum.REPLACE:
             for orm_instance in orm_instances:
-                await flow.session.merge(orm_instance)
+                await upsert(session=flow.session, orm_instance=orm_instance)
         case OnConflictDoEnum.DO_NOTHING:
             for orm_instance in orm_instances:
                 existing = await flow.session.get(
