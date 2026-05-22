@@ -13,7 +13,7 @@ from fennflow.backends.sqlalchemy._backend import SqlalchemyBackend
 from fennflow.backends.sqlalchemy._query_flows.delete_scope import DeleteScopeFlow
 from fennflow.backends.sqlalchemy._query_flows.get_by_storage_path import (
     GetByStoragePathFlow,
-    )
+)
 from fennflow.backends.sqlalchemy._query_flows.get_visible import GetVisibleFlow
 from fennflow.backends.sqlalchemy._query_flows.insert.core import InsertFlow
 from fennflow.backends.sqlalchemy._query_flows.is_empty import IsEmptyFlow
@@ -33,11 +33,11 @@ if TYPE_CHECKING:
 class SqlalchemyBackendFactory:
     @staticmethod
     def _create_registry(
-            config: SqlalchemyBackendConfig,
-            session: AsyncSession,
-            dialect: Dialect | str,
-            adapter: RecordOrmAdapter,
-            ) -> QueryFlowRegistryType:
+        config: SqlalchemyBackendConfig,
+        session: AsyncSession,
+        dialect: Dialect | str,
+        adapter: RecordOrmAdapter,
+    ) -> QueryFlowRegistryType:
         spec_to_flow = (
             (SelectVisibleQuerySpec, SelectVisibleFlow),
             (GetByStoragePathQuerySpec, GetByStoragePathFlow),
@@ -46,20 +46,20 @@ class SqlalchemyBackendFactory:
             (MergeQuerySpec, MergeFlow),
             (InsertQuerySpec, InsertFlow),
             (DeleteScopeQuerySpec, DeleteScopeFlow),
-            )
+        )
         return {
             query_spec: flow(
                 config=config,
                 session=session,
                 dialect=dialect,
                 adapter=adapter,
-                )
+            )
             for query_spec, flow in spec_to_flow
-            }
+        }
 
     @classmethod
     def from_config(
-            cls,
-            config: SqlalchemyBackendConfig,
-            ) -> SqlalchemyBackend:
+        cls,
+        config: SqlalchemyBackendConfig,
+    ) -> SqlalchemyBackend:
         return SqlalchemyBackend(config=config)
