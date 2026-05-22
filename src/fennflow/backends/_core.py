@@ -85,7 +85,7 @@ class BackendOrchestrator:
 
         for on_conflict, batch in groupby(operations, lambda op: op.on_conflict):
             await self.backend_engine.execute(
-                InsertQuerySpec(
+                InsertQuerySpec.from_operations(
                     operations=batch,
                     on_conflict=on_conflict,
                 )
