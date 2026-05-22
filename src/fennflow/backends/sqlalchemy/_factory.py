@@ -4,12 +4,14 @@ from typing import TYPE_CHECKING
 
 from fennflow._query_specs.delete.delete_scope import DeleteScopeQuerySpec
 from fennflow._query_specs.insert.insert import InsertQuerySpec
+from fennflow._query_specs.select.count import CountQuerySpec
 from fennflow._query_specs.select.get_by_storage_path import GetByStoragePathQuerySpec
 from fennflow._query_specs.select.get_visible import GetVisibleQuerySpec
 from fennflow._query_specs.select.is_empty import IsEmptyQuerySpec
 from fennflow._query_specs.select.select_visible import SelectVisibleQuerySpec
 from fennflow._query_specs.update.merge import MergeQuerySpec
 from fennflow.backends.sqlalchemy._backend import SqlalchemyBackend
+from fennflow.backends.sqlalchemy._query_flows.count import CountFlow
 from fennflow.backends.sqlalchemy._query_flows.delete_scope import DeleteScopeFlow
 from fennflow.backends.sqlalchemy._query_flows.get_by_storage_path import (
     GetByStoragePathFlow,
@@ -46,6 +48,7 @@ class SqlalchemyBackendFactory:
             (MergeQuerySpec, MergeFlow),
             (InsertQuerySpec, InsertFlow),
             (DeleteScopeQuerySpec, DeleteScopeFlow),
+            (CountQuerySpec, CountFlow),
         )
         return {
             query_spec: flow(
