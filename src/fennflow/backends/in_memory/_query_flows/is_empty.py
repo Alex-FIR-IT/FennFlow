@@ -10,7 +10,7 @@ from fennflow.backends.in_memory._query_flows.base import BaseInMemoryBackendQue
 class IsEmptyFlow(BaseInMemoryBackendQueryFlow[IsEmptyQuerySpec, bool]):
     async def run(
         self,
-        query_spec: IsEmptyQuerySpec,  # noqa: ARG002
+        query_spec: IsEmptyQuerySpec,
     ) -> bool:
         scoped_storage = self.storage.get(query_spec.scope, {})
         return len(scoped_storage) == 0
