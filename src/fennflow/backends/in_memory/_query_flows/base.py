@@ -10,7 +10,6 @@ if TYPE_CHECKING:
     from fennflow.backends import InMemoryBackendConfig
     from fennflow.backends.in_memory._types import (
         InMemoryStorageType,
-        ScopedStorageType,
     )
 
 
