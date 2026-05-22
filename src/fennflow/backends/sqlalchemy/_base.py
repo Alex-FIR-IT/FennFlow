@@ -14,6 +14,7 @@ try:
         Uuid,
         delete,
         exists,
+        func,
         insert,
         inspect,
         make_url,
