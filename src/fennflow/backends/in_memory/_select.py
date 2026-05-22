@@ -120,6 +120,6 @@ class SelectOperation:
         results = self.apply_limit(filtered_results)
         next_token = self.get_continuation_token(filtered_results)
         return RecordPage(
-            operations=results,
+            records=results,
             continuation_token=next_token,
         )

@@ -57,4 +57,4 @@ class SelectVisibleFlow(
         records = tuple(self.adapter.from_orm(obj) for obj in page_objects)
         next_token = page_objects[-1].storage_path if has_next else None
 
-        return RecordPage(operations=records, continuation_token=next_token)
+        return RecordPage(records=records, continuation_token=next_token)
