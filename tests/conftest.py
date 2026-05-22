@@ -2,10 +2,11 @@ import pytest
 import pytest_asyncio
 
 from fennflow import ConfigDict
+from fennflow._new_types import BackendScope, Namespace
 from fennflow.backends import InMemoryBackendConfig
-from fennflow.connectors import InMemoryConnector, InMemoryConnectorConfig
+from fennflow.backends.sqlalchemy.config import SqlalchemyBackendConfig
+from fennflow.connectors import InMemoryConnectorConfig
 from fennflow.files import TextContent
-from fennflow.reconciler._orchestrator import ReconcileOrchestrator
 from fennflow.repositories import (
     CreateRepository,
     DeleteRepository,
@@ -15,6 +16,8 @@ from fennflow.repositories import (
 from fennflow.repositories.list import ListRepository
 from fennflow.repositories.put import PutRepository
 from fennflow.uow import UnitOfWork
+from tests.shared import NAMESPACE, SCOPE
+from tests.utils import reset_state
 
 
 class UserFiles(
@@ -28,7 +31,7 @@ class UserFiles(
 
 
 class TestUOW(UnitOfWork):
-    user_files = RepoField(UserFiles, namespace="user_files")
+    user_files = RepoField(UserFiles, namespace=NAMESPACE)
     config = ConfigDict(
         backend=InMemoryBackendConfig(),
         connector=InMemoryConnectorConfig(),
@@ -36,9 +39,9 @@ class TestUOW(UnitOfWork):
 
 
 class TestSqliteUOW(UnitOfWork):
-    user_files = RepoField(UserFiles, namespace="user_files")
+    user_files = RepoField(UserFiles, namespace=NAMESPACE)
     config = ConfigDict(
-        backend=InMemoryBackendConfig(),
+        backend=SqlalchemyBackendConfig(scope=SCOPE),
         connector=InMemoryConnectorConfig(),
     )
 
@@ -46,11 +49,11 @@ class TestSqliteUOW(UnitOfWork):
 @pytest.fixture(
     params=[
         TestUOW,
-        # TestSqliteUOW,
+        TestSqliteUOW,
     ],
     ids=[
         "memory",
-        # "sqlite",
+        "sqlite",
     ],
 )
 def uow_cls(request):
