@@ -1,4 +1,3 @@
-from contextlib import nullcontext
 from uuid import uuid4
 
 import pytest
@@ -19,7 +18,7 @@ from tests.conftest import UserFiles
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "frequency, strategy, prefill_backend, response_len, files_assertion, expected_exception",  # noqa: E501
+    "frequency, strategy, prefill_backend, response_len, files_assertion",
     [
         # ON_START_APP combinations
         (
@@ -28,7 +27,6 @@ from tests.conftest import UserFiles
             False,
             2,
             True,
-            nullcontext(),
         ),
         (
             ReconcileFrequencyEnum.ON_START_APP,
@@ -36,7 +34,6 @@ from tests.conftest import UserFiles
             True,
             1,
             False,
-            nullcontext(),
         ),
         (
             ReconcileFrequencyEnum.ON_START_APP,
@@ -44,7 +41,6 @@ from tests.conftest import UserFiles
             False,
             2,
             True,
-            nullcontext(),
         ),
         (
             ReconcileFrequencyEnum.ON_START_APP,
@@ -52,7 +48,6 @@ from tests.conftest import UserFiles
             True,
             2,
             True,
-            nullcontext(),
         ),
         (
             ReconcileFrequencyEnum.ON_START_APP,
@@ -60,7 +55,6 @@ from tests.conftest import UserFiles
             False,
             2,
             True,
-            nullcontext(),
         ),
         (
             ReconcileFrequencyEnum.ON_START_APP,
@@ -68,7 +62,6 @@ from tests.conftest import UserFiles
             True,
             2,
             True,
-            nullcontext(),
         ),
         # ON_SESSION_START combinations
         (
@@ -77,7 +70,6 @@ from tests.conftest import UserFiles
             False,
             2,
             True,
-            nullcontext(),
         ),
         (
             ReconcileFrequencyEnum.ON_SESSION_START,
@@ -85,7 +77,6 @@ from tests.conftest import UserFiles
             True,
             1,
             False,
-            nullcontext(),
         ),
         (
             ReconcileFrequencyEnum.ON_SESSION_START,
@@ -93,7 +84,6 @@ from tests.conftest import UserFiles
             False,
             2,
             True,
-            nullcontext(),
         ),
         (
             ReconcileFrequencyEnum.ON_SESSION_START,
@@ -101,7 +91,6 @@ from tests.conftest import UserFiles
             True,
             2,
             True,
-            nullcontext(),
         ),
         (
             ReconcileFrequencyEnum.ON_SESSION_START,
@@ -109,7 +98,6 @@ from tests.conftest import UserFiles
             False,
             2,
             True,
-            nullcontext(),
         ),
         (
             ReconcileFrequencyEnum.ON_SESSION_START,
@@ -117,7 +105,6 @@ from tests.conftest import UserFiles
             True,
             2,
             True,
-            nullcontext(),
         ),
         # NEVER combinations
         (
@@ -126,7 +113,6 @@ from tests.conftest import UserFiles
             False,
             0,
             False,
-            nullcontext(),
         ),
         (
             ReconcileFrequencyEnum.NEVER,
@@ -134,7 +120,6 @@ from tests.conftest import UserFiles
             True,
             1,
             False,
-            nullcontext(),
         ),
         (
             ReconcileFrequencyEnum.NEVER,
@@ -142,7 +127,6 @@ from tests.conftest import UserFiles
             False,
             0,
             False,
-            nullcontext(),
         ),
         (
             ReconcileFrequencyEnum.NEVER,
@@ -150,7 +134,6 @@ from tests.conftest import UserFiles
             True,
             1,
             False,
-            nullcontext(),
         ),
         (
             ReconcileFrequencyEnum.NEVER,
@@ -158,7 +141,6 @@ from tests.conftest import UserFiles
             False,
             0,
             False,
-            nullcontext(),
         ),
         (
             ReconcileFrequencyEnum.NEVER,
@@ -166,7 +148,6 @@ from tests.conftest import UserFiles
             True,
             1,
             False,
-            nullcontext(),
         ),
     ],
 )
@@ -176,7 +157,6 @@ async def test_reconcile_on_non_empty_connector(
     prefill_backend,
     response_len,
     files_assertion,
-    expected_exception,
     text_files,
     namespace,
     scope,
@@ -210,16 +190,15 @@ async def test_reconcile_on_non_empty_connector(
     for text_file in text_files:
         InMemoryConnector._storage[namespace][text_file.filename] = text_file
 
-    with expected_exception:
-        async with TestUOW() as uow:
-            response = await uow.user_files.list()
+    async with TestUOW() as uow:
+        response = await uow.user_files.list()
 
-            assert len(response) == response_len
+        assert len(response) == response_len
 
-            files = []
-            for storage_path in response:
-                response = await uow.user_files.get(storage_path)
-                files.extend(response)
+        files = []
+        for storage_path in response:
+            response = await uow.user_files.get(storage_path)
+            files.extend(response)
 
-            files_equal = sorted(files) == sorted(text_files)
-            assert files_equal == files_assertion
+        files_equal = sorted(files) == sorted(text_files)
+        assert files_equal == files_assertion
