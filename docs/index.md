@@ -39,20 +39,20 @@ Unit of Work pattern, providing:
 
 ## Supported Connectors
 
-| Connector        | Description                                  | Documentation                                                                                 |
-|------------------|----------------------------------------------|-----------------------------------------------------------------------------------------------|
-| AWS S3 (default) | s3 compatible object storage via aiobotocore | [📖 Docs](https://alex-fir-it.github.io/FennFlow/core_concepts/connectors/#s3connector)       |
-| In-Memory        | great for and tests and development          | [📖 Docs](https://alex-fir-it.github.io/FennFlow/core_concepts/connectors/#inmemoryconnector) |
+| Connector        | Description                                  | Documentation                                             |
+|------------------|----------------------------------------------|-----------------------------------------------------------|
+| AWS S3 (default) | s3 compatible object storage via aiobotocore | [📖 Docs](core_concepts/connectors.md/#s3connector)       |
+| In-Memory        | great for and tests and development          | [📖 Docs](core_concepts/connectors.md/#inmemoryconnector) |
 
 ## Supported Backends
 
 FennFlow uses backend as a source of truth for your file storage.
 No matter what your file storage contains, backend ensures your data is consistent.
 
-| Backend              | Description                                             | Documentation                                                                               |
-|----------------------|---------------------------------------------------------|---------------------------------------------------------------------------------------------|
-| In-Memory            | great for and tests, development                        | [📖 Docs](https://alex-fir-it.github.io/FennFlow/core_concepts/backends/#inmemorybackend)   |
-| SQLAlchemy (default) | persistent metadata backend, great for all environments | [📖 Docs](https://alex-fir-it.github.io/FennFlow/core_concepts/backends/#sqlalchemybackend) |
+| Backend              | Description                                             | Documentation                                           |
+|----------------------|---------------------------------------------------------|---------------------------------------------------------|
+| In-Memory            | great for and tests, development                        | [📖 Docs](core_concepts/backends.md/)                   |
+| SQLAlchemy (default) | persistent metadata backend, great for all environments | [📖 Docs](core_concepts/backends.md/#sqlalchemybackend) |
 
 ### Backend Comparison
 
