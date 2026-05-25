@@ -3,8 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from fennflow.backends.in_memory import InMemoryBackendConfig
-from fennflow.connectors import InMemoryConnectorConfig
+from fennflow.backends import SqlalchemyBackendConfig
+from fennflow.connectors import S3ConnectorConfig
 from fennflow.reconciler import (
     ReconcileConfig,
 )
@@ -31,7 +31,7 @@ class ConfigResolver:
         cfg = config or {}
 
         return ResolvedConfig(
-            backend=cfg.get("backend") or InMemoryBackendConfig(),
-            connector=cfg.get("connector") or InMemoryConnectorConfig(),
+            backend=cfg.get("backend") or SqlalchemyBackendConfig(),
+            connector=cfg.get("connector") or S3ConnectorConfig(),
             reconcile=cfg.get("reconcile") or ReconcileConfig(),
         )
