@@ -33,6 +33,7 @@ class UnitOfWork:
     - execution and compensation logic (Saga pattern)
 
     **Example**::
+
         class UOW(UnitOfWork):
             config = ConfigDict(
                 backend=PostgresBackendConfig(...),
@@ -56,23 +57,6 @@ class UnitOfWork:
     - All operations must go through UOW
     - Rollback applies compensation in reverse order (Saga pattern)
 
-    Attributes:
-        backend:
-            Stores operation metadata (pending, done, failed)
-
-        connector:
-            Performs actual storage operations (e.g. S3 API calls)
-
-       ._operation_executor:
-            Executes and compensates operations
-
-    Methods:
-        commit():
-            Persists operation state via backend
-
-        rollback():
-            Runs compensation for all pending operations
-            and then rolls back backend state
     """
 
     config: ConfigDict | None = None
@@ -165,6 +149,7 @@ class UnitOfWork:
     async def commit(
         self,
     ) -> None:
+        """Persists operation state via backend."""
         operations = self.backend.session_buffer.get_all()
 
         if operations:
@@ -178,6 +163,11 @@ class UnitOfWork:
     async def rollback(
         self,
     ) -> None:
+        """Performs rollback for saga flow.
+
+        Runs compensation for all pending operations
+        and then rolls back backend state.
+        """
         operations = self.backend.session_buffer.get_all()
         finalize_operations = []
         for operation in reversed(tuple(operations)):

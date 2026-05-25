@@ -31,7 +31,7 @@ class ConnectorFactory:
             An initialized connector instance.
 
         Raises:
-            ValueError: If no connector is registered for the config type.
+            KeyError: If no connector is registered for the config type.
         """
         connector_cls = connector_registry.get(config.__class__.__name__)
         if not connector_cls:

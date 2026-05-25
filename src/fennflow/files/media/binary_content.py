@@ -10,7 +10,11 @@ from fennflow.files.media.base import BaseContent
 
 
 class BinaryContent(BaseContent):
-    """Base class for binary content type."""
+    """Base class for binary content type.
+
+    Attributes:
+        data: raw file's content
+    """
 
     data: bytes = Field(repr=False)
 

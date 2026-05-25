@@ -12,14 +12,16 @@ class ConfigDict(TypedDict, total=False):
 
     Attributes:
         backend: Configuration for the metadata backend
-            (e.g. ``InMemoryBackendConfig``).
+            (e.g. ``SqlalchemyBackendConfig``).
         connector: Configuration for the storage connector (e.g. ``S3ConnectorConfig``).
 
-    Example:
+    Example::
+
         class UOW(UnitOfWork):
             config = ConfigDict(
-                backend=InMemoryBackendConfig(),
-                connector=S3ConnectorConfig(...),
+                backend=SqlalchemyBackendConfig(),
+                connector=S3ConnectorConfig(),
+
             )
     """
 

@@ -18,6 +18,17 @@ class UowInspector:
     uow: UnitOfWork
 
     def get_repo_fields(self) -> Generator[RepoField, None, None]:
+        """Yields repo fields.
+
+        Example::
+
+            class UOW(UnitOfWork):
+                images = S3RepoField(...)
+                videos: S3RepoField(...)
+
+            extractor = UowInspector(uow=uow)
+            extractor.get_repo_fields() # yield images, then videos fields
+        """
         for field in vars(type(self.uow)).values():
             if isinstance(field, RepoField):
                 yield field

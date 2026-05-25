@@ -13,12 +13,6 @@ class GetRepository(AtRepository):
     This method returns a `MediaResponse` object containing the requested file,
     if it exists according to the backend (source of truth).
 
-    **Example**::
-
-        response = await uow.user_files.at("user1/").get("file.txt")
-        if response:
-            file = response[0]
-
     **Behavior**:
 
     - The backend is treated as the source of truth
@@ -52,6 +46,13 @@ class GetRepository(AtRepository):
             MediaResponse:
                 - `MediaResponse(media=(...))` if the file exists
                 - `MediaResponse()` (empty) if the file does not exist
+
+        **Example**::
+
+            response = await uow.user_files.at("user1/").get("file.txt")
+            if response:
+                file = response[0]
+
         """
         tasks = []
         for path in paths:

@@ -22,20 +22,11 @@ class PutRepository(AtRepository, ValidateDuplicatesMixin):
     This repository implements the "put" operation, which uploads new files
     to the configured storage (e.g. S3) within the current Unit of Work.
 
-    **Example**::
-
-        file1 = TextContent.from_content("This is the first file.")
-        await uow.user_files.at("user1/").put(file1)
-
     **Behavior**:
 
     - Each file is registered in the backend as a pending operation
     - Files are uploaded via the connector
     - Backend commit is executed on uow.commit
-
-    **Raises**:
-        FilepathsCollisionError:
-            If files with the same filepath are passed
 
     """
 
@@ -44,6 +35,19 @@ class PutRepository(AtRepository, ValidateDuplicatesMixin):
         *files: BinaryMedia,
         **connector_extra,
     ) -> None:
+        """Puts file into storage.
+
+        **Example**::
+
+            file1 = TextContent.from_content("This is the first file.")
+            await uow.user_files.at("user1/").put(file1)
+
+        Raises:
+            FilepathsCollisionError:
+                If files with the same filepath are passed
+
+
+        """
         self.validate_duplicates_from_files(files)
         tasks = []
         operations = []

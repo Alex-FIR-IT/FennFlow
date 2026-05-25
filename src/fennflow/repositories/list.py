@@ -32,7 +32,7 @@ class ListRepository(AtRepository):
                 a ``continuation_token`` if more results are available, otherwise
                 ``None``.
 
-        Example::
+        **Example**::
 
              async with UOW() as uow:
                  await uow.files.at("folder1/").put(file1, file2, file3)
