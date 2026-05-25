@@ -10,14 +10,16 @@ from .abstract.content import ContentPropertyAbstract
 from .abstract.from_content import FromContentAbstract
 from .binary_content import BinaryContent
 
-Value = TypeVar("Value", bound=JsonValue)
+if TYPE_CHECKING:
+    from pydantic import JsonValue
+
+    from fennflow.files._annotations import MediaTypes
 
 
 class JsonContent(
     BinaryContent,
     FromContentAbstract,
     ContentPropertyAbstract,
-    Generic[Value],
 ):
     """Media content representing a JSON file.
 
@@ -44,14 +46,14 @@ class JsonContent(
     @classmethod
     def from_content(
         cls,
-        data: Value,
         media_type: str = "application/json",
+        data: JsonValue,
         encoding: str = "utf-8",
         filename: Omittable[str] = OMIT,
         ensure_ascii: bool = False,
         indent: int | str | None = None,
         **extra_json_dumps_kwargs,
-    ) -> JsonContent[Value]:
+    ) -> JsonContent:
         dumped_data = json.dumps(
             data,
             ensure_ascii=ensure_ascii,
