@@ -87,13 +87,6 @@ original path. If commit succeeds, the `fennflow/tmp/` file is removed during fi
 Temporary files live in the file storage itself, not in memory. This pattern applies to all write operations that
 require compensation.
 
-### Operation expiry
-
-A pending operation record expires after 30 seconds. An expired pending record is treated as non-locking: another
-session can write to the same path without waiting. This prevents abandoned operations (from crashed processes) from
-blocking future writes indefinitely. A proper health-check mechanism is on
-the [roadmap](https://github.com/users/Alex-FIR-IT/projects/2).
-
 ### Session isolation
 
 A file uploaded by session A as `PENDING` is visible only to session A during that session. Other sessions see only
