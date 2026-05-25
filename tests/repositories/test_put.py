@@ -12,8 +12,6 @@ async def test_simple_put(uow_cls, text_files):
         await uow.user_files.at("user/").put(text_files[0])
 
         response = await uow.user_files.at("user/").get(text_files[0].filename)
-        print("TYPES:", type(response[0]), type(text_files[0]))
-        print("DIFFERENCE:", response[0].model_dump() == text_files[0].model_dump())
         assert response[0].data == text_files[0].data
 
 
