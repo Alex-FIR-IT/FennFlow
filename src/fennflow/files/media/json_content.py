@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import json
-from typing import Generic, TypeVar
+from typing import TYPE_CHECKING
 
-from pydantic import JsonValue
+from fennflow._sentinel import OMIT, Omittable, is_given
+from fennflow.files.enums import MediaType
 
-from ..._sentinel import OMIT, Omittable, is_given
 from .abstract.content import ContentPropertyAbstract
 from .abstract.from_content import FromContentAbstract
 from .binary_content import BinaryContent
@@ -39,15 +39,15 @@ class JsonContent(
     encoding: str = "utf-8"
 
     @property
-    def content(self) -> Value:
+    def content(self) -> JsonValue:
         text = self.data.decode(self.encoding)
         return json.loads(text)
 
     @classmethod
     def from_content(
         cls,
-        media_type: str = "application/json",
         data: JsonValue,
+        media_type: MediaTypes = MediaType.APPLICATION_JSON,
         encoding: str = "utf-8",
         filename: Omittable[str] = OMIT,
         ensure_ascii: bool = False,

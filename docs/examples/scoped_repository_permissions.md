@@ -12,7 +12,7 @@ import asyncio
 from fennflow import ConfigDict, UnitOfWork
 from fennflow.backends import SqlalchemyBackendConfig
 from fennflow.connectors import S3ConnectorConfig
-from fennflow.files import ContentFactory
+from fennflow.files import ContentFactory, MediaType
 from fennflow.repositories import (
     CreateRepository,
     DeleteRepository,
@@ -55,7 +55,7 @@ async def main():
     with open("report.txt", "rb") as file:
         report_file = ContentFactory.from_bytes(
             data=file.read(),
-            media_type="text/plain",
+            media_type=MediaType.TEXT_PLAIN,
             )
     async with AppUOW() as uow:
         # Full access on main storage

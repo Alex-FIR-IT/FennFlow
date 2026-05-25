@@ -5,11 +5,13 @@ from typing import TYPE_CHECKING, Any
 
 from pydantic import ValidationError
 
+from fennflow.files.enums import MediaType
 from fennflow.files.media.binary_content import BinaryContent
 from fennflow.files.media.url_content import UrlContent
 from fennflow.files.registry import content_registry
 
 if TYPE_CHECKING:
+    from fennflow.files._annotations import MediaTypes
     from fennflow.files.types import BinaryMedia
 
 
@@ -34,7 +36,7 @@ class ContentFactory:
     @classmethod
     def from_bytes(
         cls,
-        media_type: str,
+        media_type: MediaTypes,
         data: bytes,
         **kwargs: Any,
     ) -> BinaryMedia:
@@ -56,7 +58,8 @@ class ContentFactory:
 
         **Example**:
 
-            content = ContentFactory.from_bytes("text/plain", b"Hello, World!")
+            from fennflow.files import MediaType
+            content = ContentFactory.from_bytes(MediaType.TEXT_PLAIN, b"Hello, World!")
         """
         payload = {
             "media_type": media_type,
@@ -84,7 +87,7 @@ class ContentFactory:
     @staticmethod
     def from_url(
         url: str,
-        media_type: str = "application/octet-stream",
+        media_type: MediaTypes = MediaType.APPLICATION_OCTET_STREAM,
         **kwargs: Any,
     ) -> UrlContent:
         """Create a ``UrlContent`` instance from a URL string.

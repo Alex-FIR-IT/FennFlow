@@ -75,7 +75,7 @@ import asyncio
 from fennflow import ConfigDict, UnitOfWork
 from fennflow.backends import SqlalchemyBackendConfig
 from fennflow.connectors import S3ConnectorConfig
-from fennflow.files import BinaryContent, JsonContent, TextContent
+from fennflow.files import BinaryContent, JsonContent, MediaType, TextContent
 from fennflow.repositories import (
     DeleteRepository,
     GetRepository,
@@ -107,7 +107,7 @@ class UOW(UnitOfWork):
 async def main():
     text_file = TextContent.from_content("Hello, world!")
     json_file = JsonContent.from_content([1, 2, 3])
-    binary_file = BinaryContent(data=b"some bytes", media_type="text/plain")
+    binary_file = BinaryContent(data=b"some bytes", media_type=MediaType.TEXT_PLAIN)
 
     async with UOW() as uow:
         await uow.my_files.at("folder1").put(

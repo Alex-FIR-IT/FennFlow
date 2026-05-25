@@ -89,10 +89,14 @@ class MediaResponse:
         Returns:
             A tuple of media items whose ``media_type`` matches one of the given types.
 
-        Example:
+        Example::
+
+            from fennflow.files import MediaType
+
+
             text_and_json = response.filter_by_media_type(
-                                        "text/plain",
-                                        "application/json"
+                                        MediaType.TEXT_PLAIN,
+                                        MediaType.APPLICATION_JSON
                                         )
         """
         return tuple(file for file in self.media if file.media_type in media_types)

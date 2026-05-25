@@ -8,6 +8,8 @@ from fennflow._sentinel import OMIT, Omittable
 if TYPE_CHECKING:
     from typing_extensions import Self
 
+    from fennflow.files._annotations import MediaTypes
+
 
 class FromContentAbstract(ABC):
     """Abstract mixin for media content classes that can be created from raw data.
@@ -21,7 +23,7 @@ class FromContentAbstract(ABC):
     def from_content(
         cls,
         data: Any,
-        media_type: str,
+        media_type: MediaTypes,
         encoding: str = "utf-8",
         filename: Omittable[str] = OMIT,
         **kwargs: Any,

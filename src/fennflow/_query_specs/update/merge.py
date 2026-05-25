@@ -3,12 +3,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from typing_extensions import Self
-
 from fennflow._query_specs.update.base import UpdateQuerySpec
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
+
+    from typing_extensions import Self
 
     from fennflow._operations.dto import OperationRecord, Record
 
