@@ -132,7 +132,7 @@ if __name__ == "__main__":
 ## Next Steps
 
 To try FennFlow for yourself, [clone it](https://github.com/Alex-FIR-IT/FennFlow) and follow the instructions
-in the [examples](https://alex-fir-it.github.io/FennFlow/install/examples/).
+in the [examples](https://alex-fir-it.github.io/FennFlow/examples/).
 
 Read the [docs](https://alex-fir-it.github.io/FennFlow/) to learn more about working with
 FennFlow.
