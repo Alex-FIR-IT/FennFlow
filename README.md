@@ -134,3 +134,5 @@ Read the [docs](https://alex-fir-it.github.io/FennFlow/) to learn more about wor
 FennFlow.
 
 Read the [API Reference](https://alex-fir-it.github.io/FennFlow/api/)  to understand FennFlow’s interface.
+
+Learn how to utilize [llms](https://alex-fir-it.github.io/FennFlow/llms) with FennFlow. 
