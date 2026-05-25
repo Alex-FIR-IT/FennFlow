@@ -52,6 +52,7 @@ plugins:
           - index.md
           - install.md
           - help.md
+          - overview.md
         Core Concepts:
           - core_concepts/uow.md
           - core_concepts/connectors.md
@@ -61,6 +62,12 @@ plugins:
           - core_concepts/reconciler.md
         Advanced Features:
           - advanced_features/reconciler.md
+        Examples:
+          - examples/index.md
+          - examples/base_upload.md
+          - examples/multiple_connectors.md
+          - examples/scoped_repository_permissions.md
+          - examples/testing.md
         API Reference:
           - api.md
 nav:
