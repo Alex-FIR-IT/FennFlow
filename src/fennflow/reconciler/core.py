@@ -38,19 +38,12 @@ class Reconciler:
     """Synchronizes backend state with actual connector (storage) state.
 
     On startup or session start, the backend may be out of sync with the
-    real storage (e.g. after a crash with ``InMemoryBackend``, or on first
-    connection with a persistent backend). ``Reconciler`` restores consistency
+    real storage (e.g. on first connection with a persistent backend).
+     ``Reconciler`` restores consistency
     by listing files from the connector and inserting them into the backend
     according to the chosen strategy.
 
     Called internally by ``ReconcileOrchestrator`` in UnitOfWork.__aenter__.
-
-    Args:
-        uow_fields: Repository field descriptors to reconcile.
-            Each field provides the namespace and repo config needed to
-            list objects from the connector.
-        backend: The backend to sync state into.
-        connector: The storage connector to read the source-of-truth from.
 
     Example::
 
@@ -85,6 +78,15 @@ class Reconciler:
         backend: BackendOrchestrator,
         connector: AbstractConnector,
     ) -> None:
+        """Init method.
+
+        Args:
+            uow_fields: Repository field descriptors to reconcile.
+                Each field provides the namespace and repo config needed to
+                list objects from the connector.
+            backend: The backend to sync state into.
+            connector: The storage connector to read the source-of-truth from.
+        """
         self.uow_fields = uow_fields
         self.backend = backend
         self.connector = connector
