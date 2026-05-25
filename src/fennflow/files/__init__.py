@@ -5,11 +5,13 @@ __all__ = [
     "DocumentContent",
     "ImageContent",
     "JsonContent",
+    "MediaType",
     "TextContent",
     "UrlContent",
     "VideoContent",
 ]
 
+from .enums import MediaType
 from .factory import ContentFactory
 from .media import (
     AudioContent,
