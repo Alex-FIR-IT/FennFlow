@@ -77,6 +77,12 @@ nav:
       - Reconciler: core_concepts/reconciler.md
   - Advanced Features:
       - Reconciler: advanced_features/reconciler.md
+  - Examples:
+      - Base Upload: examples/base_upload.md
+      - Multiple Connectors: examples/multiple_connectors.md
+      - Scoped Repository Permissions: examples/scoped_repository_permissions.md
+      - Testing: examples/testing.md
+  - Llms.txt: llms.md
   - API Reference: api.md
 
 
