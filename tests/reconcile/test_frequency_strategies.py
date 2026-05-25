@@ -168,6 +168,7 @@ async def test_reconcile_on_non_empty_connector(
         config = ConfigDict(
             reconcile=ReconcileConfig(frequency=frequency, strategy=strategy),
             backend=uow_cls.config["backend"],
+            connector=uow_cls.config["connector"],
         )
 
     if prefill_backend:
