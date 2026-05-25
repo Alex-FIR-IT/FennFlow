@@ -25,7 +25,8 @@ class RepoField(Generic[RepoType]):
         repo_cls: The repository class to instantiate.
         namespace: The storage namespace (e.g. S3 bucket name) for this repository.
 
-    Example:
+    Example::
+
         class UOW(UnitOfWork):
             user_files = RepoField(UserFiles, namespace="user-files")
 

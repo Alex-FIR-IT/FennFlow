@@ -15,7 +15,7 @@ bump = true
 [project]
 name = "fennflow"
 dynamic = ["version"]
-description = "Atomic-like S3 Framework with Saga Pattern, the Pydantic way"
+description = "Atomic-like Agnostic Object Storage Framework, the Pydantic way"
 
 authors = [
     { name = "AlexFIR", email = "osintfir@gmail.com" },

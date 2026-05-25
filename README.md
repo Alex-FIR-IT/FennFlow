@@ -6,7 +6,7 @@
   </a>
 </div>
 <div align="center">
-  <h3>Atomic-like S3 Framework, the Pydantic way</h3>
+  <h3>Atomic-like Agnostic Object Storage Framework, the Pydantic way</h3>
 </div>
 <div align="center">
   <a href="https://github.com/Alex-FIR-IT/FennFlow/actions/workflows/coverage-report.yml"><img src="https://github.com/Alex-FIR-IT/FennFlow/actions/workflows/coverage-report.yml/badge.svg?branch=master" alt="CI"></a>
@@ -25,7 +25,7 @@
 
 ---
 
-### <em>FennFlow is a Python s3 framework designed to help you quickly, confidently, and painlessly manipulate files in your object storage implementing Saga-like compensation flow.</em>
+### <em>FennFlow is a Python s3 framework designed to help you quickly, confidently, and painlessly manipulate files in your object storage implementing SSOT pattern and Saga compensation flow.</em>
 
 ## Why use FennFlow?
 
@@ -34,35 +34,36 @@ Unit of Work pattern, providing:
 
 - **Atomic-like multistep operations** — if something fails, previous actions are automatically compensated (Saga
   Pattern).
-- **Clean Architecture** — treat S3 as proper repositories using mixins (`CreateRepository`, `GetRepository`, etc.).
+- **Clean Architecture** — treat S3 as proper repositories using mixins (`PutRepository`, `GetRepository`, etc.).
 - **Pydantic-powered models** — work with `TextContent`, `JsonContent`, `ImageContent` and others instead of raw bytes.
 
 ## Supported Connectors
 
-| Connector           | Description                                  | Documentation                                                                                 |
-|---------------------|----------------------------------------------|-----------------------------------------------------------------------------------------------|
-| AWS S3              | s3 compatible object storage via aiobotocore | [📖 Docs](https://alex-fir-it.github.io/FennFlow/core_concepts/connectors/#s3connector)       |
-| In-Memory (default) | great for and tests and development          | [📖 Docs](https://alex-fir-it.github.io/FennFlow/core_concepts/connectors/#inmemoryconnector) |
+| Connector        | Description                                  | Documentation                                                                                 |
+|------------------|----------------------------------------------|-----------------------------------------------------------------------------------------------|
+| AWS S3 (default) | s3 compatible object storage via aiobotocore | [📖 Docs](https://alex-fir-it.github.io/FennFlow/core_concepts/connectors/#s3connector)       |
+| In-Memory        | great for and tests and development          | [📖 Docs](https://alex-fir-it.github.io/FennFlow/core_concepts/connectors/#inmemoryconnector) |
 
 ## Supported Backends
 
 FennFlow uses backend as a source of truth for your file storage.
 No matter what your file storage contains, backend ensures your data is consistent.
 
-| Backend             | Description                                         | Documenration                                                                             |
-|---------------------|-----------------------------------------------------|-------------------------------------------------------------------------------------------|
-| In-Memory (default) | great for and tests, development and small projects | [📖 Docs](https://alex-fir-it.github.io/FennFlow/core_concepts/backends/#inmemorybackend) |
+| Backend              | Description                                             | Documentation                                                                               |
+|----------------------|---------------------------------------------------------|---------------------------------------------------------------------------------------------|
+| In-Memory            | great for and tests, development                        | [📖 Docs](https://alex-fir-it.github.io/FennFlow/core_concepts/backends/#inmemorybackend)   |
+| SQLAlchemy (default) | persistent metadata backend, great for all environments | [📖 Docs](https://alex-fir-it.github.io/FennFlow/core_concepts/backends/#sqlalchemybackend) |
 
 ### Backend Comparison
 
-|                    | Raw aiobotocore                                   | In-Memory                                                                                     |
-|--------------------|---------------------------------------------------|-----------------------------------------------------------------------------------------------|
-| **Consistency**    | 🔴 None<br>No link between files and metadata     | 🟡 Medium<br>Consistent within process lifetime, lost on crash                                | 
-| **Compensation**   | 🔴 None<br>Orphaned files on failure              | 🟡 Medium<br>Automatic within process, orphaned files possible on crash                       | 
-| **Reliability**    | 🔴 Low<br>Failures leave storage in unknown state | 🟡 Medium<br>Syncs with storage on restart, files uploaded during crash cannot be compensated | 
-| **Latency**        | ✅ Lowest<br>Pure S3 network overhead only         | ✅ Lowest<br>Minimal in-process overhead                                                       | 
-| **Infrastructure** | ✅ None                                            | ✅ None                                                                                        |
-| **Memory usage**   | ✅ None                                            | 🟡 Stores file metadata in-process                                                            |
+|                    | Raw aiobotocore                                   | SQLAlchemy (default)                                         |
+|--------------------|---------------------------------------------------|--------------------------------------------------------------|
+| **Consistency**    | 🔴 None<br>No link between files and metadata     | ✅ High<br>Persistent across restarts                         |
+| **Compensation**   | 🔴 None<br>Orphaned files on failure              | ✅ High<br>Automatic within session                           |
+| **Reliability**    | 🔴 Low<br>Failures leave storage in unknown state | ✅ High<br>Consistent state guaranteed across restarts        |
+| **Latency**        | ✅ Lowest<br>Pure S3 network overhead only         | 🟡 Low/middle<br>DB overhead                                 |
+| **Infrastructure** | ✅ None                                            | ✅ None<br>SQLite by default                                  |
+| **Memory usage**   | ✅ None                                            | ✅ Minimal<br>Metadata persisted to disk, not held in-process |
 
 ## Quick Start
 
@@ -72,7 +73,7 @@ Here's a minimal example of FennFlow:
 import asyncio
 
 from fennflow import ConfigDict, UnitOfWork
-from fennflow.backends import InMemoryBackendConfig
+from fennflow.backends import SqlalchemyBackendConfig
 from fennflow.connectors import S3ConnectorConfig
 from fennflow.files import BinaryContent, JsonContent, TextContent
 from fennflow.repositories import (
@@ -98,7 +99,7 @@ class CrudRepository(
 class UOW(UnitOfWork):
     my_files = S3RepoField(CrudRepository, bucket_name="my_files")
     config = ConfigDict(
-        backend=InMemoryBackendConfig(),
+        backend=SqlalchemyBackendConfig(),
         connector=S3ConnectorConfig(),
         )
 
@@ -130,7 +131,12 @@ if __name__ == "__main__":
 
 ## Next Steps
 
+To try FennFlow for yourself, [clone it](https://github.com/Alex-FIR-IT/FennFlow) and follow the instructions
+in the [examples](https://alex-fir-it.github.io/FennFlow/install/examples/).
+
 Read the [docs](https://alex-fir-it.github.io/FennFlow/) to learn more about working with
 FennFlow.
 
 Read the [API Reference](https://alex-fir-it.github.io/FennFlow/api/)  to understand FennFlow’s interface.
+
+Learn how to utilize [llms](https://alex-fir-it.github.io/FennFlow/llms) with FennFlow. 

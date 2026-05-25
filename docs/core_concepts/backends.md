@@ -9,55 +9,67 @@ Backends do not store file data. That is the connector's responsibility.
 ## Why a separate backend?
 
 Raw file storage (S3, etc.) has no concept of pending operations, sessions, or compensation. The backend gives FennFlow
-a consistent view of state that it can query, lock, and update independently of the storage. This is what makes the Saga
+a consistent view of state that it can query and update independently of the storage. This is what makes the Saga
 flow possible: the backend is always consulted before any storage operation, and its state is what commit and rollback
 act on.
 
-## InMemoryBackend
+## SQLAlchemyBackend
 
-The default backend. State is kept in a class-level dictionary shared across all UoW instances within the same process.
+The default backend. Stores metadata in a database via SQLAlchemy. Defaults to a local SQLite file
+(`fennflow.db`) with no external infrastructure required.
 
 ```python
-from fennflow.backends import InMemoryBackendConfig
+from fennflow.backends import SqlalchemyBackendConfig
 
 
 class UOW(UnitOfWork):
     config = ConfigDict(
-        backend=InMemoryBackendConfig(),
+        backend=SqlalchemyBackendConfig(),
         )
 ```
 
-`InMemoryBackendConfig` accepts an optional `scope` field (default `"fennflow_backend"`). Use different scopes when
-running multiple UoW classes in the same process that point to different storage instances, to prevent their metadata
-from merging.
+`SqlalchemyBackendConfig` accepts the following fields:
+
+- `database_url` — any SQLAlchemy-compatible async URL. Defaults to `sqlite+aiosqlite:///fennflow.db`.
+  Requires `aiosqlite` to be installed. Pass an explicit URL to use a different database.
+- `db_schema` — schema name for FennFlow's tables. Defaults to `"fennflow"`.
+- `table_name` — table name for metadata records. Defaults to `"metadata"`.
+- `scope` — label to isolate backend state. Defaults to `"default"`. Use different scopes when
+  running multiple UoW classes in the same process that point to different storage instances, to prevent
+  their metadata from merging.
 
 ```python
-from fennflow.backends import InMemoryBackendConfig
+from fennflow.backends import SqlalchemyBackendConfig
 
 
-class S3UOW(UnitOfWork):
+class AWSUOW(UnitOfWork):
     config = ConfigDict(
-        backend=InMemoryBackendConfig(scope="s3_metadata"),
+        backend=SqlalchemyBackendConfig(scope="aws"),
         )
 
 
-class MinioUOW(UnitOfWork):
+class MinIOUOW(UnitOfWork):
     config = ConfigDict(
-        backend=InMemoryBackendConfig(scope="minio_metadata"),
+        backend=SqlalchemyBackendConfig(scope="minio"),
         )
 ```
 
-**Tradeoffs:**
+For testing, point the backend at an in-memory SQLite database — no files created, no cleanup needed:
 
-- Zero infrastructure — no external service required.
-- State is lost on process restart. The reconciler handles re-sync (see [Reconciler](reconciler.md)).
-- Files uploaded during a crash before commit cannot be compensated after restart, since their pending records are gone.
+```python
+from fennflow.backends import SqlalchemyBackendConfig
 
-`InMemoryBackend` is suitable for development, testing, and small deployments where process restarts are acceptable.
+
+class TestUOW(AppUOW):
+    config = ConfigDict(
+        backend=SqlalchemyBackendConfig(database_url="sqlite+aiosqlite:///:memory:"),
+        )
+```
 
 ## Implementing a custom backend
 
-Subclass `AbstractBackend` and register it in `backend_registry`.
+Subclass `AbstractBackend`, create a factory and register it in `backend_registry`.
 
 For available and planned backends, see the [roadmap](https://github.com/users/Alex-FIR-IT/projects/2/views/2).
+
 If you need a backend that isn't there, [open an issue](https://github.com/Alex-FIR-IT/FennFlow/issues).

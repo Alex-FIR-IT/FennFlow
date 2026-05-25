@@ -77,24 +77,18 @@ A `DELETE`, for example, does not immediately remove the file. Instead, on execu
 path** inside the same storage:
 
 ```
-tmp/session_{session_id}/operation_{operation_id}/{original_path}
+fennflow/tmp/session_{session_id}/operation_{operation_id}/{original_path}
 ```
 
-The original file is then deleted. If rollback is needed, the compensation step copies the file back from `tmp/` to its
-original path. If commit succeeds, the `tmp/` file is removed during finalize.
+The original file is then deleted. If rollback is needed, the compensation step copies the file back from
+`fennflow/tmp/` to its
+original path. If commit succeeds, the `fennflow/tmp/` file is removed during finalize.
 
 Temporary files live in the file storage itself, not in memory. This pattern applies to all write operations that
 require compensation.
 
-### Operation expiry
-
-A pending operation record expires after 30 seconds. An expired pending record is treated as non-locking: another
-session can write to the same path without waiting. This prevents abandoned operations (from crashed processes) from
-blocking future writes indefinitely. A proper health-check mechanism is on
-the [roadmap](https://github.com/users/Alex-FIR-IT/projects/2).
-
 ### Session isolation
 
-A file uploaded by session A as `PENDING` is visible only to session A during that session. Other sessions see only
-`UPLOADED` files. This means reads within an open UoW reflect the current session's own uncommitted writes, but never
-another session's. This is similar to sqlalchemy sessions.
+A file involved in any pending operation — whether CREATE, PUT, or DELETE — is invisible to all other sessions until
+that operation is committed. This is a conservative visibility model: FennFlow errs on the side of hiding a file rather
+than exposing potentially inconsistent state to concurrent sessions.

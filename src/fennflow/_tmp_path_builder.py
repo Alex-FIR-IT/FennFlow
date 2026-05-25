@@ -13,6 +13,7 @@ class TmpPathBuilder:
     @staticmethod
     def from_record(record: Record) -> StoragePath:
         return Path.join_path(
+            "fennflow",
             "tmp",
             f"session_id_{record.session_id}",
             f"operation_id_{record.operation_id}",

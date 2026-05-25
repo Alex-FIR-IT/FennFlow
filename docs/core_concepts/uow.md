@@ -14,7 +14,7 @@ Subclass `UnitOfWork`, declare your repositories as class-level fields, and set 
 
 ```python
 from fennflow import ConfigDict, UnitOfWork
-from fennflow.backends import InMemoryBackendConfig
+from fennflow.backends import SqlalchemyBackendConfig
 from fennflow.connectors import S3ConnectorConfig
 from fennflow.repositories import CreateRepository, GetRepository, S3RepoField
 
@@ -25,7 +25,7 @@ class MyRepo(CreateRepository, GetRepository):
 
 class UOW(UnitOfWork):
     config = ConfigDict(
-        backend=InMemoryBackendConfig(),
+        backend=SqlalchemyBackendConfig(),
         connector=S3ConnectorConfig(...),
         )
     user_files = S3RepoField(MyRepo, bucket_name="my-bucket")

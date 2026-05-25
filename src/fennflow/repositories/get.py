@@ -13,12 +13,6 @@ class GetRepository(AtRepository):
     This method returns a `MediaResponse` object containing the requested file,
     if it exists according to the backend (source of truth).
 
-    **Example**::
-
-        response = await uow.user_files.at("user1/").get("file.txt")
-        if response:
-            file = response[0]
-
     **Behavior**:
 
     - The backend is treated as the source of truth
@@ -37,21 +31,28 @@ class GetRepository(AtRepository):
 
     """
 
-    async def get(self, *paths: str, **provider_extra) -> MediaResponse:
+    async def get(self, *paths: str, **connector_extra) -> MediaResponse:
         """Retrieve a file from storage within the current scope.
 
         Args:
             *paths (str):
                 Relative file's paths within the scoped repository
 
-            **provider_extra (Any):
-                Additional provider-specific parameters passed directly to the connector
-                (e.g. S3 `get_object` arguments)
+            **connector_extra (Any):
+                Additional connector-specific parameters passed directly
+                to the connector (e.g. S3 `get_object` arguments)
 
         Returns:
             MediaResponse:
                 - `MediaResponse(media=(...))` if the file exists
                 - `MediaResponse()` (empty) if the file does not exist
+
+        **Example**::
+
+            response = await uow.user_files.at("user1/").get("file.txt")
+            if response:
+                file = response[0]
+
         """
         tasks = []
         for path in paths:
@@ -70,7 +71,7 @@ class GetRepository(AtRepository):
                     self._uow.connector.get(
                         storage_path=storage_path,
                         repo_extra=self.repo_extra,
-                        **provider_extra,
+                        **connector_extra,
                     )
                 )
 

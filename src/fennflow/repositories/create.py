@@ -27,30 +27,32 @@ class CreateRepository(
     This repository implements the "create" operation, which uploads new files
     to the configured storage (e.g. S3) within the current Unit of Work.
 
-    **Example**::
-
-        file1 = TextContent.from_content("This is the first file.")
-        await uow.user_files.at("user1/").create(file1)
-
     **Behavior**:
 
     - Each file is registered in the backend as a pending operation
     - Files are uploaded via the connector
     - Backend commit is executed on uow.commit
 
-    **Raises**:
-        RecordAlreadyExistsException:
-            If a file with the same path already exists in a backend
-        FilepathsCollisionError:
-            If files with the same filepath are passed
-
     """
 
     async def create(
         self,
         *files: BinaryMedia,
-        **provider_extra,
+        **connector_extra,
     ) -> None:
+        """Puts file if it doesn't exist in the backend.
+
+        **Example**::
+
+            file1 = TextContent.from_content("This is the first file.")
+            await uow.user_files.at("user1/").create(file1)
+
+        Raises:
+            RecordAlreadyExistsException:
+                If a file with the same path already exists in a backend
+            FilepathsCollisionError:
+                If files with the same filepath are passed
+        """
         self.validate_duplicates_from_files(files)
         tasks = []
         operations = []
@@ -86,7 +88,7 @@ class CreateRepository(
             tasks.append(
                 self._uow._operation_executor.execute(
                     operation,
-                    **provider_extra,
+                    **connector_extra,
                 ),
             )
             operations.append(operation)

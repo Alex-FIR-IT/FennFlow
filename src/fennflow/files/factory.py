@@ -19,9 +19,6 @@ class ContentFactory:
     Resolves the appropriate content class from the registry based on
     MIME type, falling back to ``BinaryContent`` for unknown types.
 
-    Example:
-        content = ContentFactory.from_bytes("text/plain", b"Hello, World!")
-        url = ContentFactory.from_url("https://example.com/file.txt")
     """
 
     @staticmethod
@@ -55,12 +52,12 @@ class ContentFactory:
             A media content instance appropriate for the given MIME type.
 
         Raises:
-            TypeError: If ``data`` is not bytes.
             ValueError: If the resolved content class fails validation.
-        """
-        if not isinstance(data, bytes):
-            raise TypeError(f"Factory expected bytes, got {type(data)=} instead.")
 
+        **Example**:
+
+            content = ContentFactory.from_bytes("text/plain", b"Hello, World!")
+        """
         payload = {
             "media_type": media_type,
             "data": data,
@@ -102,7 +99,11 @@ class ContentFactory:
             A ``UrlContent`` instance wrapping the given URL.
 
         Raises:
-            ValueError: If the URL fails validation.
+            ValueError: If the resolved content class fails validation.
+
+        **Example**::
+
+            url = ContentFactory.from_url("https://example.com/file.txt")
         """
         payload = {
             "data": url,
