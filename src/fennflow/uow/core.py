@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 
 from fennflow._operations.executor import OperationExecutor
 from fennflow._resolver import ConfigResolver
-from fennflow.backends import BackendFactory
+from fennflow.backends._factory import BackendFactory
 from fennflow.connectors import ConnectorFactory
 from fennflow.reconciler._orchestrator import ReconcileOrchestrator
 
