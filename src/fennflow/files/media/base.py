@@ -16,6 +16,7 @@ from pydantic import (
 )
 
 from fennflow._path import Path
+from fennflow.files._annotations import MediaTypes
 from fennflow.files.exceptions.cannot_parse_extension import (
     CannotParseExtensionException,
 )
@@ -47,7 +48,7 @@ class BaseContent(BaseModel, ABC):
 
     data: Any
     filename: str
-    media_type: str
+    media_type: MediaTypes
     _storage_prefix: str | None = None
     extra_metadata: dict[str, str] = Field(default_factory=dict)
 

@@ -4,8 +4,6 @@ import itertools
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from typing_extensions import Unpack
-
 from fennflow._datetime import now
 from fennflow._sentinel import OMIT
 from fennflow.backends._abstract.annotations import SelectParams
@@ -13,6 +11,8 @@ from fennflow.backends.responses import RecordPage
 
 if TYPE_CHECKING:
     from collections.abc import Generator, Iterable
+
+    from typing_extensions import Unpack
 
     from fennflow._operations.dto import Record
 

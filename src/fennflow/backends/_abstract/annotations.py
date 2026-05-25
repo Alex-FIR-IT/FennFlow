@@ -2,14 +2,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, TypedDict
 
-from typing_extensions import NotRequired
-
 if TYPE_CHECKING:
     from uuid import UUID
+
+    from typing_extensions import NotRequired
 
     from fennflow._new_types import Namespace, StoragePath
     from fennflow._operations.enums import OperationStatusEnum
     from fennflow._sentinel import Omittable
+    from fennflow.files._annotations import MediaTypes
 
 
 class SelectParams(TypedDict):
@@ -22,7 +23,7 @@ class SelectParams(TypedDict):
     prefix: NotRequired[str]
     namespace: NotRequired[Namespace]
     status: NotRequired[OperationStatusEnum]
-    media_type: NotRequired[str]
+    media_type: NotRequired[MediaTypes]
     session_id: NotRequired[UUID]
     operation_id: NotRequired[UUID]
     is_expired: NotRequired[bool]

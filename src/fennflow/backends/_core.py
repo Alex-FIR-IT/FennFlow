@@ -3,8 +3,6 @@ from __future__ import annotations
 from itertools import groupby
 from typing import TYPE_CHECKING
 
-from typing_extensions import Self
-
 from fennflow._operations.dto import OperationRecord
 from fennflow._query_specs.insert.insert import InsertQuerySpec
 from fennflow._query_specs.select.get_by_storage_path import GetByStoragePathQuerySpec
@@ -14,6 +12,8 @@ from fennflow.backends.enums import OnConflictDoEnum
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
+
+    from typing_extensions import Self
 
     from fennflow._new_types import BackendScope, Namespace, StoragePath
     from fennflow._sessions.abstract import AbstractSessionBuffer

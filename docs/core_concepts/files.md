@@ -28,24 +28,41 @@ There is also a model representing url files:
 `TextContent` and `JsonContent` expose a `from_content()` classmethod as the primary constructor:
 
 ```python
-from fennflow.files import TextContent, JsonContent, BinaryContent, ImageContent, ContentFactory
+from fennflow.files import (
+    BinaryContent,
+    ContentFactory,
+    ImageContent,
+    JsonContent,
+    MediaType,
+    TextContent,
+)
 
 text = TextContent.from_content("Hello, world!")
 json_file = JsonContent.from_content({"key": "value"})
 json_list = JsonContent.from_content([1, 2, 3])
 
 # BinaryContent requires explicit media_type
-binary = BinaryContent(data=b"...", media_type="application/octet-stream")
+binary = BinaryContent(
+    data=b"...",
+    media_type=MediaType.APPLICATION_OCTET_STREAM,
+)
 
 # Optional metadata fields
-image = ImageContent(data=img_bytes, media_type="image/png", width=800, height=600)
+image = ImageContent(
+    data=img_bytes,
+    media_type=MediaType.IMAGE_PNG,
+    width=800,
+    height=600,
+)
 
 # ContentFactory can be used to get specific class of content
-file: TextContent = ContentFactory.from_bytes(
-    media_type="text/plain",
-    data=file_bytes,
-    **metadata,
+file: TextContent = (
+    ContentFactory.from_bytes(
+        media_type=MediaType.TEXT_PLAIN,
+        data=file_bytes,
+        **metadata,
     ),
+)
 
 ```
 

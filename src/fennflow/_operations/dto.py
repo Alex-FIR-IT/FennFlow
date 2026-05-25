@@ -5,8 +5,6 @@ import uuid
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from typing_extensions import Self
-
 from fennflow._datetime import AwareDatetime, now
 from fennflow._operations.context.abstract import BaseContext
 from fennflow._operations.enums import OperationStatusEnum, OperationTypeEnum
@@ -16,6 +14,8 @@ from fennflow._tmp_path_builder import TmpPathBuilder
 from fennflow.backends.enums import OnConflictDoEnum
 
 if TYPE_CHECKING:
+    from typing_extensions import Self
+
     from fennflow import UnitOfWork
     from fennflow._new_types import BackendScope, Namespace, StoragePath
     from fennflow._operations.context.types import Context

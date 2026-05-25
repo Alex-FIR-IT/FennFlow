@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from fennflow.files.enums import MediaType
 from fennflow.files.media import (
     AudioContent,
     BinaryContent,
@@ -11,11 +12,11 @@ from fennflow.files.media import (
 )
 
 content_registry: dict[str, type[BinaryContent]] = {
-    "text/plain": TextContent,
+    MediaType.TEXT_PLAIN: TextContent,
     "text/": TextContent,
     "image/": ImageContent,
-    "application/json": JsonContent,
+    MediaType.APPLICATION_JSON: JsonContent,
     "audio/": AudioContent,
     "video/": VideoContent,
-    "application/pdf": DocumentContent,
+    MediaType.APPLICATION_OCTET_STREAM: DocumentContent,
 }

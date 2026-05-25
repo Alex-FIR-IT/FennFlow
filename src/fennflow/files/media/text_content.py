@@ -2,13 +2,17 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ..._sentinel import OMIT, Omittable, is_given
+from fennflow._sentinel import OMIT, Omittable, is_given
+from fennflow.files.enums import MediaType
+
 from .abstract.content import ContentPropertyAbstract
 from .abstract.from_content import FromContentAbstract
 from .binary_content import BinaryContent
 
 if TYPE_CHECKING:
     from typing_extensions import Self
+
+    from fennflow.files._annotations import MediaTypes
 
 
 class TextContent(
@@ -44,7 +48,7 @@ class TextContent(
     def from_content(
         cls,
         data: str,
-        media_type: str = "text/plain",
+        media_type: MediaTypes = MediaType.TEXT_PLAIN,
         encoding: str = "utf-8",
         filename: Omittable[str] = OMIT,
         **kwargs,  # noqa: ARG003

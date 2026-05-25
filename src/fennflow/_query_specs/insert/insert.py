@@ -3,13 +3,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, TypeVar
 
-from typing_extensions import Self
-
 from fennflow._query_specs.insert.base import BaseInsertQuerySpec
 from fennflow.backends.enums import OnConflictDoEnum
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
+
+    from typing_extensions import Self
 
     from fennflow._operations.dto import OperationRecord, Record
 
