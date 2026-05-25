@@ -8,7 +8,7 @@ class AbstractBackendConfig(BasePydanticConfig):
     """Base configuration for all FennFlow backends."""
 
     scope: BackendScope = Field(
-        default="fennflow_backend",
+        default="default",
         description="Label to isolate backend state. "
         "Useful when working with multiple storage instances "
         "(e.g. two S3 or S3 and MinIO) "
