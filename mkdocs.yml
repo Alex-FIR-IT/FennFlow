@@ -24,7 +24,7 @@ theme:
     - content.code.select
     - navigation.path
     - navigation.indexes
-    - navigation.sections
+    #    - navigation.sections
     - navigation.tracking
     - toc.follow
     - announce.dismiss
