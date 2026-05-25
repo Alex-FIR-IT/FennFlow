@@ -77,11 +77,12 @@ A `DELETE`, for example, does not immediately remove the file. Instead, on execu
 path** inside the same storage:
 
 ```
-tmp/session_{session_id}/operation_{operation_id}/{original_path}
+fennflow/tmp/session_{session_id}/operation_{operation_id}/{original_path}
 ```
 
-The original file is then deleted. If rollback is needed, the compensation step copies the file back from `tmp/` to its
-original path. If commit succeeds, the `tmp/` file is removed during finalize.
+The original file is then deleted. If rollback is needed, the compensation step copies the file back from
+`fennflow/tmp/` to its
+original path. If commit succeeds, the `fennflow/tmp/` file is removed during finalize.
 
 Temporary files live in the file storage itself, not in memory. This pattern applies to all write operations that
 require compensation.
