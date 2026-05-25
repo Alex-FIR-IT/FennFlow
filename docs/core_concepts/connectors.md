@@ -52,7 +52,7 @@ Call `InMemoryConnector.drop_all()` between tests to reset connector state.
 
 ## Default config
 
-If `config` is omitted entirely from a UoW subclass, backend and connector default to InMemoryBackend and S3Connector
+If `config` is omitted entirely from a UoW subclass, backend and connector default to Sqlalchemy and S3Connector
 accordingly.
 
 ## Implementing a custom connector
