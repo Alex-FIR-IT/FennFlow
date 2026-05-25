@@ -39,30 +39,31 @@ Unit of Work pattern, providing:
 
 ## Supported Connectors
 
-| Connector           | Description                                  | Documentation                                                                                 |
-|---------------------|----------------------------------------------|-----------------------------------------------------------------------------------------------|
-| AWS S3              | s3 compatible object storage via aiobotocore | [📖 Docs](https://alex-fir-it.github.io/FennFlow/core_concepts/connectors/#s3connector)       |
-| In-Memory (default) | great for and tests and development          | [📖 Docs](https://alex-fir-it.github.io/FennFlow/core_concepts/connectors/#inmemoryconnector) |
+| Connector        | Description                                  | Documentation                                                                                 |
+|------------------|----------------------------------------------|-----------------------------------------------------------------------------------------------|
+| AWS S3 (default) | s3 compatible object storage via aiobotocore | [📖 Docs](https://alex-fir-it.github.io/FennFlow/core_concepts/connectors/#s3connector)       |
+| In-Memory        | great for and tests and development          | [📖 Docs](https://alex-fir-it.github.io/FennFlow/core_concepts/connectors/#inmemoryconnector) |
 
 ## Supported Backends
 
 FennFlow uses backend as a source of truth for your file storage.
 No matter what your file storage contains, backend ensures your data is consistent.
 
-| Backend             | Description                                         | Documenration                                                                             |
-|---------------------|-----------------------------------------------------|-------------------------------------------------------------------------------------------|
-| In-Memory (default) | great for and tests, development and small projects | [📖 Docs](https://alex-fir-it.github.io/FennFlow/core_concepts/backends/#inmemorybackend) |
+| Backend              | Description                                             | Documentation                                                                               |
+|----------------------|---------------------------------------------------------|---------------------------------------------------------------------------------------------|
+| In-Memory            | great for and tests, development                        | [📖 Docs](https://alex-fir-it.github.io/FennFlow/core_concepts/backends/#inmemorybackend)   |
+| SQLAlchemy (default) | persistent metadata backend, great for all environments | [📖 Docs](https://alex-fir-it.github.io/FennFlow/core_concepts/backends/#sqlalchemybackend) |
 
 ### Backend Comparison
 
-|                    | Raw aiobotocore                                   | In-Memory                                                                                               |
-|--------------------|---------------------------------------------------|---------------------------------------------------------------------------------------------------------|
-| **Consistency**    | 🔴 None<br>No link between files and metadata     | 🟡 Medium<br>Consistent within process lifetime, lost on crash                                          | 
-| **Compensation**   | 🔴 None<br>Orphaned files on failure              | 🟡 Medium<br>Automatic within process                                                                   | 
-| **Reliability**    | 🔴 Low<br>Failures leave storage in unknown state | 🟡 Medium<br> Syncs with storage on restart, orphaned files uploaded during crash cannot be compensated | 
-| **Latency**        | ✅ Lowest<br>Pure S3 network overhead only         | ✅ Lowest<br>Minimal in-process overhead                                                                 | 
-| **Infrastructure** | ✅ None                                            | ✅ None                                                                                                  |
-| **Memory usage**   | ✅ None                                            | 🟡 Stores file metadata in-process                                                                      |
+|                    | Raw aiobotocore                                   | SQLAlchemy (default)                                         |
+|--------------------|---------------------------------------------------|--------------------------------------------------------------|
+| **Consistency**    | 🔴 None<br>No link between files and metadata     | ✅ High<br>Persistent across restarts                         |
+| **Compensation**   | 🔴 None<br>Orphaned files on failure              | ✅ High<br>Automatic within session                           |
+| **Reliability**    | 🔴 Low<br>Failures leave storage in unknown state | ✅ High<br>Consistent state guaranteed across restarts        |
+| **Latency**        | ✅ Lowest<br>Pure S3 network overhead only         | 🟡 Low/middle<br>DB overhead                                 |
+| **Infrastructure** | ✅ None                                            | ✅ None<br>SQLite by default                                  |
+| **Memory usage**   | ✅ None                                            | ✅ Minimal<br>Metadata persisted to disk, not held in-process |
 
 ## Quick Start
 
@@ -72,7 +73,7 @@ Here's a minimal example of FennFlow:
 import asyncio
 
 from fennflow import ConfigDict, UnitOfWork
-from fennflow.backends import InMemoryBackendConfig
+from fennflow.backends import SqlalchemyBackendConfig
 from fennflow.connectors import S3ConnectorConfig
 from fennflow.files import BinaryContent, JsonContent, TextContent
 from fennflow.repositories import (
@@ -98,7 +99,7 @@ class CrudRepository(
 class UOW(UnitOfWork):
     my_files = S3RepoField(CrudRepository, bucket_name="my_files")
     config = ConfigDict(
-        backend=InMemoryBackendConfig(),
+        backend=SqlalchemyBackendConfig(),
         connector=S3ConnectorConfig(),
         )
 
