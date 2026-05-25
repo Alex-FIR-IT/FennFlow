@@ -25,9 +25,7 @@ class AppUOW(UnitOfWork):
     avatars = S3RepoField(AvatarRepository, bucket_name="avatars")
     config = ConfigDict(
         backend=SqlalchemyBackendConfig(),
-        connector=S3ConnectorConfig(
-            ...
-            ),
+        connector=S3ConnectorConfig(),
         )
 
 
