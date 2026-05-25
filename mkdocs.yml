@@ -78,6 +78,7 @@ nav:
   - Advanced Features:
       - Reconciler: advanced_features/reconciler.md
   - Examples:
+      - examples/index.md
       - Base Upload: examples/base_upload.md
       - Multiple Connectors: examples/multiple_connectors.md
       - Scoped Repository Permissions: examples/scoped_repository_permissions.md
