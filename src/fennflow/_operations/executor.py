@@ -17,13 +17,13 @@ class OperationExecutor:
     async def execute(
         self,
         operation: OperationRecord,
-        **provider_extra,
+        **connector_extra,
     ):
         operation_flow = flow_registry[operation.record.operation_type]
         return await operation_flow().execute(
             operation=operation,
             connector=self.connector,
-            **provider_extra,
+            **connector_extra,
         )
 
     async def compensate(

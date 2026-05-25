@@ -15,7 +15,7 @@ class AbstractFlow(ABC):
         *,
         operation: OperationRecord,
         connector: AbstractConnector,
-        **provider_extra,
+        **connector_extra,
     ): ...
 
     @staticmethod

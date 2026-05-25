@@ -37,15 +37,15 @@ class GetRepository(AtRepository):
 
     """
 
-    async def get(self, *paths: str, **provider_extra) -> MediaResponse:
+    async def get(self, *paths: str, **connector_extra) -> MediaResponse:
         """Retrieve a file from storage within the current scope.
 
         Args:
             *paths (str):
                 Relative file's paths within the scoped repository
 
-            **provider_extra (Any):
-                Additional provider-specific parameters passed directly to the connector
+            **connector_extra (Any):
+                Additional connector-specific parameters passed directly to the connector
                 (e.g. S3 `get_object` arguments)
 
         Returns:
@@ -70,7 +70,7 @@ class GetRepository(AtRepository):
                     self._uow.connector.get(
                         storage_path=storage_path,
                         repo_extra=self.repo_extra,
-                        **provider_extra,
+                        **connector_extra,
                     )
                 )
 

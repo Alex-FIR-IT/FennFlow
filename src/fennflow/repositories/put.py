@@ -42,7 +42,7 @@ class PutRepository(AtRepository, ValidateDuplicatesMixin):
     async def put(
         self,
         *files: BinaryMedia,
-        **provider_extra,
+        **connector_extra,
     ) -> None:
         self.validate_duplicates_from_files(files)
         tasks = []
@@ -71,7 +71,7 @@ class PutRepository(AtRepository, ValidateDuplicatesMixin):
             tasks.append(
                 self._uow._operation_executor.execute(
                     operation,
-                    **provider_extra,
+                    **connector_extra,
                 ),
             )
             operations.append(operation)

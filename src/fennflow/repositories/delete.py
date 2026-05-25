@@ -17,12 +17,12 @@ class DeleteRepository(AtRepository):
     Implements Saga-based deletion with automatic compensation on failure.
     """
 
-    async def delete(self, path: str, **provider_extra: Any) -> bool:
+    async def delete(self, path: str, **connector_extra: Any) -> bool:
         """Delete a file from storage.
 
         Args:
             path: Path to the file relative to the current directory.
-            **provider_extra: Additional kwargs forwarded to the connector.
+            **connector_extra: Additional kwargs forwarded to the connector.
 
         Returns:
             True if the file was deleted, False if it did not exist.
@@ -54,7 +54,7 @@ class DeleteRepository(AtRepository):
 
         await self._uow._operation_executor.execute(
             operation,
-            **provider_extra,
+            **connector_extra,
         )
         await self._uow.backend.flush(operations=[operation])
         return True

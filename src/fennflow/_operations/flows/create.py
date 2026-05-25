@@ -17,13 +17,13 @@ class CreateFlow(AbstractFlow):
         *,
         operation: OperationRecord,
         connector: AbstractConnector,
-        **provider_extra,
+        **connector_extra,
     ):
         ctx: CreateContext = operation.context
         return await connector.put(
             file=ctx.file,
             repo_extra=operation.repo_extra,
-            **provider_extra,
+            **connector_extra,
         )
 
     @staticmethod
@@ -31,13 +31,13 @@ class CreateFlow(AbstractFlow):
         *,
         operation: OperationRecord,
         connector: AbstractConnector,
-        **provider_extra,
+        **connector_extra,
     ):
 
         result = await connector.delete(
             storage_path=operation.record.storage_path,
             repo_extra=operation.repo_extra,
-            **provider_extra,
+            **connector_extra,
         )
         operation.record.status = OperationStatusEnum.FAILED
         return result
@@ -47,6 +47,6 @@ class CreateFlow(AbstractFlow):
         *,
         operation: OperationRecord,
         connector: AbstractConnector,
-        **provider_extra,
+        **connector_extra,
     ):
         pass

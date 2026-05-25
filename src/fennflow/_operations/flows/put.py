@@ -20,7 +20,7 @@ class PutFlow(AbstractFlow):
         *,
         operation: OperationRecord,
         connector: AbstractConnector,
-        **provider_extra,
+        **connector_extra,
     ):
         ctx: PutContext = operation.context
 
@@ -33,14 +33,14 @@ class PutFlow(AbstractFlow):
                     to_storage_path=tmp_path,
                     to_namespace=operation.repo_extra["namespace"],
                     repo_extra=operation.repo_extra,
-                    **provider_extra,
+                    **connector_extra,
                 )
                 ctx.tmp_path = tmp_path
 
         return await connector.put(
             file=ctx.file,
             repo_extra=operation.repo_extra,
-            **provider_extra,
+            **connector_extra,
         )
 
     @staticmethod
@@ -48,7 +48,7 @@ class PutFlow(AbstractFlow):
         *,
         operation: OperationRecord,
         connector: AbstractConnector,
-        **provider_extra,
+        **connector_extra,
     ):
 
         ctx: PutContext = operation.context
@@ -59,14 +59,14 @@ class PutFlow(AbstractFlow):
                 to_storage_path=operation.record.storage_path,
                 to_namespace=operation.record.namespace,
                 repo_extra=operation.repo_extra,
-                **provider_extra,
+                **connector_extra,
             )
             operation.record.status = OperationStatusEnum.UPLOADED
         else:
             await connector.delete(
                 storage_path=operation.record.storage_path,
                 repo_extra=operation.repo_extra,
-                **provider_extra,
+                **connector_extra,
             )
             operation.record.status = OperationStatusEnum.FAILED
 
@@ -75,7 +75,7 @@ class PutFlow(AbstractFlow):
         *,
         operation: OperationRecord,
         connector: AbstractConnector,
-        **provider_extra,
+        **connector_extra,
     ):
 
         ctx: PutContext = operation.context
@@ -84,5 +84,5 @@ class PutFlow(AbstractFlow):
             await connector.delete(
                 storage_path=ctx.tmp_path,
                 repo_extra=operation.repo_extra,
-                **provider_extra,
+                **connector_extra,
             )

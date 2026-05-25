@@ -19,7 +19,7 @@ class DeleteFlow(AbstractFlow):
         *,
         operation: OperationRecord,
         connector: AbstractConnector,
-        **provider_extra,
+        **connector_extra,
     ):
         ctx: DeleteContext = operation.context
 
@@ -29,12 +29,12 @@ class DeleteFlow(AbstractFlow):
                 to_storage_path=ctx.to_storage_path,
                 to_namespace=ctx.to_namespace,
                 repo_extra=operation.repo_extra,
-                **provider_extra,
+                **connector_extra,
             )
             return await connector.delete(
                 storage_path=operation.record.storage_path,
                 repo_extra=operation.repo_extra,
-                **provider_extra,
+                **connector_extra,
             )
 
     @staticmethod
@@ -42,7 +42,7 @@ class DeleteFlow(AbstractFlow):
         *,
         operation: OperationRecord,
         connector: AbstractConnector,
-        **provider_extra,
+        **connector_extra,
     ):
         ctx: DeleteContext = operation.context
         await connector.copy_object(
@@ -50,7 +50,7 @@ class DeleteFlow(AbstractFlow):
             to_storage_path=operation.record.storage_path,
             to_namespace=operation.record.namespace,
             repo_extra=operation.repo_extra,
-            **provider_extra,
+            **connector_extra,
         )
         await connector.delete(
             storage_path=ctx.to_storage_path,
@@ -63,11 +63,11 @@ class DeleteFlow(AbstractFlow):
         *,
         operation: OperationRecord,
         connector: AbstractConnector,
-        **provider_extra,
+        **connector_extra,
     ):
         ctx: DeleteContext = operation.context
         await connector.delete(
             storage_path=ctx.to_storage_path,
             repo_extra=operation.repo_extra,
-            **provider_extra,
+            **connector_extra,
         )
