@@ -89,6 +89,6 @@ require compensation.
 
 ### Session isolation
 
-A file uploaded by session A as `PENDING` is visible only to session A during that session. Other sessions see only
-`UPLOADED` files. This means reads within an open UoW reflect the current session's own uncommitted writes, but never
-another session's. This is similar to sqlalchemy sessions.
+A file involved in any pending operation — whether CREATE, PUT, or DELETE — is invisible to all other sessions until
+that operation is committed. This is a conservative visibility model: FennFlow errs on the side of hiding a file rather
+than exposing potentially inconsistent state to concurrent sessions.
