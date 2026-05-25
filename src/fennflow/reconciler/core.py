@@ -42,8 +42,10 @@ class Reconciler:
      ``Reconciler`` restores consistency
     by listing files from the connector and inserting them into the backend
     according to the chosen strategy.
-
     Called internally by ``ReconcileOrchestrator`` in UnitOfWork.__aenter__.
+
+    Notes:
+        Reconciler does not perform garbage collection!
 
     Example::
 
