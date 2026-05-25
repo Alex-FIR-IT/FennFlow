@@ -39,8 +39,8 @@ class GetRepository(AtRepository):
                 Relative file's paths within the scoped repository
 
             **connector_extra (Any):
-                Additional connector-specific parameters passed directly to the connector
-                (e.g. S3 `get_object` arguments)
+                Additional connector-specific parameters passed directly
+                to the connector (e.g. S3 `get_object` arguments)
 
         Returns:
             MediaResponse:
