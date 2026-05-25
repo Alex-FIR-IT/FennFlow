@@ -31,7 +31,7 @@ class AppUOW(UnitOfWork):
 
 class TestUOW(AppUOW):
     config = ConfigDict(
-        backend=SqlalchemyBackendConfig(url="sqlite+aiosqlite:///:memory:"),
+        backend=SqlalchemyBackendConfig(database_url="sqlite+aiosqlite:///:memory:"),
         connector=InMemoryConnectorConfig(),
         )
 

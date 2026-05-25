@@ -62,7 +62,7 @@ from fennflow.backends import SqlalchemyBackendConfig
 
 class TestUOW(AppUOW):
     config = ConfigDict(
-        backend=SqlalchemyBackendConfig(url="sqlite+aiosqlite:///:memory:"),
+        backend=SqlalchemyBackendConfig(database_url="sqlite+aiosqlite:///:memory:"),
         )
 ```
 
