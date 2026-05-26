@@ -13,7 +13,10 @@ changelog:
     - title: 📦 Dependencies
       labels:
         - dependency
-    - title: 🔧 Internal
+    - title: 🔧 Maintenance
       labels:
         - ci
         - infra
+    - title: 🚨 Breaking Change
+      labels:
+        - breaking change
