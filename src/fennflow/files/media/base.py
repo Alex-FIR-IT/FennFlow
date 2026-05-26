@@ -3,9 +3,10 @@ from __future__ import annotations
 import logging
 import mimetypes
 import os
+import sys
 from abc import ABC
 from functools import total_ordering
-from hashlib import sha256
+from pathlib import Path as PathLib
 from typing import TYPE_CHECKING, Any
 
 from pydantic import (
@@ -17,6 +18,8 @@ from pydantic import (
 
 from fennflow._path import Path
 from fennflow.files._annotations import MediaTypes
+from fennflow.files._filename_generator import FilenameGenerator
+from fennflow.files._media_type_guesser import MimeTypeGuesser
 from fennflow.files.exceptions.cannot_parse_extension import (
     CannotParseExtensionException,
 )
@@ -27,9 +30,6 @@ from fennflow.files.exceptions.filename_and_mediatype_both_none import (
     FileNameAndMediaTypeBothNoneException,
 )
 from fennflow.files.exceptions.filename_is_none import FilenameIsNoneException
-from fennflow.files.exceptions.media_type_cannot_be_guessed import (
-    MediaTypeCannotBeGuessedException,
-)
 from fennflow.files.exceptions.storage_prefix_is_none import (
     StoragePrefixIsNoneException,
 )
@@ -94,13 +94,9 @@ class BaseContent(BaseModel, ABC):
         if media_type and filename:
             pass
         elif media_type:
-            data["filename"] = sha256(data["data"]).hexdigest()
+            data["filename"] = FilenameGenerator.generate_from_bytes(data["data"])
         elif filename:
-            guessed_media_type = mimetypes.guess_type(filename, strict=False)[0]
-            if guessed_media_type is None:
-                raise MediaTypeCannotBeGuessedException(filename=filename)
-            data["media_type"] = guessed_media_type
-
+            data["media_type"] = MimeTypeGuesser.guess_type(filename=filename)
         else:
             raise FileNameAndMediaTypeBothNoneException()
 
@@ -108,19 +104,18 @@ class BaseContent(BaseModel, ABC):
 
     @model_validator(mode="after")
     def ensure_filename_has_ext(self) -> Self:
-        ext = os.path.splitext(self.filename)[-1]
+        ext = PathLib(self.filename).suffix
 
         if not ext:
-            guessed_extension = mimetypes.guess_extension(
-                self.media_type,
+            guessed_extension = MimeTypeGuesser.guess_extension(
+                media_type=self.media_type,
                 strict=False,
+                return_exception=True,
             )
-
-            if guessed_extension is None:
-                raise ExtensionCannotBeGuessed(
-                    f"Cannot guess extension for {self.media_type=}. "
-                    f"Please, specify filename explicitly."
-                )
+            if isinstance(guessed_extension, ExtensionCannotBeGuessed):
+                if sys.version_info >= (3, 11):
+                    guessed_extension.add_note("Please, specify filename explicitly.")
+                raise guessed_extension
 
             self.__dict__["filename"] = f"{self.filename}{guessed_extension}"
         return self

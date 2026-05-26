@@ -1,12 +1,16 @@
 from __future__ import annotations
 
 from functools import cache
+from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from pydantic import ValidationError
 
+from fennflow._sentinel import OMIT, Omittable, is_given
+from fennflow.files._filename_generator import FilenameGenerator
+from fennflow.files._media_type_guesser import MimeTypeGuesser
 from fennflow.files.enums import MediaType
-from fennflow.files.media.binary_content import BinaryContent
+from fennflow.files.media.base_binary import BaseBinary
 from fennflow.files.media.url_content import UrlContent
 from fennflow.files.registry import content_registry
 
@@ -19,7 +23,7 @@ class ContentFactory:
     """Factory for creating media content instances from raw data.
 
     Resolves the appropriate content class from the registry based on
-    MIME type, falling back to ``BinaryContent`` for unknown types.
+    MIME type, falling back to ``BaseBinary`` for unknown types.
 
     """
 
@@ -43,7 +47,7 @@ class ContentFactory:
         """Create a media content instance from raw bytes.
 
         Resolves the content class from the registry by exact MIME type match,
-        then by prefix match, falling back to ``BinaryContent`` if no match is found.
+        then by prefix match, falling back to ``BaseBinary`` if no match is found.
 
         Args:
             media_type: The MIME type of the content (e.g. ``"text/plain"``).
@@ -75,7 +79,7 @@ class ContentFactory:
                     content_cls = content_registry[prefix]
                     break
             else:
-                content_cls = BinaryContent
+                content_cls = BaseBinary
 
         try:
             return content_cls.model_validate(payload)
@@ -108,12 +112,37 @@ class ContentFactory:
 
             url = ContentFactory.from_url("https://example.com/file.txt")
         """
+        if "filename" not in kwargs:
+            kwargs["filename"] = FilenameGenerator.generate_from_url(url)
+
         payload = {
             "data": url,
             "media_type": media_type,
             **kwargs,
         }
+
         try:
             return UrlContent.model_validate(payload)
         except ValidationError as exc:
             raise ValueError(f"Failed to create UrlContent for {url=}") from exc
+
+    @classmethod
+    def from_local_path(
+        cls,
+        path: str | Path,
+        media_type: Omittable[MediaTypes] = OMIT,
+        **kwargs: Any,
+    ) -> BinaryMedia:
+        filename = Path(path).name
+
+        if not is_given(media_type):
+            media_type = MimeTypeGuesser.guess_type(filename=filename)
+
+        kwargs.setdefault("filename", filename)
+
+        with open(path, "rb") as file:
+            return cls.from_bytes(
+                data=file.read(),
+                media_type=media_type,
+                **kwargs,
+            )

@@ -1,5 +1,6 @@
 __all__ = [
     "AudioContent",
+    "BaseBinary",
     "BaseContent",
     "BinaryContent",
     "DocumentContent",
@@ -12,6 +13,7 @@ __all__ = [
 
 from .audio_content import AudioContent
 from .base import BaseContent
+from .base_binary import BaseBinary
 from .binary_content import BinaryContent
 from .document_content import DocumentContent
 from .image_content import ImageContent

@@ -8,7 +8,7 @@ from fennflow.files.enums import MediaType
 
 from .abstract.content import ContentPropertyAbstract
 from .abstract.from_content import FromContentAbstract
-from .binary_content import BinaryContent
+from .base_binary import BaseBinary
 
 if TYPE_CHECKING:
     from pydantic import JsonValue
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 
 class JsonContent(
-    BinaryContent,
+    BaseBinary,
     FromContentAbstract,
     ContentPropertyAbstract,
 ):

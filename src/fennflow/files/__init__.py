@@ -1,5 +1,6 @@
 __all__ = [
     "AudioContent",
+    "BaseBinary",
     "BinaryContent",
     "ContentFactory",
     "DocumentContent",
@@ -15,6 +16,7 @@ from .enums import MediaType
 from .factory import ContentFactory
 from .media import (
     AudioContent,
+    BaseBinary,
     BinaryContent,
     DocumentContent,
     ImageContent,

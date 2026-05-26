@@ -1,5 +1,5 @@
-from .binary_content import BinaryContent
+from .base_binary import BaseBinary
 
 
-class DocumentContent(BinaryContent):
+class DocumentContent(BaseBinary):
     """Media content representing a document."""

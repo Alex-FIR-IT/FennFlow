@@ -1,7 +1,7 @@
-from .binary_content import BinaryContent
+from .base_binary import BaseBinary
 
 
-class AudioContent(BinaryContent):
+class AudioContent(BaseBinary):
     """Media content representing an audio file.
 
     Attributes:
