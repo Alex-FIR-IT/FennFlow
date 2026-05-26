@@ -3,7 +3,7 @@ from __future__ import annotations
 from fennflow.files.enums import MediaType
 from fennflow.files.media import (
     AudioContent,
-    BinaryContent,
+    BaseBinary,
     DocumentContent,
     ImageContent,
     JsonContent,
@@ -11,7 +11,7 @@ from fennflow.files.media import (
     VideoContent,
 )
 
-content_registry: dict[str, type[BinaryContent]] = {
+content_registry: dict[str, type[BaseBinary]] = {
     MediaType.TEXT_PLAIN: TextContent,
     "text/": TextContent,
     "image/": ImageContent,

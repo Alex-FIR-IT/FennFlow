@@ -1,7 +1,7 @@
-from .binary_content import BinaryContent
+from .base_binary import BaseBinary
 
 
-class ImageContent(BinaryContent):
+class ImageContent(BaseBinary):
     """Media content representing an image file.
 
     Attributes:

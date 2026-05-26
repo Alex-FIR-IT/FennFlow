@@ -1,8 +1,9 @@
 from typing import TypeAlias
 
+from . import BinaryContent
 from .media import (
     AudioContent,
-    BinaryContent,
+    BaseBinary,
     DocumentContent,
     ImageContent,
     JsonContent,
@@ -20,6 +21,7 @@ BinaryMedia: TypeAlias = (
     | ImageContent
     | AudioContent
     | TextContent
+    | BaseBinary
     | BinaryContent
 )
 

@@ -7,7 +7,7 @@ from fennflow.files.enums import MediaType
 
 from .abstract.content import ContentPropertyAbstract
 from .abstract.from_content import FromContentAbstract
-from .binary_content import BinaryContent
+from .base_binary import BaseBinary
 
 if TYPE_CHECKING:
     from typing_extensions import Self
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 
 class TextContent(
-    BinaryContent,
+    BaseBinary,
     FromContentAbstract,
     ContentPropertyAbstract,
 ):

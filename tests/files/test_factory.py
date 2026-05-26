@@ -9,7 +9,7 @@ from fennflow.files import MediaType
 from fennflow.files.exceptions import ExtensionCannotBeGuessed
 from fennflow.files.factory import ContentFactory
 from fennflow.files.media.audio_content import AudioContent
-from fennflow.files.media.binary_content import BinaryContent
+from fennflow.files.media.base_binary import BaseBinary
 from fennflow.files.media.image_content import ImageContent
 from fennflow.files.media.json_content import JsonContent
 from fennflow.files.media.text_content import TextContent
@@ -65,7 +65,7 @@ class TestFromBytes:
             filename=filename,
         )
 
-        assert type(result) is BinaryContent
+        assert type(result) is BaseBinary
         assert result.filename == filename
 
     def test_prefix_match_resolves_image_subtype(self):
@@ -189,7 +189,7 @@ class TestFromLocalPath:
         f = tmp_path / "sample.bin"
         f.write_bytes(b"\x00\x01\x02\x03")
         result = ContentFactory.from_local_path(f)
-        assert isinstance(result, BinaryContent)
+        assert isinstance(result, BaseBinary)
 
     def test_explicit_media_type_overrides_guessed_type(self, tmp_path: Path):
         # File is .txt but we force JSON media type

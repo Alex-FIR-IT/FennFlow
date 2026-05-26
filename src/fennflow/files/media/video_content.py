@@ -1,7 +1,7 @@
-from .binary_content import BinaryContent
+from .base_binary import BaseBinary
 
 
-class VideoContent(BinaryContent):
+class VideoContent(BaseBinary):
     """Media content representing a video file.
 
     Attributes:

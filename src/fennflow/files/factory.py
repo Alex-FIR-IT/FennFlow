@@ -10,7 +10,7 @@ from fennflow._sentinel import OMIT, Omittable, is_given
 from fennflow.files._filename_generator import FilenameGenerator
 from fennflow.files._media_type_guesser import MimeTypeGuesser
 from fennflow.files.enums import MediaType
-from fennflow.files.media.binary_content import BinaryContent
+from fennflow.files.media.base_binary import BaseBinary
 from fennflow.files.media.url_content import UrlContent
 from fennflow.files.registry import content_registry
 
@@ -23,7 +23,7 @@ class ContentFactory:
     """Factory for creating media content instances from raw data.
 
     Resolves the appropriate content class from the registry based on
-    MIME type, falling back to ``BinaryContent`` for unknown types.
+    MIME type, falling back to ``BaseBinary`` for unknown types.
 
     """
 
@@ -47,7 +47,7 @@ class ContentFactory:
         """Create a media content instance from raw bytes.
 
         Resolves the content class from the registry by exact MIME type match,
-        then by prefix match, falling back to ``BinaryContent`` if no match is found.
+        then by prefix match, falling back to ``BaseBinary`` if no match is found.
 
         Args:
             media_type: The MIME type of the content (e.g. ``"text/plain"``).
@@ -79,7 +79,7 @@ class ContentFactory:
                     content_cls = content_registry[prefix]
                     break
             else:
-                content_cls = BinaryContent
+                content_cls = BaseBinary
 
         try:
             return content_cls.model_validate(payload)
