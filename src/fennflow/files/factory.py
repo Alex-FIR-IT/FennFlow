@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from functools import cache
+from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from pydantic import ValidationError
@@ -108,11 +109,15 @@ class ContentFactory:
 
             url = ContentFactory.from_url("https://example.com/file.txt")
         """
+        if "filename" not in kwargs:
+            kwargs["filename"] = FilenameGenerator.generate_from_url(url)
+
         payload = {
             "data": url,
             "media_type": media_type,
             **kwargs,
         }
+
         try:
             return UrlContent.model_validate(payload)
         except ValidationError as exc:
