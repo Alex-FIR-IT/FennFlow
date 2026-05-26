@@ -107,12 +107,15 @@ class UOW(UnitOfWork):
 async def main():
     text_file = TextContent.from_content("Hello, world!")
     json_file = JsonContent.from_content([1, 2, 3])
+
+    from_path_binary_file = BinaryContent.from_local_path("my_file.txt")
     binary_file = BinaryContent(data=b"some bytes", media_type=MediaType.TEXT_PLAIN)
 
     async with UOW() as uow:
         await uow.my_files.at("folder1").put(
             text_file,
             json_file,
+            from_path_binary_file,
             binary_file,
             )
 
@@ -120,7 +123,7 @@ async def main():
         print(paths)  # ListResponse[Filepath, ...]
 
         files = await uow.my_files.get(*paths)
-        print(files)  # MediaResponse[TextContent, JsonContent, BinaryContent]
+        print(files)  # MediaResponse[TextContent, JsonContent, TextContent, BaseBinary]
 
 
 if __name__ == "__main__":

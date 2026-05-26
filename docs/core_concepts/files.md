@@ -3,19 +3,20 @@
 FennFlow wraps raw bytes in typed content models instead of passing `bytes` and `dict` directly. Every file you put into
 or get from storage is represented as one of these models.
 
-All **binary** content types inherit from `BinaryContent`, which itself inherits from `BaseContent` (a Pydantic model).
+All **binary** content types inherit from `BaseBinary`, which itself inherits from `BaseContent` (a Pydantic model).
 
 ## Content types
 
-| Class             | Media type         | Notes                                                                      |
-|-------------------|--------------------|----------------------------------------------------------------------------|
-| `BinaryContent`   | any                | Base class. Use when no specific type fits                                 |
-| `TextContent`     | `text/plain`       | Stores text as UTF-8 bytes internally. `.content` returns `str`            |
-| `JsonContent`     | `application/json` | Stores JSON as UTF-8 bytes. `.content` returns the parsed Python object    |
-| `ImageContent`    | `image/*`          | Extends `BinaryContent` with optional `width` and `height` fields          |
-| `AudioContent`    | `audio/*`          | Extends `BinaryContent` with optional `duration` field                     |
-| `VideoContent`    | `video/*`          | Extends `BinaryContent` with optional `duration`, `width`, `height` fields |
-| `DocumentContent` | any document type  | Thin subclass of `BinaryContent`                                           |
+| Class             | Media type         | Notes                                                                   |
+|-------------------|--------------------|-------------------------------------------------------------------------|
+| `BaseBinary`      | any                | Base class. Use when no specific type fits                              |
+| `BinaryContent`   | any                | Extends `BaseBinary` with "from_local_path" classmethod                 |
+| `TextContent`     | `text/plain`       | Stores text as UTF-8 bytes internally. `.content` returns `str`         |
+| `JsonContent`     | `application/json` | Stores JSON as UTF-8 bytes. `.content` returns the parsed Python object |
+| `ImageContent`    | `image/*`          | Extends `BaseBinary` with optional `width` and `height` fields          |
+| `AudioContent`    | `audio/*`          | Extends `BaseBinary` with optional `duration` field                     |
+| `VideoContent`    | `video/*`          | Extends `BaseBinary` with optional `duration`, `width`, `height` fields |
+| `DocumentContent` | any document type  | Thin subclass of `BaseBinary`                                           |
 
 There is also a model representing url files:
 
@@ -35,17 +36,18 @@ from fennflow.files import (
     JsonContent,
     MediaType,
     TextContent,
-)
+    )
 
 text = TextContent.from_content("Hello, world!")
 json_file = JsonContent.from_content({"key": "value"})
 json_list = JsonContent.from_content([1, 2, 3])
+from_local_path_binary = BinaryContent.from_local_path("my_file.txt")
 
-# BinaryContent requires explicit media_type
+# Manul initialization requires explicit media_type or filename
 binary = BinaryContent(
     data=b"...",
     media_type=MediaType.APPLICATION_OCTET_STREAM,
-)
+    )
 
 # Optional metadata fields
 image = ImageContent(
@@ -53,7 +55,7 @@ image = ImageContent(
     media_type=MediaType.IMAGE_PNG,
     width=800,
     height=600,
-)
+    )
 
 # ContentFactory can be used to get specific class of content
 file: TextContent = (
@@ -61,8 +63,8 @@ file: TextContent = (
         media_type=MediaType.TEXT_PLAIN,
         data=file_bytes,
         **metadata,
-    ),
-)
+        ),
+    )
 
 ```
 
@@ -87,6 +89,6 @@ forwarded to the connector (e.g. stored as S3 object metadata).
 
 When FennFlow retrieves a file from storage, it reconstructs the appropriate content type using
 `ContentFactory.from_bytes()`. The factory resolves the class from a registry by MIME type match falling back to
-`BinaryContent` for unknown types.
+`BaseBinary` for unknown types.
 
 You can register custom content types in `content_registry` to have them returned automatically on `get`.
