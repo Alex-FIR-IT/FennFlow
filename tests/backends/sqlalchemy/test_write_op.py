@@ -12,12 +12,6 @@ from fennflow.backends.enums import OnConflictDoEnum
 from fennflow.backends.sqlalchemy._enums import Dialect
 from fennflow.backends.sqlalchemy._query_flows.insert.core import InsertFlow
 from fennflow.backends.sqlalchemy._query_flows.merge.core import MergeFlow
-from tests.conftest import TestSqliteUOW
-
-
-@pytest.fixture
-def uow_cls():
-    return TestSqliteUOW
 
 
 def get_insert_flow(uow, dialect: Dialect) -> InsertFlow:

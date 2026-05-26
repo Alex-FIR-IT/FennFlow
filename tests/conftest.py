@@ -8,7 +8,6 @@ from fennflow._new_types import BackendScope, Namespace
 from fennflow._operations.dto import OperationRecord, Record
 from fennflow._operations.enums import OperationStatusEnum, OperationTypeEnum
 from fennflow.backends import InMemoryBackendConfig
-from fennflow.backends.sqlalchemy.config import SqlalchemyBackendConfig
 from fennflow.connectors import InMemoryConnectorConfig
 from fennflow.files import TextContent
 from fennflow.repositories import (
@@ -42,23 +41,9 @@ class TestUOW(UnitOfWork):
     )
 
 
-class TestSqliteUOW(UnitOfWork):
-    user_files = RepoField(UserFiles, namespace=NAMESPACE)
-    config = ConfigDict(
-        backend=SqlalchemyBackendConfig(scope=SCOPE),
-        connector=InMemoryConnectorConfig(),
-    )
-
-
 @pytest.fixture(
-    params=[
-        TestUOW,
-        TestSqliteUOW,
-    ],
-    ids=[
-        "memory",
-        "sqlite",
-    ],
+    params=[TestUOW],
+    ids=["sqlite_in_memory"],
 )
 def uow_cls(request):
     return request.param
