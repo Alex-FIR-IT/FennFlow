@@ -6,6 +6,9 @@ from typing import TYPE_CHECKING, Any
 
 from pydantic import ValidationError
 
+from fennflow._sentinel import OMIT, Omittable, is_given
+from fennflow.files._filename_generator import FilenameGenerator
+from fennflow.files._media_type_guesser import MimeTypeGuesser
 from fennflow.files.enums import MediaType
 from fennflow.files.media.binary_content import BinaryContent
 from fennflow.files.media.url_content import UrlContent
@@ -122,3 +125,24 @@ class ContentFactory:
             return UrlContent.model_validate(payload)
         except ValidationError as exc:
             raise ValueError(f"Failed to create UrlContent for {url=}") from exc
+
+    @classmethod
+    def from_local_path(
+        cls,
+        path: str | Path,
+        media_type: Omittable[MediaTypes] = OMIT,
+        **kwargs: Any,
+    ) -> BinaryMedia:
+        filename = Path(path).name
+
+        if not is_given(media_type):
+            media_type = MimeTypeGuesser.guess_type(filename=filename)
+
+        kwargs.setdefault("filename", filename)
+
+        with open(path, "rb") as file:
+            return cls.from_bytes(
+                data=file.read(),
+                media_type=media_type,
+                **kwargs,
+            )
