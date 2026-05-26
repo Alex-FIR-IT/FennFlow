@@ -54,15 +54,18 @@ class MinIOUOW(UnitOfWork):
         )
 ```
 
-For testing, point the backend at an in-memory SQLite database — no files created, no cleanup needed:
+## InMemoryBackend
+
+`InMemoryBackendConfig` is a subclass of `SqlalchemyBackendConfig` with the `database_url` pointing to an in-memory
+SQLite database:
 
 ```python
-from fennflow.backends import SqlalchemyBackendConfig
+from fennflow.backends import InMemoryBackendConfig
 
 
 class TestUOW(AppUOW):
     config = ConfigDict(
-        backend=SqlalchemyBackendConfig(database_url="sqlite+aiosqlite:///:memory:"),
+        backend=InMemoryBackendConfig(),
         )
 ```
 

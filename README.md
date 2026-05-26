@@ -51,8 +51,8 @@ No matter what your file storage contains, backend ensures your data is consiste
 
 | Backend              | Description                                             | Documentation                                                                               |
 |----------------------|---------------------------------------------------------|---------------------------------------------------------------------------------------------|
-| In-Memory            | great for and tests, development                        | [📖 Docs](https://alex-fir-it.github.io/FennFlow/core_concepts/backends/#inmemorybackend)   |
 | SQLAlchemy (default) | persistent metadata backend, great for all environments | [📖 Docs](https://alex-fir-it.github.io/FennFlow/core_concepts/backends/#sqlalchemybackend) |
+| In-Memory            | great for and tests, development                        | [📖 Docs](https://alex-fir-it.github.io/FennFlow/core_concepts/backends/#inmemorybackend)   |
 
 ### Backend Comparison
 
