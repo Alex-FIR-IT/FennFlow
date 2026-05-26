@@ -7,7 +7,7 @@ from fennflow._query_specs.dispatcher import Dispatcher
 from fennflow.backends._abstract.core import AbstractBackend
 
 from ._adapter import RecordOrmAdapter
-from ._engine import async_engine_factory
+from ._engine_manager import engine_manager
 from ._model import create_all, create_operation_record_model
 
 if TYPE_CHECKING:
@@ -29,7 +29,7 @@ class SqlalchemyBackend(AbstractBackend):
         self._session: AsyncSession | None = None
         self._dispatcher: Dispatcher | None = None
         self._config = config
-        self._engine = async_engine_factory(
+        self._engine = engine_manager.get(
             url=self._config.database_url,
             schema=self._config.db_schema,
         )
@@ -103,8 +103,6 @@ class SqlalchemyBackend(AbstractBackend):
     ) -> None:
         with suppress(Exception):
             await self.session.close()
-        with suppress(Exception):
-            await self._engine.dispose()
 
         self._session = None
         self._dispatcher = None
