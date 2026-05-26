@@ -51,8 +51,8 @@ No matter what your file storage contains, backend ensures your data is consiste
 
 | Backend              | Description                                             | Documentation                                           |
 |----------------------|---------------------------------------------------------|---------------------------------------------------------|
-| In-Memory            | great for and tests, development                        | [📖 Docs](core_concepts/backends.md/)                   |
 | SQLAlchemy (default) | persistent metadata backend, great for all environments | [📖 Docs](core_concepts/backends.md/#sqlalchemybackend) |
+| In-Memory            | great for and tests, development                        | [📖 Docs](core_concepts/backends.md/#inmemorybackend)   |
 
 ### Backend Comparison
 
