@@ -9,10 +9,10 @@ from pydantic import ValidationError
 from fennflow._sentinel import OMIT, Omittable, is_given
 from fennflow.files._filename_generator import FilenameGenerator
 from fennflow.files._media_type_guesser import MimeTypeGuesser
+from fennflow.files._registry import content_registry
 from fennflow.files.enums import MediaType
 from fennflow.files.media.base_binary import BaseBinary
 from fennflow.files.media.url_content import UrlContent
-from fennflow.files.registry import content_registry
 
 if TYPE_CHECKING:
     from fennflow.files._annotations import MediaTypes
