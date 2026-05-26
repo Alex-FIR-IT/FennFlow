@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Literal
-
-from pydantic import Field, model_validator
+from pydantic import Field
 
 from fennflow.backends.sqlalchemy.config import SqlalchemyBackendConfig
 
