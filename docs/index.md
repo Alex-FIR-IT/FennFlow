@@ -32,10 +32,14 @@
 Working with aiobotocore often feels like handling raw bytes and dicts. `FennFlow` wraps S3 operations into a high-level
 Unit of Work pattern, providing:
 
-- **Atomic-like multistep operations** — if something fails, previous actions are automatically compensated (Saga
-  Pattern).
+- **SSOT** — the backend is the single source of truth for your file storage. No matter what your file storage contains,
+  the backend ensures a consistent view of what exists.
+- **Saga compensation flow** — if something fails mid-operation, all previous actions are automatically compensated in
+  reverse order, leaving storage in a consistent state.
 - **Clean Architecture** — treat S3 as proper repositories using mixins (`PutRepository`, `GetRepository`, etc.).
 - **Pydantic-powered models** — work with `TextContent`, `JsonContent`, `ImageContent` and others instead of raw bytes.
+- **Testability** — swap S3ConnectorConfig for InMemoryConnectorConfig and point the backend at an in-memory SQLite
+  database. Zero infrastructure, zero mocks.
 
 ## Supported Connectors
 
