@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from fennflow._sentinel import OMIT, Omittable, is_given
 from fennflow.files.enums import MediaType
@@ -61,7 +61,8 @@ class JsonContent(
             **extra_json_dumps_kwargs,
         )
 
-        extra = {}
+        extra: dict[str, Any] = {}
+
         if is_given(filename):
             extra["filename"] = filename
 

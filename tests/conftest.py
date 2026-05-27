@@ -13,6 +13,7 @@ from fennflow.files import TextContent
 from fennflow.repositories import (
     CreateRepository,
     DeleteRepository,
+    GeneratePresignedUrlRepository,
     GetRepository,
     RepoField,
 )
@@ -29,6 +30,7 @@ class UserFiles(
     DeleteRepository,
     GetRepository,
     ListRepository,
+    GeneratePresignedUrlRepository,
 ):
     pass
 

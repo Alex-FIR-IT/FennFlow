@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from fennflow._new_types import Namespace, StoragePath
     from fennflow.files.responses.base import MediaResponse
     from fennflow.files.responses.list import ListResponse
+    from fennflow.files.responses.presigned_url import PresignedUrlResponse
     from fennflow.files.types import BinaryMedia
 
 RepoExtraType = TypeVar("RepoExtraType", bound=RepoExtra)
@@ -86,3 +87,13 @@ class AbstractConnector(ABC, Generic[RepoExtraType]):
         **extra: dict[Any, Any],
     ) -> ListResponse:
         """List all files in storage."""
+
+    @abstractmethod
+    async def generate_presigned_url(
+        self,
+        storage_path: str,
+        repo_extra: RepoExtraType,
+        expires_in: Omittable[int] = OMIT,
+        connector_extra: Omittable[Any] = OMIT,
+    ) -> PresignedUrlResponse:
+        """Generate a presigned url."""

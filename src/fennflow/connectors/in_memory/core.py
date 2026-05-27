@@ -4,12 +4,15 @@ import bisect
 import logging
 from collections import defaultdict
 from itertools import islice
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, NoReturn
 
 from fennflow._decorators import reraise_with
 from fennflow._sentinel import OMIT, Omittable
 from fennflow.connectors._abstract import AbstractConnector
-from fennflow.connectors.exceptions import NoSuchKeyException
+from fennflow.connectors.exceptions import (
+    ConnectorCapabilityException,
+    NoSuchKeyException,
+)
 from fennflow.files import ContentFactory
 from fennflow.files.responses.base import MediaResponse
 from fennflow.files.responses.list import ListResponse
@@ -152,3 +155,12 @@ class InMemoryConnector(AbstractConnector):
             storage_paths=filtered_storage_paths,
             continuation_token=continuation_token,
         )
+
+    async def generate_presigned_url(
+        self,
+        storage_path: str,  # noqa: ARG002
+        repo_extra: RepoExtraType,  # noqa: ARG002
+        expires_in: Omittable[int] = OMIT,  # noqa: ARG002
+        connector_extra: Omittable[Any] = OMIT,  # noqa: ARG002
+    ) -> NoReturn:
+        raise ConnectorCapabilityException("generate_presigned_url")

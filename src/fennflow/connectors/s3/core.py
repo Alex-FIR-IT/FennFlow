@@ -7,13 +7,14 @@ from aiobotocore.session import get_session
 from botocore.exceptions import ClientError
 
 from fennflow._decorators import reraise_with
-from fennflow._sentinel import OMIT, Omittable
+from fennflow._sentinel import OMIT, Omittable, is_given
 from fennflow.connectors._abstract import AbstractConnector
 from fennflow.connectors.exceptions import NoSuchKeyException
 from fennflow.connectors.s3._client import S3Client
 from fennflow.files import ContentFactory
 from fennflow.files.responses.base import MediaResponse
 from fennflow.files.responses.list import ListResponse
+from fennflow.files.responses.presigned_url import PresignedUrlResponse
 from fennflow.repositories.fields.s3 import S3Extra
 
 if TYPE_CHECKING:
@@ -189,3 +190,25 @@ class S3Connector(AbstractConnector[S3Extra]):
             storage_paths=tuple(obj["Key"] for obj in response.get("Contents", [])),
             continuation_token=response.get("NextContinuationToken"),
         )
+
+    async def generate_presigned_url(
+        self,
+        storage_path: str,
+        repo_extra: RepoExtraType,
+        expires_in: Omittable[int] = OMIT,
+        connector_extra: Omittable[Any] = OMIT,
+    ) -> PresignedUrlResponse:
+        params: dict[str, Any] = {
+            "ClientMethod": "get_object",
+            "Params": {"Bucket": repo_extra["namespace"], "Key": storage_path},
+        }
+
+        if is_given(expires_in):
+            params["ExpiresIn"] = expires_in
+
+        if is_given(connector_extra):
+            params.update(connector_extra)
+
+        url = await self.s3client.client.generate_presigned_url(**params)
+
+        return PresignedUrlResponse(url=url)

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from fennflow._sentinel import OMIT, Omittable, is_given
 from fennflow.files.enums import MediaType
@@ -53,7 +53,7 @@ class TextContent(
         filename: Omittable[str] = OMIT,
         **kwargs,  # noqa: ARG003
     ) -> Self:
-        extra = {}
+        extra: dict[str, Any] = {}
 
         if is_given(filename):
             extra["filename"] = filename

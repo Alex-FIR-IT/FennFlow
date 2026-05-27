@@ -27,13 +27,14 @@ class CrudRepository(
 
 Available mixins:
 
-| Mixin              | Operation                            | Participates in Saga |
-|--------------------|--------------------------------------|----------------------|
-| `PutRepository`    | Upsert one or more files             | Yes                  |
-| `GetRepository`    | Download one or more files           | No (read-only)       |
-| `DeleteRepository` | Delete a file                        | Yes                  |
-| `ListRepository`   | List files by prefix with pagination | No (read-only)       |
-| `CreateRepository` | Upload one or more files             | Yes                  |
+| Mixin                            | Operation                            | Participates in Saga |
+|----------------------------------|--------------------------------------|----------------------|
+| `PutRepository`                  | Upsert one or more files             | Yes                  |
+| `GetRepository`                  | Download one or more files           | No (read-only)       |
+| `DeleteRepository`               | Delete a file                        | Yes                  |
+| `ListRepository`                 | List files by prefix with pagination | No (read-only)       |
+| `CreateRepository`               | Upload one or more files             | Yes                  |
+| `GeneratePresignedUrlRepository` | generate presigned url               | No (read-only)       |
 
 Read-only operations (such as `GetRepository` and `ListRepository`) consult the backend before touching storage. If the
 backend has no record of a file, no network request is made.
