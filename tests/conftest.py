@@ -76,7 +76,7 @@ async def reset_state_fixture(uow_cls, scope):
 
 @pytest_asyncio.fixture
 def operations(namespace: str, scope: str):
-    operations = []
+    operations: list[OperationRecord] = []
     for i in range(10):
         record = Record(
             session_id=uuid.uuid4(),

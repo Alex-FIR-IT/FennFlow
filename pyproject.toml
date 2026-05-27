@@ -77,6 +77,10 @@ docs = [
     "mkdocs-llmstxt>=0.2.0",
 ]
 
+examples = [
+    "httpx>=0.27.0",
+]
+
 [tool.hatch.build.targets.sdist]
 exclude = [
     "/tests",
