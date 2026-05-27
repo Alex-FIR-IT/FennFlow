@@ -145,3 +145,7 @@ validation:
   absolute_links: warn
   unrecognized_links: warn
   anchors: warn
+
+
+hooks:
+  - docs/.hooks/snippets.py
