@@ -3,6 +3,7 @@ from __future__ import annotations
 import mimetypes
 from typing import TYPE_CHECKING
 
+from fennflow._extra_mimetypes import EXTENSION_TO_CONTENT_TYPE
 from fennflow._sentinel import OMIT, Omittable, is_given
 from fennflow.files.exceptions import (
     ExtensionCannotBeGuessed,
@@ -13,6 +14,10 @@ if TYPE_CHECKING:
     from fennflow.files._annotations import MediaTypes
 
 
+for ext, mimetype in EXTENSION_TO_CONTENT_TYPE.items():
+    mimetypes.add_type(mimetype, f".{ext}")
+
+
 class MimeTypeGuesser:
     @staticmethod
     def guess_type(
@@ -20,6 +25,12 @@ class MimeTypeGuesser:
         strict: bool = False,
         fallback_media_type: Omittable[MediaTypes] = OMIT,
     ) -> str:
+        original_filename = filename
+        if not filename.split(".")[0]:
+            # mimetypes.guess_type fails on dotfiles (e.g. ".env")
+            # — prepend a stem to fix it
+            filename = f"stem{filename}"
+
         guessed_media_type = mimetypes.guess_type(
             filename,
             strict=strict,
@@ -28,7 +39,7 @@ class MimeTypeGuesser:
         if guessed_media_type is None:
             if is_given(fallback_media_type):
                 return fallback_media_type
-            raise MediaTypeCannotBeGuessedException(filename=filename)
+            raise MediaTypeCannotBeGuessedException(filename=original_filename)
 
         return guessed_media_type
 
