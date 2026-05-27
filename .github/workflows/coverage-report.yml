@@ -51,13 +51,13 @@ jobs:
           enable-cache: true
 
       - name: Install dependencies
-        run: uv sync --group lint
+        run: uv sync --group lint --group examples
 
       - name: Run ruff
-        run: uv run ruff check src/
+        run: uv run ruff check .
 
       - name: Run mypy
-        run: uv run mypy src/
+        run: uv run mypy .
 
   coverage:
     runs-on: ubuntu-latest
