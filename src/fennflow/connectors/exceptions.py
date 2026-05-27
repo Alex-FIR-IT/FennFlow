@@ -15,3 +15,12 @@ class NoSuchKeyException(BaseConnectorException):
         **kwargs,
     ):
         super().__init__(msg, *args, **kwargs)
+
+
+class ConnectorCapabilityException(BaseConnectorException):
+    """Raise when a connector does not support a capability."""
+
+    def __init__(self, capability: str) -> None:
+        msg = f"Connector does not support the capability - {capability}"
+        super().__init__(msg)
+        self.capability = capability
