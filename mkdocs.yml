@@ -66,6 +66,7 @@ plugins:
           - examples/index.md
           - examples/base_upload.md
           - examples/multiple_connectors.md
+          - examples/saga_compensation.md
           - examples/scoped_repository_permissions.md
           - examples/testing.md
         API Reference:
@@ -88,6 +89,7 @@ nav:
       - examples/index.md
       - Base Upload: examples/base_upload.md
       - Multiple Connectors: examples/multiple_connectors.md
+      - Saga Compensation: examples/saga_compensation.md
       - Scoped Repository Permissions: examples/scoped_repository_permissions.md
       - Testing: examples/testing.md
   - Llms.txt: llms.md
@@ -109,22 +111,22 @@ markdown_extensions:
   - admonition
   - attr_list
   - md_in_html
+  - pymdownx.snippets:
+      base_path: [ "." ]
+      check_paths: true
   - pymdownx.details
   - pymdownx.caret
   - pymdownx.critic
   - pymdownx.mark
-  - pymdownx.superfences
-  - pymdownx.snippets
   - pymdownx.tilde
   - pymdownx.inlinehilite
   - pymdownx.highlight:
       pygments_lang_class: true
-  - pymdownx.extra:
-      pymdownx.superfences:
-        custom_fences:
-          - name: mermaid
-            class: mermaid
-            format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
@@ -145,3 +147,7 @@ validation:
   absolute_links: warn
   unrecognized_links: warn
   anchors: warn
+
+
+hooks:
+  - docs/.hooks/snippets.py
