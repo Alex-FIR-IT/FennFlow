@@ -66,6 +66,7 @@ plugins:
           - examples/index.md
           - examples/base_upload.md
           - examples/multiple_connectors.md
+          - examples/saga_compensation.md
           - examples/scoped_repository_permissions.md
           - examples/testing.md
         API Reference:
@@ -88,6 +89,7 @@ nav:
       - examples/index.md
       - Base Upload: examples/base_upload.md
       - Multiple Connectors: examples/multiple_connectors.md
+      - Saga Compensation: examples/saga_compensation.md
       - Scoped Repository Permissions: examples/scoped_repository_permissions.md
       - Testing: examples/testing.md
   - Llms.txt: llms.md
