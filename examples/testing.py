@@ -30,11 +30,12 @@ class TestUOW(AppUOW):
 class DbClient:
     async def create_user(self, user_id: str, avatar_path: str) -> None: ...
 
-    async def get_user(self, user_id: str) -> dict: ...
-
 
 async def register_user(
-    user_id: str, avatar: ImageContent, uow: AppUOW, db: DbClient
+    user_id: str,
+    avatar: ImageContent,
+    uow: AppUOW,
+    db: DbClient,
 ) -> None:
     async with uow:
         await uow.avatars.at(user_id).create(avatar)
