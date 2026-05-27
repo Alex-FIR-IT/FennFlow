@@ -126,6 +126,8 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = ["D"]
 "src/fennflow/backends/sqlalchemy/_base.py" = ["F401"]
+"examples/*" = ["D101", "D103"]
+"docs/.hooks/*" = ["D101", "D103"]
 
 [tool.ruff.lint.flake8-type-checking]
 runtime-evaluated-base-classes = ["pydantic.BaseModel"]
