@@ -84,7 +84,7 @@ class PutRepository(AtRepository, ValidateDuplicatesMixin):
 
     def __get_context(
         self,
-        operation: OperationRecord | None,
+        operation: OperationRecord[PutContext] | None,
         file: BinaryMedia,
     ) -> PutContext:
         if (
@@ -93,7 +93,7 @@ class PutRepository(AtRepository, ValidateDuplicatesMixin):
             and operation.record.session_id == self._uow._session_id
             and operation.record.is_put_type
         ):
-            tmp_path = operation.context.tmp_path
+            tmp_path = operation.require_context().tmp_path
             ctx = PutContext(
                 file=file,
                 tmp_path=tmp_path,

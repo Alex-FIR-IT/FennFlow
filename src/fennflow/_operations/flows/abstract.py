@@ -1,19 +1,23 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Generic, TypeVar
+
+from fennflow._operations.context.abstract import BaseContext
 
 if TYPE_CHECKING:
     from fennflow._operations.dto import OperationRecord
     from fennflow.connectors._abstract import AbstractConnector
 
+ContextType = TypeVar("ContextType", bound=BaseContext)
 
-class AbstractFlow(ABC):
+
+class AbstractFlow(ABC, Generic[ContextType]):
     @staticmethod
     @abstractmethod
     async def execute(
         *,
-        operation: OperationRecord,
+        operation: OperationRecord[ContextType],
         connector: AbstractConnector,
         **connector_extra,
     ): ...
@@ -22,7 +26,7 @@ class AbstractFlow(ABC):
     @abstractmethod
     async def compensate(
         *,
-        operation: OperationRecord,
+        operation: OperationRecord[ContextType],
         connector: AbstractConnector,
     ): ...
 
@@ -30,6 +34,6 @@ class AbstractFlow(ABC):
     @abstractmethod
     async def finalize(
         *,
-        operation: OperationRecord,
+        operation: OperationRecord[ContextType],
         connector: AbstractConnector,
     ): ...

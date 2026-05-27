@@ -3,26 +3,26 @@ from __future__ import annotations
 from contextlib import suppress
 from typing import TYPE_CHECKING
 
+from fennflow._operations.context.put import PutContext
 from fennflow._operations.enums import OperationStatusEnum
 from fennflow._operations.flows.abstract import AbstractFlow
 from fennflow._sentinel import is_given
 from fennflow.connectors.exceptions import NoSuchKeyException
 
 if TYPE_CHECKING:
-    from fennflow._operations.context.put import PutContext
     from fennflow._operations.dto import OperationRecord
     from fennflow.connectors._abstract import AbstractConnector
 
 
-class PutFlow(AbstractFlow):
+class PutFlow(AbstractFlow[PutContext]):
     @staticmethod
     async def execute(
         *,
-        operation: OperationRecord,
+        operation: OperationRecord[PutContext],
         connector: AbstractConnector,
         **connector_extra,
     ):
-        ctx: PutContext = operation.context
+        ctx = operation.require_context()
 
         if not is_given(ctx.tmp_path):
             tmp_path = operation.record.generate_tmp_path()
@@ -46,12 +46,12 @@ class PutFlow(AbstractFlow):
     @staticmethod
     async def compensate(
         *,
-        operation: OperationRecord,
+        operation: OperationRecord[PutContext],
         connector: AbstractConnector,
         **connector_extra,
     ):
 
-        ctx: PutContext = operation.context
+        ctx = operation.require_context()
 
         if is_given(ctx.tmp_path):
             await connector.copy_object(
@@ -73,12 +73,12 @@ class PutFlow(AbstractFlow):
     @staticmethod
     async def finalize(
         *,
-        operation: OperationRecord,
+        operation: OperationRecord[PutContext],
         connector: AbstractConnector,
         **connector_extra,
     ):
 
-        ctx: PutContext = operation.context
+        ctx = operation.require_context()
 
         if is_given(ctx.tmp_path):
             await connector.delete(

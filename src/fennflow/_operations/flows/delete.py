@@ -3,25 +3,25 @@ from __future__ import annotations
 from contextlib import suppress
 from typing import TYPE_CHECKING
 
+from fennflow._operations.context.delete import DeleteContext
 from fennflow._operations.enums import OperationStatusEnum
 from fennflow._operations.flows.abstract import AbstractFlow
 from fennflow.connectors.exceptions import NoSuchKeyException
 
 if TYPE_CHECKING:
-    from fennflow._operations.context.delete import DeleteContext
     from fennflow._operations.dto import OperationRecord
     from fennflow.connectors._abstract import AbstractConnector
 
 
-class DeleteFlow(AbstractFlow):
+class DeleteFlow(AbstractFlow[DeleteContext]):
     @staticmethod
     async def execute(
         *,
-        operation: OperationRecord,
+        operation: OperationRecord[DeleteContext],
         connector: AbstractConnector,
         **connector_extra,
     ):
-        ctx: DeleteContext = operation.context
+        ctx = operation.require_context()
 
         with suppress(NoSuchKeyException):
             await connector.copy_object(
@@ -40,11 +40,11 @@ class DeleteFlow(AbstractFlow):
     @staticmethod
     async def compensate(
         *,
-        operation: OperationRecord,
+        operation: OperationRecord[DeleteContext],
         connector: AbstractConnector,
         **connector_extra,
     ):
-        ctx: DeleteContext = operation.context
+        ctx = operation.require_context()
         await connector.copy_object(
             from_storage_path=ctx.to_storage_path,
             to_storage_path=operation.record.storage_path,
@@ -61,13 +61,12 @@ class DeleteFlow(AbstractFlow):
     @staticmethod
     async def finalize(
         *,
-        operation: OperationRecord,
+        operation: OperationRecord[DeleteContext],
         connector: AbstractConnector,
         **connector_extra,
     ):
-        ctx: DeleteContext = operation.context
         await connector.delete(
-            storage_path=ctx.to_storage_path,
+            storage_path=operation.require_context().to_storage_path,
             repo_extra=operation.repo_extra,
             **connector_extra,
         )

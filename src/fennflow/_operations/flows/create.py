@@ -2,26 +2,26 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from fennflow._operations.context.create import CreateContext
 from fennflow._operations.enums import OperationStatusEnum
 from fennflow._operations.flows.abstract import AbstractFlow
 
 if TYPE_CHECKING:
-    from fennflow._operations.context.create import CreateContext
     from fennflow._operations.dto import OperationRecord
     from fennflow.connectors._abstract import AbstractConnector
 
 
-class CreateFlow(AbstractFlow):
+class CreateFlow(AbstractFlow[CreateContext]):
     @staticmethod
     async def execute(
         *,
-        operation: OperationRecord,
+        operation: OperationRecord[CreateContext],
         connector: AbstractConnector,
         **connector_extra,
     ):
-        ctx: CreateContext = operation.context
+
         return await connector.put(
-            file=ctx.file,
+            file=operation.require_context().file,
             repo_extra=operation.repo_extra,
             **connector_extra,
         )

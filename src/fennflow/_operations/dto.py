@@ -3,7 +3,7 @@ from __future__ import annotations
 import datetime
 import uuid
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Generic, TypeVar
 
 from fennflow._datetime import AwareDatetime, now
 from fennflow._operations.context.abstract import BaseContext
@@ -18,8 +18,9 @@ if TYPE_CHECKING:
 
     from fennflow import UnitOfWork
     from fennflow._new_types import BackendScope, Namespace, StoragePath
-    from fennflow._operations.context.types import Context
     from fennflow.repositories.fields.base import RepoExtra
+
+ContextType = TypeVar("ContextType", bound=BaseContext)
 
 
 @dataclass(slots=True)
@@ -109,11 +110,17 @@ class Record:
 
 
 @dataclass(slots=True)
-class OperationRecord:
+class OperationRecord(Generic[ContextType]):
     record: Record
     repo_extra: RepoExtra
-    context: Context = field(default_factory=BaseContext)
+    context: Omittable[ContextType] = OMIT
     on_conflict: OnConflictDoEnum = OnConflictDoEnum.RAISE
+
+    def require_context(self) -> ContextType:
+        if not is_given(self.context):
+            raise TypeError("Context is not given.")
+
+        return self.context
 
     @classmethod
     def create(
@@ -124,9 +131,9 @@ class OperationRecord:
         operation_type: OperationTypeEnum,
         repo_extra: RepoExtra,
         status: OperationStatusEnum = OperationStatusEnum.PENDING,
-        context: Omittable[Context] = OMIT,
+        context: Omittable[ContextType] = OMIT,
         on_conflict: OnConflictDoEnum = OnConflictDoEnum.RAISE,
-    ) -> Self:
+    ) -> OperationRecord[ContextType]:
         record = Record(
             session_id=session_id,
             scope=scope,
@@ -138,7 +145,7 @@ class OperationRecord:
         return cls(
             record=record,
             repo_extra=repo_extra,
-            context=context if is_given(context) else BaseContext(),
+            context=context,
             on_conflict=on_conflict,
         )
 
@@ -150,8 +157,8 @@ class OperationRecord:
         storage_path: StoragePath,
         operation_type: OperationTypeEnum,
         status: OperationStatusEnum = OperationStatusEnum.PENDING,
-        context: Omittable[Context] = OMIT,
-    ) -> Self:
+        context: Omittable[ContextType] = OMIT,
+    ) -> OperationRecord[ContextType]:
         return cls.create(
             session_id=uow._session_id,
             repo_extra=repo_extra,
