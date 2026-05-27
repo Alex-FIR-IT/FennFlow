@@ -35,7 +35,7 @@ class SqlalchemyBackend(AbstractBackend):
         )
 
         self._orm_model = create_operation_record_model(
-            table_name=config.scope,
+            table_name=config.table_name,
             schema=config.db_schema,
             dialect=self._engine.dialect.name,
         )
