@@ -28,18 +28,6 @@ def now_dt() -> AwareDatetime:
     return now()
 
 
-@pytest.fixture
-def uow_cls():
-    class InMemoryUOW(UnitOfWork):
-        user_files = RepoField(UserFiles, namespace="user_files")
-        config = ConfigDict(
-            backend=InMemoryBackendConfig(),
-            connector=InMemoryConnectorConfig(),
-        )
-
-    return InMemoryUOW
-
-
 def make_files(*names):
     return [TextContent.from_content("content", filename=name) for name in names]
 
