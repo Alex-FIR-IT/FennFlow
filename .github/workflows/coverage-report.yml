@@ -27,10 +27,23 @@ jobs:
       - name: Install dependencies
         run: uv sync --all-groups
 
+      - name: Start MinIO
+        run: docker compose -f tests/docker-compose.yaml up -d
+
+      - name: Wait for MinIO to be ready
+        run: |
+          for i in $(seq 1 10); do
+            curl -sf http://localhost:9000/minio/health/live && break
+            sleep 2
+          done
+
       - name: Run tests with coverage
         run: uv run pytest --cov=src/fennflow
         env:
           COVERAGE_FILE: .coverage.${{ matrix.python-version }}
+          AWS_ENDPOINT_URL: http://localhost:9000
+          AWS_ACCESS_KEY_ID: minioadmin
+          AWS_SECRET_ACCESS_KEY: minioadmin
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
