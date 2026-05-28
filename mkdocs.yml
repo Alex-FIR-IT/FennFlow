@@ -63,7 +63,7 @@ plugins:
         Advanced Features:
           - advanced_features/reconciler.md
         Examples:
-          - examples/index.md
+          - examples/setup.md
           - examples/base_upload.md
           - examples/multiple_connectors.md
           - examples/saga_compensation.md
@@ -86,7 +86,7 @@ nav:
   - Advanced Features:
       - Reconciler: advanced_features/reconciler.md
   - Examples:
-      - examples/index.md
+      - Setup: examples/setup.md
       - Base Upload: examples/base_upload.md
       - Multiple Connectors: examples/multiple_connectors.md
       - Saga Compensation: examples/saga_compensation.md
