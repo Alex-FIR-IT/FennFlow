@@ -5,8 +5,10 @@ from typing import TYPE_CHECKING
 from fennflow._operations.context.create import CreateContext
 from fennflow._operations.enums import OperationStatusEnum
 from fennflow._operations.flows.abstract import AbstractFlow
+from fennflow._sentinel import OMIT
 
 if TYPE_CHECKING:
+    from fennflow._new_types import ConnectorExtra
     from fennflow._operations.dto import OperationRecord
     from fennflow.connectors._abstract import AbstractConnector
 
@@ -17,13 +19,13 @@ class CreateFlow(AbstractFlow[CreateContext]):
         *,
         operation: OperationRecord[CreateContext],
         connector: AbstractConnector,
-        **connector_extra,
+        connector_extra: ConnectorExtra = OMIT,
     ):
 
         return await connector.put(
             file=operation.require_context().file,
             repo_extra=operation.repo_extra,
-            **connector_extra,
+            connector_extra=connector_extra,
         )
 
     @staticmethod

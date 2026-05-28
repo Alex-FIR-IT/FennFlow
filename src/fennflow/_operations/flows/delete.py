@@ -6,9 +6,11 @@ from typing import TYPE_CHECKING
 from fennflow._operations.context.delete import DeleteContext
 from fennflow._operations.enums import OperationStatusEnum
 from fennflow._operations.flows.abstract import AbstractFlow
+from fennflow._sentinel import OMIT
 from fennflow.connectors.exceptions import NoSuchKeyException
 
 if TYPE_CHECKING:
+    from fennflow._new_types import ConnectorExtra
     from fennflow._operations.dto import OperationRecord
     from fennflow.connectors._abstract import AbstractConnector
 
@@ -19,7 +21,7 @@ class DeleteFlow(AbstractFlow[DeleteContext]):
         *,
         operation: OperationRecord[DeleteContext],
         connector: AbstractConnector,
-        **connector_extra,
+        connector_extra: ConnectorExtra = OMIT,
     ):
         ctx = operation.require_context()
 
@@ -29,12 +31,11 @@ class DeleteFlow(AbstractFlow[DeleteContext]):
                 to_storage_path=ctx.to_storage_path,
                 to_namespace=ctx.to_namespace,
                 repo_extra=operation.repo_extra,
-                **connector_extra,
             )
             return await connector.delete(
                 storage_path=operation.record.storage_path,
                 repo_extra=operation.repo_extra,
-                **connector_extra,
+                connector_extra=connector_extra,
             )
 
     @staticmethod
@@ -42,7 +43,6 @@ class DeleteFlow(AbstractFlow[DeleteContext]):
         *,
         operation: OperationRecord[DeleteContext],
         connector: AbstractConnector,
-        **connector_extra,
     ):
         ctx = operation.require_context()
         await connector.copy_object(
@@ -50,7 +50,6 @@ class DeleteFlow(AbstractFlow[DeleteContext]):
             to_storage_path=operation.record.storage_path,
             to_namespace=operation.record.namespace,
             repo_extra=operation.repo_extra,
-            **connector_extra,
         )
         await connector.delete(
             storage_path=ctx.to_storage_path,
@@ -63,10 +62,8 @@ class DeleteFlow(AbstractFlow[DeleteContext]):
         *,
         operation: OperationRecord[DeleteContext],
         connector: AbstractConnector,
-        **connector_extra,
     ):
         await connector.delete(
             storage_path=operation.require_context().to_storage_path,
             repo_extra=operation.repo_extra,
-            **connector_extra,
         )

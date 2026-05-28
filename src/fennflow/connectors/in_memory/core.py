@@ -20,7 +20,7 @@ from fennflow.files.responses.list import ListResponse
 if TYPE_CHECKING:
     from typing_extensions import Self
 
-    from fennflow._new_types import Namespace, StoragePath
+    from fennflow._new_types import ConnectorExtra, Namespace, StoragePath
     from fennflow.connectors._abstract.base import RepoExtraType
     from fennflow.connectors.in_memory.config import InMemoryConnectorConfig
     from fennflow.files.types import BinaryMedia
@@ -72,7 +72,7 @@ class InMemoryConnector(AbstractConnector):
         self,
         file: BinaryMedia,
         repo_extra: RepoExtra,
-        **extra,  # noqa: ARG002
+        connector_extra: ConnectorExtra = OMIT,  # noqa: ARG002
     ) -> None:
         namespace = repo_extra["namespace"]
         self.storage[namespace][file.storage_path] = file
@@ -82,7 +82,7 @@ class InMemoryConnector(AbstractConnector):
         self,
         storage_path: StoragePath,
         repo_extra: RepoExtra,
-        **extra: dict[Any, Any],  # noqa: ARG002
+        connector_extra: ConnectorExtra = OMIT,  # noqa: ARG002
     ) -> MediaResponse:
 
         if storage_path not in self.storage[repo_extra["namespace"]]:
@@ -104,7 +104,7 @@ class InMemoryConnector(AbstractConnector):
         self,
         storage_path: StoragePath,
         repo_extra: RepoExtra,
-        **extra: dict[Any, Any],  # noqa: ARG002
+        connector_extra: ConnectorExtra = OMIT,  # noqa: ARG002
     ):
         self.storage[repo_extra["namespace"]].pop(storage_path, None)
 
@@ -115,7 +115,7 @@ class InMemoryConnector(AbstractConnector):
         from_storage_path: StoragePath,
         to_storage_path: StoragePath,
         to_namespace: Namespace,
-        **extra: dict[Any, Any],  # noqa: ARG002
+        connector_extra: ConnectorExtra = OMIT,  # noqa: ARG002
     ):
         file = self.storage[repo_extra["namespace"]][from_storage_path]
         self.storage[to_namespace][to_storage_path] = file
@@ -130,7 +130,7 @@ class InMemoryConnector(AbstractConnector):
         repo_extra: RepoExtraType,
         limit: int = 1000,
         continuation_token: Omittable[str] | None = OMIT,
-        **extra: dict[Any, Any],  # noqa: ARG002
+        connector_extra: ConnectorExtra = OMIT,  # noqa: ARG002
     ) -> ListResponse:
         filtered_storage_paths = []
         all_storage_paths = sorted(self.storage[repo_extra["namespace"]])

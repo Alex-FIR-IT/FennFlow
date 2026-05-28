@@ -7,6 +7,7 @@ from fennflow._operations.context.create import CreateContext
 from fennflow._operations.dto import OperationRecord
 from fennflow._operations.enums import OperationTypeEnum
 from fennflow._query_specs.select.get_visible import GetVisibleQuerySpec
+from fennflow._sentinel import OMIT
 from fennflow.backends.enums import OnConflictDoEnum
 from fennflow.backends.exceptions import RecordAlreadyExistsException
 from fennflow.repositories._validation_mixins.validate_duplicate import (
@@ -15,6 +16,7 @@ from fennflow.repositories._validation_mixins.validate_duplicate import (
 from fennflow.repositories.at import AtRepository
 
 if TYPE_CHECKING:
+    from fennflow._new_types import ConnectorExtra
     from fennflow.files.types import BinaryMedia
 
 
@@ -38,7 +40,7 @@ class CreateRepository(
     async def create(
         self,
         *files: BinaryMedia,
-        **connector_extra,
+        connector_extra: ConnectorExtra = OMIT,
     ) -> None:
         """Puts file if it doesn't exist in the backend.
 
@@ -88,7 +90,7 @@ class CreateRepository(
             tasks.append(
                 self._uow._operation_executor.execute(
                     operation,
-                    **connector_extra,
+                    connector_extra=connector_extra,
                 ),
             )
             operations.append(operation)
