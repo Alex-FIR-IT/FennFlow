@@ -27,16 +27,16 @@ class CrudRepository(
 
 Available mixins:
 
-| Mixin                            | Operation                            | Participates in Saga |
-|----------------------------------|--------------------------------------|----------------------|
-| `PutRepository`                  | Upsert one or more files             | Yes                  |
-| `GetRepository`                  | Download one or more files           | No (read-only)       |
-| `DeleteRepository`               | Delete a file                        | Yes                  |
-| `ListRepository`                 | List files by prefix with pagination | No (read-only)       |
-| `CreateRepository`               | Upload one or more files             | Yes                  |
-| `GeneratePresignedUrlRepository` | generate presigned url               | No (read-only)       |
+| Mixin                            | Operation                            | Participates in Saga | Backend    | Connector |
+|----------------------------------|--------------------------------------|----------------------|------------|-----------|
+| `PutRepository`                  | Upsert one or more files             | Yes                  | read+write | write     |
+| `GetRepository`                  | Download one or more files           | No (read-only)       | read       | read      |
+| `DeleteRepository`               | Delete a file                        | Yes                  | read+write | write     |
+| `ListRepository`                 | List files by prefix with pagination | No (read-only)       | read       | —         |
+| `CreateRepository`               | Upload one or more files             | Yes                  | read+write | write     |
+| `GeneratePresignedUrlRepository` | generate presigned url               | No (read-only)       | —          | read      |
 
-Read-only operations (such as `GetRepository` and `ListRepository`) consult the backend before touching storage. If the
+Read-only operations (such as `GetRepository`) consult the backend before touching storage. If the
 backend has no record of a file, no network request is made.
 
 ## RepoField and S3RepoField
