@@ -1,54 +1,32 @@
 import uuid
 
+import aiobotocore.session
 import pytest
 import pytest_asyncio
 
-from fennflow import ConfigDict
 from fennflow._new_types import BackendScope, Namespace
 from fennflow._operations.dto import OperationRecord, Record
 from fennflow._operations.enums import OperationStatusEnum, OperationTypeEnum
-from fennflow.backends import InMemoryBackendConfig
-from fennflow.connectors import InMemoryConnectorConfig
 from fennflow.files import TextContent
-from fennflow.repositories import (
-    CreateRepository,
-    DeleteRepository,
-    GeneratePresignedUrlRepository,
-    GetRepository,
-    RepoField,
-)
-from fennflow.repositories.list import ListRepository
-from fennflow.repositories.put import PutRepository
-from fennflow.uow import UnitOfWork
 from tests.shared.constants import NAMESPACE, SCOPE
+from tests.shared.uows import MinioUOW, TestUOW
 from tests.utils import reset_state
 
 
-class UserFiles(
-    PutRepository,
-    CreateRepository,
-    DeleteRepository,
-    GetRepository,
-    ListRepository,
-    GeneratePresignedUrlRepository,
-):
-    pass
-
-
-class TestUOW(UnitOfWork):
-    user_files = RepoField(UserFiles, namespace=NAMESPACE)
-    config = ConfigDict(
-        backend=InMemoryBackendConfig(scope=SCOPE),
-        connector=InMemoryConnectorConfig(),
-    )
-
-
-@pytest.fixture(
-    params=[TestUOW],
-    ids=["sqlite_in_memory"],
+@pytest_asyncio.fixture(
+    params=[
+        TestUOW,
+        MinioUOW,
+    ],
+    ids=[
+        "sqlite_in_memory",
+        "minio",
+    ],
 )
-def uow_cls(request):
-    return request.param
+async def uow_cls(request, scope):
+    cls = request.param
+    await reset_state(cls, scope)
+    yield cls
 
 
 @pytest.fixture
@@ -69,11 +47,6 @@ def text_files():
     ]
 
 
-@pytest_asyncio.fixture(autouse=True)
-async def reset_state_fixture(uow_cls, scope):
-    await reset_state(uow_cls, scope)
-
-
 @pytest_asyncio.fixture
 def operations(namespace: str, scope: str):
     operations: list[OperationRecord] = []
@@ -89,3 +62,14 @@ def operations(namespace: str, scope: str):
         operations.append(OperationRecord.from_record(record))
 
     return operations
+
+
+@pytest_asyncio.fixture(scope="session", autouse=True)
+async def create_minio_bucket():
+
+    session = aiobotocore.session.get_session()
+    async with session.create_client("s3") as client:
+        try:
+            await client.create_bucket(Bucket=NAMESPACE)
+        except client.exceptions.BucketAlreadyOwnedByYou:
+            pass

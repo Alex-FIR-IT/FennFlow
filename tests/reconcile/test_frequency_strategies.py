@@ -13,7 +13,7 @@ from fennflow.reconciler import (
     ReconcileStrategyEnum,
 )
 from fennflow.repositories import RepoField
-from tests.conftest import UserFiles
+from tests.shared.repositories import UserFiles
 
 
 @pytest.mark.asyncio
