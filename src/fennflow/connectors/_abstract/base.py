@@ -9,7 +9,7 @@ from fennflow.repositories.fields.base import RepoExtra
 if TYPE_CHECKING:
     from typing_extensions import Self
 
-    from fennflow._new_types import Namespace, StoragePath
+    from fennflow._new_types import ConnectorExtra, Namespace, StoragePath
     from fennflow.files.responses.base import MediaResponse
     from fennflow.files.responses.list import ListResponse
     from fennflow.files.responses.presigned_url import PresignedUrlResponse
@@ -44,7 +44,7 @@ class AbstractConnector(ABC, Generic[RepoExtraType]):
         self,
         file: BinaryMedia,
         repo_extra: RepoExtraType,
-        **extra: dict[Any, Any],
+        connector_extra: ConnectorExtra = OMIT,
     ) -> Any:
         """Upload a file to storage."""
 
@@ -53,7 +53,7 @@ class AbstractConnector(ABC, Generic[RepoExtraType]):
         self,
         storage_path: StoragePath,
         repo_extra: RepoExtraType,
-        **extra: dict[Any, Any],
+        connector_extra: ConnectorExtra = OMIT,
     ) -> MediaResponse:
         """Download a file from storage."""
 
@@ -62,7 +62,7 @@ class AbstractConnector(ABC, Generic[RepoExtraType]):
         self,
         storage_path: StoragePath,
         repo_extra: RepoExtraType,
-        **extra: dict[Any, Any],
+        connector_extra: ConnectorExtra = OMIT,
     ):
         """Delete a file from storage."""
 
@@ -73,7 +73,7 @@ class AbstractConnector(ABC, Generic[RepoExtraType]):
         from_storage_path: StoragePath,
         to_storage_path: StoragePath,
         to_namespace: Namespace,
-        **extra: dict[Any, Any],
+        connector_extra: ConnectorExtra = OMIT,
     ):
         """Copy a file within or across namespaces."""
 
@@ -84,7 +84,7 @@ class AbstractConnector(ABC, Generic[RepoExtraType]):
         repo_extra: RepoExtraType,
         limit: int = 1000,
         continuation_token: Omittable[str] | None = OMIT,
-        **extra: dict[Any, Any],
+        connector_extra: ConnectorExtra = OMIT,
     ) -> ListResponse:
         """List all files in storage."""
 
@@ -94,6 +94,6 @@ class AbstractConnector(ABC, Generic[RepoExtraType]):
         storage_path: str,
         repo_extra: RepoExtraType,
         expires_in: Omittable[int] = OMIT,
-        connector_extra: Omittable[Any] = OMIT,
+        connector_extra: ConnectorExtra = OMIT,
     ) -> PresignedUrlResponse:
         """Generate a presigned url."""

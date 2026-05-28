@@ -1,14 +1,18 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING
 
 from fennflow._operations.context.delete import DeleteContext
 from fennflow._operations.dto import OperationRecord, Record
 from fennflow._operations.enums import OperationTypeEnum
 
 from .._query_specs.select.get_visible import GetVisibleQuerySpec
+from .._sentinel import OMIT
 from ..backends.enums import OnConflictDoEnum
 from .at import AtRepository
+
+if TYPE_CHECKING:
+    from .._new_types import ConnectorExtra
 
 
 class DeleteRepository(AtRepository):
@@ -17,12 +21,16 @@ class DeleteRepository(AtRepository):
     Implements Saga-based deletion with automatic compensation on failure.
     """
 
-    async def delete(self, path: str, **connector_extra: Any) -> bool:
+    async def delete(
+        self,
+        path: str,
+        connector_extra: ConnectorExtra = OMIT,
+    ) -> bool:
         """Delete a file from storage.
 
         Args:
             path: Path to the file relative to the current directory.
-            **connector_extra: Additional kwargs forwarded to the connector.
+            connector_extra: Additional kwargs forwarded to the connector.
 
         Returns:
             True if the file was deleted, False if it did not exist.
@@ -54,7 +62,7 @@ class DeleteRepository(AtRepository):
 
         await self._uow._operation_executor.execute(
             operation,
-            **connector_extra,
+            connector_extra=connector_extra,
         )
         await self._uow.backend.flush(operations=[operation])
         return True

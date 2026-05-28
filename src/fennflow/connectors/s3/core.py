@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from aiobotocore.session import AioSession
     from typing_extensions import Self
 
-    from fennflow._new_types import Namespace, StoragePath
+    from fennflow._new_types import ConnectorExtra, Namespace, StoragePath
     from fennflow.connectors._abstract.base import RepoExtraType
     from fennflow.connectors.s3 import S3ConnectorConfig
     from fennflow.files.types import BinaryMedia
@@ -89,8 +89,13 @@ class S3Connector(AbstractConnector[S3Extra]):
         self,
         file: BinaryMedia,
         repo_extra: S3Extra,
-        **sdk_extra: Any,
+        connector_extra: ConnectorExtra = OMIT,
     ) -> None:
+        extra: dict[str, Any] = {}
+
+        if is_given(connector_extra):
+            extra.update(connector_extra)
+
         bucket_name = repo_extra["namespace"]
         await self.s3client.client.put_object(
             Bucket=bucket_name,
@@ -98,7 +103,7 @@ class S3Connector(AbstractConnector[S3Extra]):
             Body=file.data,
             ContentType=file.media_type,
             Metadata=file.get_metadata(),
-            **sdk_extra,
+            **extra,
         )
         logger.debug(f"{file=} uploaded to {bucket_name=}")
 
@@ -106,12 +111,17 @@ class S3Connector(AbstractConnector[S3Extra]):
         self,
         storage_path: StoragePath,
         repo_extra: S3Extra,
-        **sdk_extra: Any,
+        connector_extra: ConnectorExtra = OMIT,
     ) -> MediaResponse:
+        extra: dict[str, Any] = {}
+
+        if is_given(connector_extra):
+            extra.update(connector_extra)
+
         response = await self.s3client.client.get_object(
             Bucket=repo_extra["namespace"],
             Key=storage_path,
-            **sdk_extra,
+            **extra,
         )
         if not response:
             return MediaResponse()
@@ -130,13 +140,18 @@ class S3Connector(AbstractConnector[S3Extra]):
         self,
         storage_path: StoragePath,
         repo_extra: S3Extra,
-        **sdk_extra: Any,
+        connector_extra: ConnectorExtra = OMIT,
     ):
+        extra: dict[str, Any] = {}
+
+        if is_given(connector_extra):
+            extra.update(connector_extra)
+
         bucket_name = repo_extra["namespace"]
         await self.s3client.client.delete_object(
             Bucket=bucket_name,
             Key=storage_path,
-            **sdk_extra,
+            **extra,
         )
         logger.debug(f"file with {storage_path=} deleted from {bucket_name=}")
 
@@ -152,15 +167,20 @@ class S3Connector(AbstractConnector[S3Extra]):
         from_storage_path: StoragePath,
         to_storage_path: StoragePath,
         to_namespace: Namespace,
-        **sdk_extra: Any,
+        connector_extra: ConnectorExtra = OMIT,
     ):
+        extra: dict[str, Any] = {}
+
+        if is_given(connector_extra):
+            extra.update(connector_extra)
+
         bucket_name = repo_extra["namespace"]
 
         await self.s3client.client.copy_object(
             CopySource={"Bucket": bucket_name, "Key": from_storage_path},
             Bucket=to_namespace,
             Key=to_storage_path,
-            **sdk_extra,
+            **extra,
         )
         logger.debug(
             f"file from {bucket_name=} with {from_storage_path=} "
@@ -173,8 +193,12 @@ class S3Connector(AbstractConnector[S3Extra]):
         repo_extra: RepoExtraType,
         limit: int = 1000,
         continuation_token: Omittable[str] | None = OMIT,
-        **extra: Any,
+        connector_extra: ConnectorExtra = OMIT,
     ) -> ListResponse:
+        extra: dict[str, Any] = {}
+
+        if is_given(connector_extra):
+            extra.update(connector_extra)
 
         if continuation_token:
             extra["ContinuationToken"] = continuation_token
@@ -196,7 +220,7 @@ class S3Connector(AbstractConnector[S3Extra]):
         storage_path: str,
         repo_extra: RepoExtraType,
         expires_in: Omittable[int] = OMIT,
-        connector_extra: Omittable[Any] = OMIT,
+        connector_extra: ConnectorExtra = OMIT,
     ) -> PresignedUrlResponse:
         params: dict[str, Any] = {
             "ClientMethod": "get_object",

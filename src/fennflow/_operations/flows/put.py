@@ -6,10 +6,11 @@ from typing import TYPE_CHECKING
 from fennflow._operations.context.put import PutContext
 from fennflow._operations.enums import OperationStatusEnum
 from fennflow._operations.flows.abstract import AbstractFlow
-from fennflow._sentinel import is_given
+from fennflow._sentinel import OMIT, is_given
 from fennflow.connectors.exceptions import NoSuchKeyException
 
 if TYPE_CHECKING:
+    from fennflow._new_types import ConnectorExtra
     from fennflow._operations.dto import OperationRecord
     from fennflow.connectors._abstract import AbstractConnector
 
@@ -20,7 +21,7 @@ class PutFlow(AbstractFlow[PutContext]):
         *,
         operation: OperationRecord[PutContext],
         connector: AbstractConnector,
-        **connector_extra,
+        connector_extra: ConnectorExtra = OMIT,
     ):
         ctx = operation.require_context()
 
@@ -33,14 +34,13 @@ class PutFlow(AbstractFlow[PutContext]):
                     to_storage_path=tmp_path,
                     to_namespace=operation.repo_extra["namespace"],
                     repo_extra=operation.repo_extra,
-                    **connector_extra,
                 )
                 ctx.tmp_path = tmp_path
 
         return await connector.put(
             file=ctx.file,
             repo_extra=operation.repo_extra,
-            **connector_extra,
+            connector_extra=connector_extra,
         )
 
     @staticmethod
@@ -48,7 +48,6 @@ class PutFlow(AbstractFlow[PutContext]):
         *,
         operation: OperationRecord[PutContext],
         connector: AbstractConnector,
-        **connector_extra,
     ):
 
         ctx = operation.require_context()
@@ -59,14 +58,12 @@ class PutFlow(AbstractFlow[PutContext]):
                 to_storage_path=operation.record.storage_path,
                 to_namespace=operation.record.namespace,
                 repo_extra=operation.repo_extra,
-                **connector_extra,
             )
             operation.record.status = OperationStatusEnum.UPLOADED
         else:
             await connector.delete(
                 storage_path=operation.record.storage_path,
                 repo_extra=operation.repo_extra,
-                **connector_extra,
             )
             operation.record.status = OperationStatusEnum.FAILED
 
@@ -75,7 +72,6 @@ class PutFlow(AbstractFlow[PutContext]):
         *,
         operation: OperationRecord[PutContext],
         connector: AbstractConnector,
-        **connector_extra,
     ):
 
         ctx = operation.require_context()
@@ -84,5 +80,4 @@ class PutFlow(AbstractFlow[PutContext]):
             await connector.delete(
                 storage_path=ctx.tmp_path,
                 repo_extra=operation.repo_extra,
-                **connector_extra,
             )

@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from fennflow._operations.context.put import PutContext
 from fennflow._operations.dto import OperationRecord
 from fennflow._operations.enums import OperationTypeEnum
+from fennflow._sentinel import OMIT
 from fennflow.backends.enums import OnConflictDoEnum
 from fennflow.repositories._validation_mixins.validate_duplicate import (
     ValidateDuplicatesMixin,
@@ -13,6 +14,7 @@ from fennflow.repositories._validation_mixins.validate_duplicate import (
 from fennflow.repositories.at import AtRepository
 
 if TYPE_CHECKING:
+    from fennflow._new_types import ConnectorExtra
     from fennflow.files.types import BinaryMedia
 
 
@@ -33,7 +35,7 @@ class PutRepository(AtRepository, ValidateDuplicatesMixin):
     async def put(
         self,
         *files: BinaryMedia,
-        **connector_extra,
+        connector_extra: ConnectorExtra = OMIT,
     ) -> None:
         """Puts file into storage.
 
@@ -75,7 +77,7 @@ class PutRepository(AtRepository, ValidateDuplicatesMixin):
             tasks.append(
                 self._uow._operation_executor.execute(
                     operation,
-                    **connector_extra,
+                    connector_extra=connector_extra,
                 ),
             )
             operations.append(operation)

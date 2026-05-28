@@ -4,8 +4,10 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 from fennflow._operations.context.abstract import BaseContext
+from fennflow._sentinel import OMIT
 
 if TYPE_CHECKING:
+    from fennflow._new_types import ConnectorExtra
     from fennflow._operations.dto import OperationRecord
     from fennflow.connectors._abstract import AbstractConnector
 
@@ -19,7 +21,7 @@ class AbstractFlow(ABC, Generic[ContextType]):
         *,
         operation: OperationRecord[ContextType],
         connector: AbstractConnector,
-        **connector_extra,
+        connector_extra: ConnectorExtra = OMIT,
     ): ...
 
     @staticmethod

@@ -1,10 +1,15 @@
 from __future__ import annotations
 
 import asyncio
+from typing import TYPE_CHECKING
 
 from fennflow._query_specs.select.get_visible import GetVisibleQuerySpec
+from fennflow._sentinel import OMIT
 from fennflow.files.responses.base import MediaResponse
 from fennflow.repositories.at import AtRepository
+
+if TYPE_CHECKING:
+    from fennflow._new_types import ConnectorExtra
 
 
 class GetRepository(AtRepository):
@@ -31,14 +36,18 @@ class GetRepository(AtRepository):
 
     """
 
-    async def get(self, *paths: str, **connector_extra) -> MediaResponse:
+    async def get(
+        self,
+        *paths: str,
+        connector_extra: ConnectorExtra = OMIT,
+    ) -> MediaResponse:
         """Retrieve a file from storage within the current scope.
 
         Args:
             *paths (str):
                 Relative file's paths within the scoped repository
 
-            **connector_extra (Any):
+            connector_extra:
                 Additional connector-specific parameters passed directly
                 to the connector (e.g. S3 `get_object` arguments)
 
@@ -71,7 +80,7 @@ class GetRepository(AtRepository):
                     self._uow.connector.get(
                         storage_path=storage_path,
                         repo_extra=self.repo_extra,
-                        **connector_extra,
+                        connector_extra=connector_extra,
                     )
                 )
 
