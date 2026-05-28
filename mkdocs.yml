@@ -59,11 +59,12 @@ plugins:
           - core_concepts/backends.md
           - core_concepts/repositories.md
           - core_concepts/files.md
+          - core_concepts/path_templates.md
           - core_concepts/reconciler.md
         Advanced Features:
           - advanced_features/reconciler.md
         Examples:
-          - examples/index.md
+          - examples/setup.md
           - examples/base_upload.md
           - examples/multiple_connectors.md
           - examples/saga_compensation.md
@@ -82,11 +83,12 @@ nav:
       - Backends: core_concepts/backends.md
       - Repositories: core_concepts/repositories.md
       - Files: core_concepts/files.md
+      - Path Templates: core_concepts/path_templates.md
       - Reconciler: core_concepts/reconciler.md
   - Advanced Features:
       - Reconciler: advanced_features/reconciler.md
   - Examples:
-      - examples/index.md
+      - Setup: examples/setup.md
       - Base Upload: examples/base_upload.md
       - Multiple Connectors: examples/multiple_connectors.md
       - Saga Compensation: examples/saga_compensation.md

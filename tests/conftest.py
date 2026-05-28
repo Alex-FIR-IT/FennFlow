@@ -20,7 +20,7 @@ from fennflow.repositories import (
 from fennflow.repositories.list import ListRepository
 from fennflow.repositories.put import PutRepository
 from fennflow.uow import UnitOfWork
-from tests.shared import NAMESPACE, SCOPE
+from tests.shared.constants import NAMESPACE, SCOPE
 from tests.utils import reset_state
 
 

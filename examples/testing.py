@@ -2,7 +2,7 @@ import pytest
 import pytest_asyncio
 
 from fennflow import ConfigDict, UnitOfWork
-from fennflow.backends import SqlalchemyBackendConfig
+from fennflow.backends import InMemoryBackendConfig, SqlalchemyBackendConfig
 from fennflow.connectors import InMemoryConnectorConfig, S3ConnectorConfig
 from fennflow.files import ImageContent
 from fennflow.repositories import CreateRepository, GetRepository, S3RepoField
@@ -22,7 +22,7 @@ class AppUOW(UnitOfWork):
 
 class TestUOW(AppUOW):
     config = ConfigDict(
-        backend=SqlalchemyBackendConfig(database_url="sqlite+aiosqlite:///:memory:"),
+        backend=InMemoryBackendConfig(),
         connector=InMemoryConnectorConfig(),
     )
 
