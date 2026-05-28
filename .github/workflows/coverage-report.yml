@@ -44,6 +44,7 @@ jobs:
           AWS_ENDPOINT_URL: http://localhost:9000
           AWS_ACCESS_KEY_ID: minioadmin
           AWS_SECRET_ACCESS_KEY: minioadmin
+          PYTEST_USE_MINIO: 1
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
