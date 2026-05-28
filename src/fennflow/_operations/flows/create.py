@@ -33,13 +33,11 @@ class CreateFlow(AbstractFlow[CreateContext]):
         *,
         operation: OperationRecord,
         connector: AbstractConnector,
-        **connector_extra,
     ):
 
         result = await connector.delete(
             storage_path=operation.record.storage_path,
             repo_extra=operation.repo_extra,
-            **connector_extra,
         )
         operation.record.status = OperationStatusEnum.FAILED
         return result
@@ -49,6 +47,5 @@ class CreateFlow(AbstractFlow[CreateContext]):
         *,
         operation: OperationRecord,
         connector: AbstractConnector,
-        **connector_extra,
     ):
         pass
