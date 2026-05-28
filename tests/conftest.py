@@ -8,20 +8,21 @@ from fennflow._new_types import BackendScope, Namespace
 from fennflow._operations.dto import OperationRecord, Record
 from fennflow._operations.enums import OperationStatusEnum, OperationTypeEnum
 from fennflow.files import TextContent
-from tests.shared.constants import NAMESPACE, SCOPE
+from tests.shared.constants import NAMESPACE, PYTEST_USE_MINIO, SCOPE
 from tests.shared.uows import MinioUOW, TestUOW
 from tests.utils import reset_state
 
+params = [TestUOW]
+ids = ["sqlite_in_memory"]
+
+if PYTEST_USE_MINIO:
+    params.append(MinioUOW)
+    ids.append("minio")
+
 
 @pytest_asyncio.fixture(
-    params=[
-        TestUOW,
-        MinioUOW,
-    ],
-    ids=[
-        "sqlite_in_memory",
-        "minio",
-    ],
+    params=params,
+    ids=ids,
 )
 async def uow_cls(request, scope):
     cls = request.param
@@ -66,6 +67,9 @@ def operations(namespace: str, scope: str):
 
 @pytest_asyncio.fixture(scope="session", autouse=True)
 async def create_minio_bucket():
+
+    if not PYTEST_USE_MINIO:
+        return
 
     session = aiobotocore.session.get_session()
     async with session.create_client("s3") as client:
