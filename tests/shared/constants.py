@@ -5,5 +5,5 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from fennflow._new_types import BackendScope, Namespace
 
-NAMESPACE: Namespace = "user_files"
+NAMESPACE: Namespace = "user-files"
 SCOPE: BackendScope = "default"
