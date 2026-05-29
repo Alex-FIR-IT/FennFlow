@@ -13,11 +13,6 @@ if TYPE_CHECKING:
 class ListResponse:
     """Response returned by :meth:`ListRepository.list`.
 
-    Attributes:
-        storage_paths: storage_paths of the listed files.
-        continuation_token: Opaque token to pass to the next :meth:`ListRepository.list`
-            call to retrieve the next page. ``None`` if no more results are available.
-
     Example::
 
         page = await uow.files.at("folder1/").list(limit=2)
@@ -33,7 +28,12 @@ class ListResponse:
     storage_paths: list[StoragePath] | tuple[StoragePath, ...] = field(
         default_factory=tuple
     )
+    """storage_paths of the listed files."""
+
     continuation_token: str | None = None
+    """Opaque token to pass to the next :meth:`ListRepository.list`
+    call to retrieve the next page. ``None`` if no more results are available.
+    """
 
     def __iter__(self) -> Iterator[StoragePath]:
         return iter(self.storage_paths)
