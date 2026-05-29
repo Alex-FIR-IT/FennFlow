@@ -110,7 +110,7 @@ class S3Connector(AbstractConnector[S3Extra]):
             Bucket=bucket_name,
             Key=file.storage_path,
             Body=file.data,
-            ContentType=str(file.media_type),
+            ContentType=file.media_type,
             Metadata=file.get_metadata(),
             **extra,
         )

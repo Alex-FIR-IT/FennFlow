@@ -71,19 +71,6 @@ class ContentFactory:
             **kwargs,
         }
 
-        print(f"{media_type=}, {type(media_type)=}")
-
-        if getattr(media_type, "value", None):
-            print(f"{media_type.value=}, {type(media_type.value)=}")
-
-        media_type = str(
-            media_type
-        )  # since python3.10 has no build-in StrEnum and his behavior differs,
-        # we must use str representations directly
-
-        print(media_type, type(media_type))
-        print(content_registry)
-        print(f"{media_type in content_registry=}")
         if media_type in content_registry:
             content_cls = content_registry[media_type]
         else:
