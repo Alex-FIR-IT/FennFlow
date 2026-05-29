@@ -12,7 +12,6 @@ ConnectorResponseT = TypeVar("ConnectorResponseT")
 ContentResponseT = TypeVar(
     "ContentResponseT",
     bound=Media,
-    # covariant=True,
 )
 
 
