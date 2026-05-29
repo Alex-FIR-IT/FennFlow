@@ -7,3 +7,6 @@ else:
 
     class StrEnum(str, Enum):
         """StrEnum for python3.10."""
+
+        def __str__(self):
+            return self.value
