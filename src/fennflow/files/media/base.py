@@ -49,7 +49,7 @@ class BaseContent(BaseModel, ABC):
     data: Any
     filename: str
     media_type: MediaTypes
-    _storage_prefix: str | None = None
+    _storage_prefix: str = ""
     extra_metadata: dict[str, str] = Field(default_factory=dict)
 
     @property
