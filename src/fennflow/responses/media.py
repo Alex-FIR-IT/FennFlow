@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Generic, TypeVar, overload
 
+from fennflow.files import JsonContent
 from fennflow.files.media import (
     AudioContent,
     DocumentContent,
@@ -137,6 +138,10 @@ class MediaResponse(Generic[ConnectorResponseT]):
     @property
     def texts(self) -> tuple[ContentResponse[ConnectorResponseT, TextContent], ...]:
         return self.filter(TextContent)
+
+    @property
+    def jsons(self) -> tuple[ContentResponse[ConnectorResponseT, JsonContent], ...]:
+        return self.filter(JsonContent)
 
     @property
     def audios(
