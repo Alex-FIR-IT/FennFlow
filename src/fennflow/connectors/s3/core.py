@@ -137,14 +137,15 @@ class S3Connector(AbstractConnector[S3Extra]):
         if not response:
             return MediaResponse()
 
-        content_response = ContentResponse(
-            content=ContentFactory.from_bytes(
-                media_type=response["ContentType"],
-                data=await response["Body"].read(),
-                **response.get("Metadata", {}),
-            ),
-            raw_response=response,
-        )
+        async with response["Body"] as stream:
+            content_response = ContentResponse(
+                content=ContentFactory.from_bytes(
+                    media_type=response["ContentType"],
+                    data=await stream.read(),
+                    **response.get("Metadata", {}),
+                ),
+                raw_response=response,
+            )
 
         return MediaResponse.from_content_response(content_response)
 
