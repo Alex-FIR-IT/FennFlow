@@ -58,5 +58,5 @@ async def test_register_user_saves_avatar(db):
     await register_user(user_id="user-123", avatar=avatar, uow=TestUOW(), db=db)
 
     async with TestUOW() as uow:
-        response = await uow.avatars.at("user-123").get("avatar.jpg")
-        assert response.images[0].filename == "avatar.jpg"
+        response = await uow.avatars.at("user-123").get(avatar.filename)
+        assert response.images[0].content.filename == "avatar.jpg"

@@ -12,7 +12,7 @@ async def test_simple_put(uow_cls, text_files):
         await uow.user_files.at("user/").put(text_files[0])
 
         response = await uow.user_files.at("user/").get(text_files[0].filename)
-        assert response[0].data == text_files[0].data
+        assert response[0].content.data == text_files[0].data
 
 
 @pytest.mark.asyncio
@@ -27,8 +27,8 @@ async def test_upsert(uow_cls, text_files):
         response = await uow.user_files.at("user/").get(another_file.filename)
         response2 = await uow.user_files.at("user/").get(text_files[0].filename)
 
-        assert response[0].data != text_files[0].data
-        assert response[0].data == another_file.data
+        assert response[0].content.data != text_files[0].data
+        assert response[0].content.data == another_file.data
         assert response == response2
 
 
@@ -49,7 +49,7 @@ async def test_upsert_last_file_is_saved(uow_cls):
 
         response = await uow.user_files.at("user/").get(filename)
 
-        assert response[0].data == files[-1].data
+        assert response[0].content.data == files[-1].data
 
 
 @pytest.mark.asyncio
@@ -75,14 +75,14 @@ async def test_upsert_rollback_returned_original_file(uow_cls):
             await uow.user_files.at("user/").put(file)
 
         response = await uow.user_files.at("user/").get(filename)
-        assert response[0].data == files[-1].data
-        assert response[0].data != original_file.data
+        assert response[0].content.data == files[-1].data
+        assert response[0].content.data != original_file.data
 
         await uow.rollback()
 
         response = await uow.user_files.at("user/").get(filename)
-        assert response[0].data != files[-1].data
-        assert response[0].data == original_file.data
+        assert response[0].content.data != files[-1].data
+        assert response[0].content.data == original_file.data
 
 
 @pytest.mark.asyncio

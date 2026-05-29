@@ -57,7 +57,7 @@ async def test_create_multiple_files(uow_cls, text_files):
 
         for file in text_files:
             result = await uow.user_files.at("user/").get(file.filename)
-            assert result.media[0].data == file.data
+            assert result[0].content.data == file.data
 
 
 @pytest.mark.asyncio

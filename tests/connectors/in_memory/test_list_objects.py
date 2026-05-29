@@ -1,7 +1,7 @@
 import pytest
 
 from fennflow._sentinel import OMIT
-from fennflow.responses.list import ListResponse
+from fennflow.responses.connector_list import ConnectorListResponse
 
 
 @pytest.mark.asyncio
@@ -20,9 +20,10 @@ from fennflow.responses.list import ListResponse
             "foo/",
             1000,
             OMIT,
-            ListResponse(
+            ConnectorListResponse(
                 storage_paths=["foo/a.txt", "foo/b.txt"],
                 continuation_token=None,
+                raw_response=None,
             ),
         ),
         # Ограничение limit
@@ -37,9 +38,10 @@ from fennflow.responses.list import ListResponse
             "foo/",
             2,
             OMIT,
-            ListResponse(
+            ConnectorListResponse(
                 storage_paths=["foo/a.txt", "foo/b.txt"],
                 continuation_token="foo/c.txt",
+                raw_response=None,
             ),
         ),
         # continuation_token пропускает предыдущие элементы
@@ -54,9 +56,10 @@ from fennflow.responses.list import ListResponse
             "foo/",
             1000,
             "foo/a.txt",
-            ListResponse(
+            ConnectorListResponse(
                 storage_paths=["foo/b.txt", "foo/c.txt"],
                 continuation_token=None,
+                raw_response=None,
             ),
         ),
         # continuation_token + limit
@@ -72,9 +75,10 @@ from fennflow.responses.list import ListResponse
             "foo/",
             2,
             "foo/a.txt",
-            ListResponse(
+            ConnectorListResponse(
                 storage_paths=["foo/b.txt", "foo/c.txt"],
                 continuation_token="foo/d.txt",
+                raw_response=None,
             ),
         ),
         # Нет совпадений по prefix
@@ -88,9 +92,10 @@ from fennflow.responses.list import ListResponse
             "foo/",
             1000,
             OMIT,
-            ListResponse(
+            ConnectorListResponse(
                 storage_paths=[],
                 continuation_token=None,
+                raw_response=None,
             ),
         ),
         # Пустое хранилище
@@ -101,9 +106,10 @@ from fennflow.responses.list import ListResponse
             "foo/",
             1000,
             OMIT,
-            ListResponse(
+            ConnectorListResponse(
                 storage_paths=[],
                 continuation_token=None,
+                raw_response=None,
             ),
         ),
         # continuation_token указывает после всех элементов
@@ -117,9 +123,10 @@ from fennflow.responses.list import ListResponse
             "foo/",
             1000,
             "zzz.txt",
-            ListResponse(
+            ConnectorListResponse(
                 storage_paths=[],
                 continuation_token=None,
+                raw_response=None,
             ),
         ),
     ],

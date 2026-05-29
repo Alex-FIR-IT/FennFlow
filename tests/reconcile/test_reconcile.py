@@ -27,6 +27,6 @@ async def test_reconcile_on_non_empty_connector(uow_cls, text_files):
         files = []
         for storage_path in response:
             response = await uow.user_files.get(storage_path)
-            files.extend(response)
+            files.append(response[0].content)
 
         assert sorted(files) == sorted(text_files)

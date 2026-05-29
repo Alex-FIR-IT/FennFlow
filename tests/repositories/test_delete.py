@@ -46,4 +46,4 @@ async def test_delete_several_times_and_rollback(uow_cls, text_files):
 
         response = await uow.user_files.get(file.filename)
         assert len(response) == 1
-        assert response[0].data == file.data
+        assert response[0].content.data == file.data
