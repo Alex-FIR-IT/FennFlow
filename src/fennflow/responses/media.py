@@ -93,7 +93,7 @@ class MediaResponse(Generic[ConnectorResponseT]):
             images = response.filter(ImageContent)
             text_and_json = response.filter(TextContent, JsonContent)
         """
-        return tuple(file for file in self.media if isinstance(file, types))
+        return tuple(file for file in self.media if isinstance(file.content, types))
 
     def filter_by_media_type(
         self,
