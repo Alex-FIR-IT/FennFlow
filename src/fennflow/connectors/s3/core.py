@@ -12,13 +12,22 @@ from fennflow.connectors._abstract import AbstractConnector
 from fennflow.connectors.exceptions import NoSuchKeyException
 from fennflow.connectors.s3._client import S3Client
 from fennflow.files import ContentFactory
-from fennflow.files.responses.base import MediaResponse
-from fennflow.files.responses.list import ListResponse
-from fennflow.files.responses.presigned_url import PresignedUrlResponse
 from fennflow.repositories.fields.s3 import S3Extra
+from fennflow.responses.connector_list import ConnectorListResponse
+from fennflow.responses.connector_raw import ConnectorRawResponse
+from fennflow.responses.content import ContentResponse
+from fennflow.responses.media import MediaResponse
+from fennflow.responses.presigned_url import PresignedUrlResponse
 
 if TYPE_CHECKING:
     from aiobotocore.session import AioSession
+    from types_aiobotocore_s3.type_defs import (
+        CopyObjectOutputTypeDef,
+        DeleteObjectOutputTypeDef,
+        GetObjectOutputTypeDef,
+        ListObjectsV2OutputTypeDef,
+        PutObjectOutputTypeDef,
+    )
     from typing_extensions import Self
 
     from fennflow._new_types import ConnectorExtra, Namespace, StoragePath
@@ -90,14 +99,14 @@ class S3Connector(AbstractConnector[S3Extra]):
         file: BinaryMedia,
         repo_extra: S3Extra,
         connector_extra: ConnectorExtra = OMIT,
-    ) -> None:
+    ) -> ConnectorRawResponse[PutObjectOutputTypeDef]:
         extra: dict[str, Any] = {}
 
         if is_given(connector_extra):
             extra.update(connector_extra)
 
         bucket_name = repo_extra["namespace"]
-        await self.s3client.client.put_object(
+        response = await self.s3client.client.put_object(
             Bucket=bucket_name,
             Key=file.storage_path,
             Body=file.data,
@@ -107,12 +116,14 @@ class S3Connector(AbstractConnector[S3Extra]):
         )
         logger.debug(f"{file=} uploaded to {bucket_name=}")
 
+        return ConnectorRawResponse(raw_response=response)
+
     async def get(
         self,
         storage_path: StoragePath,
         repo_extra: S3Extra,
         connector_extra: ConnectorExtra = OMIT,
-    ) -> MediaResponse:
+    ) -> MediaResponse[GetObjectOutputTypeDef]:
         extra: dict[str, Any] = {}
 
         if is_given(connector_extra):
@@ -126,34 +137,37 @@ class S3Connector(AbstractConnector[S3Extra]):
         if not response:
             return MediaResponse()
 
-        return MediaResponse(
-            media=(
-                ContentFactory.from_bytes(
-                    media_type=response["ContentType"],
-                    data=await response["Body"].read(),
-                    **response.get("Metadata", {}),
-                ),
+        content_response = ContentResponse(
+            content=ContentFactory.from_bytes(
+                media_type=response["ContentType"],
+                data=await response["Body"].read(),
+                **response.get("Metadata", {}),
             ),
+            raw_response=response,
         )
+
+        return MediaResponse.from_content_response(content_response)
 
     async def delete(
         self,
         storage_path: StoragePath,
         repo_extra: S3Extra,
         connector_extra: ConnectorExtra = OMIT,
-    ):
+    ) -> ConnectorRawResponse[DeleteObjectOutputTypeDef]:
         extra: dict[str, Any] = {}
 
         if is_given(connector_extra):
             extra.update(connector_extra)
 
         bucket_name = repo_extra["namespace"]
-        await self.s3client.client.delete_object(
+        response = await self.s3client.client.delete_object(
             Bucket=bucket_name,
             Key=storage_path,
             **extra,
         )
         logger.debug(f"file with {storage_path=} deleted from {bucket_name=}")
+
+        return ConnectorRawResponse(raw_response=response)
 
     @reraise_with(
         NoSuchKeyException(),
@@ -168,7 +182,7 @@ class S3Connector(AbstractConnector[S3Extra]):
         to_storage_path: StoragePath,
         to_namespace: Namespace,
         connector_extra: ConnectorExtra = OMIT,
-    ):
+    ) -> ConnectorRawResponse[CopyObjectOutputTypeDef]:
         extra: dict[str, Any] = {}
 
         if is_given(connector_extra):
@@ -176,7 +190,7 @@ class S3Connector(AbstractConnector[S3Extra]):
 
         bucket_name = repo_extra["namespace"]
 
-        await self.s3client.client.copy_object(
+        response = await self.s3client.client.copy_object(
             CopySource={"Bucket": bucket_name, "Key": from_storage_path},
             Bucket=to_namespace,
             Key=to_storage_path,
@@ -187,6 +201,8 @@ class S3Connector(AbstractConnector[S3Extra]):
             f"copied to {to_namespace=}"
         )
 
+        return ConnectorRawResponse(raw_response=response)
+
     async def list_objects(
         self,
         prefix: str,
@@ -194,7 +210,7 @@ class S3Connector(AbstractConnector[S3Extra]):
         limit: int = 1000,
         continuation_token: Omittable[str] | None = OMIT,
         connector_extra: ConnectorExtra = OMIT,
-    ) -> ListResponse:
+    ) -> ConnectorListResponse[ListObjectsV2OutputTypeDef]:
         extra: dict[str, Any] = {}
 
         if is_given(connector_extra):
@@ -210,9 +226,10 @@ class S3Connector(AbstractConnector[S3Extra]):
             **extra,
         )
 
-        return ListResponse(
+        return ConnectorListResponse(
             storage_paths=tuple(obj["Key"] for obj in response.get("Contents", [])),
             continuation_token=response.get("NextContinuationToken"),
+            raw_response=response,
         )
 
     async def generate_presigned_url(

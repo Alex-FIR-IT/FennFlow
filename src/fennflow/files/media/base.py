@@ -29,10 +29,6 @@ from fennflow.files.exceptions.extension_cannot_be_guessed import (
 from fennflow.files.exceptions.filename_and_mediatype_both_none import (
     FileNameAndMediaTypeBothNoneException,
 )
-from fennflow.files.exceptions.filename_is_none import FilenameIsNoneException
-from fennflow.files.exceptions.storage_prefix_is_none import (
-    StoragePrefixIsNoneException,
-)
 
 if TYPE_CHECKING:
     from typing_extensions import Self
@@ -49,21 +45,11 @@ class BaseContent(BaseModel, ABC):
     data: Any
     filename: str
     media_type: MediaTypes
-    _storage_prefix: str | None = None
+    _storage_prefix: str = ""
     extra_metadata: dict[str, str] = Field(default_factory=dict)
 
     @property
     def storage_path(self) -> StoragePath:
-        if self._storage_prefix is None:
-            raise StoragePrefixIsNoneException(
-                f"Cannot determine storage_path for {self.filename=}. "
-                f"Storage prefix is None."
-            )
-        elif self.filename is None:
-            raise FilenameIsNoneException(
-                f"Cannot determine storage_path for file in {self._storage_prefix=}. "
-                f"Filename is None."
-            )
         return Path.join_path(self._storage_prefix, self.filename)
 
     model_config = ConfigDict(

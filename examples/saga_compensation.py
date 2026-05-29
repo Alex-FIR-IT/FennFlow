@@ -41,7 +41,7 @@ async def process_avatar(user_id: str, avatar: ImageContent) -> None:
                 json={"url": presigned_url},
             )
 
-        if response.status_code == 200:
+        if response.is_success:
             await uow.commit()
         # if verification failed or an exception was raised,
         # the UoW rolls back on exit — avatar is removed from S3 automatically

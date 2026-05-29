@@ -18,5 +18,5 @@ content_registry: dict[str, type[BaseBinary]] = {
     MediaType.APPLICATION_JSON: JsonContent,
     "audio/": AudioContent,
     "video/": VideoContent,
-    MediaType.APPLICATION_OCTET_STREAM: DocumentContent,
+    MediaType.APPLICATION_PDF: DocumentContent,
 }

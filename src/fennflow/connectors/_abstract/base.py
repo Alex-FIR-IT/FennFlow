@@ -10,10 +10,11 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from fennflow._new_types import ConnectorExtra, Namespace, StoragePath
-    from fennflow.files.responses.base import MediaResponse
-    from fennflow.files.responses.list import ListResponse
-    from fennflow.files.responses.presigned_url import PresignedUrlResponse
     from fennflow.files.types import BinaryMedia
+    from fennflow.responses.connector_list import ConnectorListResponse
+    from fennflow.responses.connector_raw import ConnectorRawResponse
+    from fennflow.responses.media import MediaResponse
+    from fennflow.responses.presigned_url import PresignedUrlResponse
 
 RepoExtraType = TypeVar("RepoExtraType", bound=RepoExtra)
 
@@ -45,7 +46,7 @@ class AbstractConnector(ABC, Generic[RepoExtraType]):
         file: BinaryMedia,
         repo_extra: RepoExtraType,
         connector_extra: ConnectorExtra = OMIT,
-    ) -> Any:
+    ) -> ConnectorRawResponse[Any]:
         """Upload a file to storage."""
 
     @abstractmethod
@@ -54,7 +55,7 @@ class AbstractConnector(ABC, Generic[RepoExtraType]):
         storage_path: StoragePath,
         repo_extra: RepoExtraType,
         connector_extra: ConnectorExtra = OMIT,
-    ) -> MediaResponse:
+    ) -> MediaResponse[Any]:
         """Download a file from storage."""
 
     @abstractmethod
@@ -63,7 +64,7 @@ class AbstractConnector(ABC, Generic[RepoExtraType]):
         storage_path: StoragePath,
         repo_extra: RepoExtraType,
         connector_extra: ConnectorExtra = OMIT,
-    ):
+    ) -> ConnectorRawResponse[Any]:
         """Delete a file from storage."""
 
     @abstractmethod
@@ -74,7 +75,7 @@ class AbstractConnector(ABC, Generic[RepoExtraType]):
         to_storage_path: StoragePath,
         to_namespace: Namespace,
         connector_extra: ConnectorExtra = OMIT,
-    ):
+    ) -> ConnectorRawResponse[Any]:
         """Copy a file within or across namespaces."""
 
     @abstractmethod
@@ -85,7 +86,7 @@ class AbstractConnector(ABC, Generic[RepoExtraType]):
         limit: int = 1000,
         continuation_token: Omittable[str] | None = OMIT,
         connector_extra: ConnectorExtra = OMIT,
-    ) -> ListResponse:
+    ) -> ConnectorListResponse[Any]:
         """List all files in storage."""
 
     @abstractmethod

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from fennflow._operations.context.create import CreateContext
 from fennflow._operations.dto import OperationRecord
@@ -18,6 +18,7 @@ from fennflow.repositories.at import AtRepository
 if TYPE_CHECKING:
     from fennflow._new_types import ConnectorExtra
     from fennflow.files.types import BinaryMedia
+    from fennflow.responses.connector_raw import ConnectorRawResponse
 
 
 class CreateRepository(
@@ -41,7 +42,7 @@ class CreateRepository(
         self,
         *files: BinaryMedia,
         connector_extra: ConnectorExtra = OMIT,
-    ) -> None:
+    ) -> list[ConnectorRawResponse[Any]]:
         """Puts file if it doesn't exist in the backend.
 
         **Example**::
@@ -96,4 +97,4 @@ class CreateRepository(
             operations.append(operation)
 
         await self._uow.backend.flush(operations=operations)
-        await asyncio.gather(*tasks)
+        return await asyncio.gather(*tasks)

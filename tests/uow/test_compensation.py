@@ -14,7 +14,7 @@ async def test_file_recovery_after_deleting_on_rollback(
     async with uow_cls(auto_commit=False) as uow:
         get_response = await uow.user_files.at("user/").get(text_files[0].filename)
         assert len(get_response) == 1, f"Expected 1 file, got {len(get_response)}"
-        assert get_response[0].data == text_files[0].data
+        assert get_response[0].content.data == text_files[0].data
 
         await uow.user_files.at("user/").delete(text_files[0].filename)
 
@@ -24,7 +24,7 @@ async def test_file_recovery_after_deleting_on_rollback(
     async with uow_cls() as uow:
         response = await uow.user_files.at("user/").get(text_files[0].filename)
         assert len(response) == 1, f"Expected 1 file, got {len(response)}"
-        assert response[0].data == text_files[0].data
+        assert response[0].content.data == text_files[0].data
 
         operation = await uow.backend.get(
             storage_path=text_files[0].storage_path,

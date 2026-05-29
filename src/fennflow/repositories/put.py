@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from fennflow._operations.context.put import PutContext
 from fennflow._operations.dto import OperationRecord
@@ -16,6 +16,7 @@ from fennflow.repositories.at import AtRepository
 if TYPE_CHECKING:
     from fennflow._new_types import ConnectorExtra
     from fennflow.files.types import BinaryMedia
+    from fennflow.responses.connector_raw import ConnectorRawResponse
 
 
 class PutRepository(AtRepository, ValidateDuplicatesMixin):
@@ -36,7 +37,7 @@ class PutRepository(AtRepository, ValidateDuplicatesMixin):
         self,
         *files: BinaryMedia,
         connector_extra: ConnectorExtra = OMIT,
-    ) -> None:
+    ) -> list[ConnectorRawResponse[Any]]:
         """Puts file into storage.
 
         **Example**::
@@ -82,7 +83,7 @@ class PutRepository(AtRepository, ValidateDuplicatesMixin):
             )
             operations.append(operation)
         await self._uow.backend.flush(operations=operations)
-        await asyncio.gather(*tasks)
+        return await asyncio.gather(*tasks)
 
     def __get_context(
         self,

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from fennflow._operations.context.delete import DeleteContext
 from fennflow._operations.dto import OperationRecord, Record
@@ -9,6 +9,7 @@ from fennflow._operations.enums import OperationTypeEnum
 from .._query_specs.select.get_visible import GetVisibleQuerySpec
 from .._sentinel import OMIT
 from ..backends.enums import OnConflictDoEnum
+from ..responses.connector_raw import ConnectorRawResponse
 from .at import AtRepository
 
 if TYPE_CHECKING:
@@ -25,7 +26,7 @@ class DeleteRepository(AtRepository):
         self,
         path: str,
         connector_extra: ConnectorExtra = OMIT,
-    ) -> bool:
+    ) -> ConnectorRawResponse[Any]:
         """Delete a file from storage.
 
         Args:
@@ -46,7 +47,7 @@ class DeleteRepository(AtRepository):
             )
         )
         if record is None:
-            return False
+            return ConnectorRawResponse(raw_response=None)
 
         operation = OperationRecord.from_uow(
             uow=self._uow,
@@ -59,13 +60,12 @@ class DeleteRepository(AtRepository):
             operation,
             on_conflict=OnConflictDoEnum.REPLACE,
         )
+        await self._uow.backend.flush(operations=[operation])
 
-        await self._uow._operation_executor.execute(
+        return await self._uow._operation_executor.execute(
             operation,
             connector_extra=connector_extra,
         )
-        await self._uow.backend.flush(operations=[operation])
-        return True
 
     def __get_context(self, record: Record) -> DeleteContext:
         return DeleteContext(
