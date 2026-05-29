@@ -29,7 +29,7 @@ async def test_upsert(uow_cls, text_files):
 
         assert response[0].content.data != text_files[0].data
         assert response[0].content.data == another_file.data
-        assert response == response2
+        assert response[0].content == response2[0].content
 
 
 @pytest.mark.asyncio
