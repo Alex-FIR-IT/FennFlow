@@ -24,6 +24,14 @@ async def test_media_response_properties(uow_cls):
 
         response = await uow.user_files.get(*[file.filename for file in files])
 
+        for f in response.media:
+            print(
+                type(f.content),
+                repr(f.content),
+                isinstance(f.content, TextContent),
+                getattr(f, "filename", None),
+            )
+
         assert response.texts[0].content == text_file
         assert response.jsons[0].content == json_file
         assert response.images[0].content == image_file
