@@ -71,7 +71,10 @@ class ContentFactory:
             **kwargs,
         }
 
-        print(media_type, type(media_type), media_type.value, type(media_type.value))
+        print(media_type, type(media_type))
+
+        if getattr(media_type, "value", None):
+            print(media_type.value, type(media_type.value))
 
         media_type = (
             media_type.value if isinstance(media_type, MediaType) else media_type
