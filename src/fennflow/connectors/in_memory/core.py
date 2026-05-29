@@ -75,10 +75,12 @@ class InMemoryConnector(AbstractConnector):
         file: BinaryMedia,
         repo_extra: RepoExtra,
         connector_extra: ConnectorExtra = OMIT,  # noqa: ARG002
-    ) -> None:
+    ) -> ConnectorRawResponse[None]:
         namespace = repo_extra["namespace"]
         self.storage[namespace][file.storage_path] = file
         logger.debug(f"{file=} uploaded to {namespace=}")
+
+        return ConnectorRawResponse(raw_response=None)
 
     async def get(
         self,

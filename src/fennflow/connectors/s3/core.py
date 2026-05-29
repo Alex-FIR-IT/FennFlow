@@ -26,6 +26,7 @@ if TYPE_CHECKING:
         DeleteObjectOutputTypeDef,
         GetObjectOutputTypeDef,
         ListObjectsV2OutputTypeDef,
+        PutObjectOutputTypeDef,
     )
     from typing_extensions import Self
 
@@ -98,14 +99,14 @@ class S3Connector(AbstractConnector[S3Extra]):
         file: BinaryMedia,
         repo_extra: S3Extra,
         connector_extra: ConnectorExtra = OMIT,
-    ) -> None:
+    ) -> ConnectorRawResponse[PutObjectOutputTypeDef]:
         extra: dict[str, Any] = {}
 
         if is_given(connector_extra):
             extra.update(connector_extra)
 
         bucket_name = repo_extra["namespace"]
-        await self.s3client.client.put_object(
+        response = await self.s3client.client.put_object(
             Bucket=bucket_name,
             Key=file.storage_path,
             Body=file.data,
@@ -114,6 +115,8 @@ class S3Connector(AbstractConnector[S3Extra]):
             **extra,
         )
         logger.debug(f"{file=} uploaded to {bucket_name=}")
+
+        return ConnectorRawResponse(raw_response=response)
 
     async def get(
         self,

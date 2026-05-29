@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from fennflow._query_specs.select.get_visible import GetVisibleQuerySpec
 from fennflow._sentinel import OMIT
@@ -40,7 +40,7 @@ class GetRepository(AtRepository):
         self,
         *paths: str,
         connector_extra: ConnectorExtra = OMIT,
-    ) -> MediaResponse:
+    ) -> MediaResponse[Any]:
         """Retrieve a file from storage within the current scope.
 
         Args:
