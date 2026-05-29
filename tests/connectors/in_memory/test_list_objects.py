@@ -1,7 +1,7 @@
 import pytest
 
 from fennflow._sentinel import OMIT
-from fennflow.files.responses.list import ListResponse
+from fennflow.responses.list import ListResponse
 
 
 @pytest.mark.asyncio

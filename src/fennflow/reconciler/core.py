@@ -21,8 +21,8 @@ if TYPE_CHECKING:
     from fennflow._new_types import BackendScope
     from fennflow.backends._core import BackendOrchestrator
     from fennflow.connectors._abstract import AbstractConnector
-    from fennflow.files.responses.list import ListResponse
     from fennflow.repositories.fields.base import RepoExtra
+    from fennflow.responses.list import ListResponse
 
 logger = logging.getLogger(__name__)
 

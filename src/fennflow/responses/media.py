@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, TypeVar, overload
+from typing import TYPE_CHECKING, Generic, TypeVar, overload
 
 from fennflow.files.media import (
     AudioContent,
@@ -10,18 +10,21 @@ from fennflow.files.media import (
     TextContent,
     VideoContent,
 )
-from fennflow.files.types import Media
+from fennflow.files.types import BinaryMedia
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator
 
     from typing_extensions import Self
 
-T = TypeVar("T", bound=Media)
+    from fennflow.responses.content import ContentResponse
+
+ContentResponseT = TypeVar("ContentResponseT", bound=BinaryMedia)
+ConnectorResponseT = TypeVar("ConnectorResponseT")
 
 
 @dataclass(slots=True)
-class MediaResponse:
+class MediaResponse(Generic[ConnectorResponseT]):
     """Response object containing a collection of media items.
 
     Returned by repository read operations such as ``GetRepository.get()``.
@@ -35,13 +38,22 @@ class MediaResponse:
             print(item.data)
     """
 
-    media: tuple[Media, ...] = field(default_factory=tuple)
+    media: tuple[ContentResponse[ConnectorResponseT, BinaryMedia], ...] = field(
+        default_factory=tuple
+    )
 
     def __post_init__(self):
         self.media = tuple(
             TextContent.from_content(item) if isinstance(item, str) else item
             for item in self.media
         )
+
+    @classmethod
+    def from_content_response(
+        cls,
+        response: ContentResponse[ConnectorResponseT, BinaryMedia],
+    ) -> MediaResponse[ConnectorResponseT]:
+        return cls(media=(response,))
 
     @classmethod
     def join(cls, iterable: Iterable[Self]) -> Self:
@@ -59,10 +71,14 @@ class MediaResponse:
         return cls(media=tuple(file for response in iterable for file in response))
 
     @overload
-    def filter(self, typ: type[T]) -> tuple[T, ...]: ...
+    def filter(
+        self, typ: type[ContentResponseT]
+    ) -> tuple[ContentResponse[ConnectorResponseT, ContentResponseT], ...]: ...
 
     @overload
-    def filter(self, *types: type[T]) -> tuple[T, ...]: ...
+    def filter(
+        self, *types: type[ContentResponseT]
+    ) -> tuple[ContentResponse[ConnectorResponseT, ContentResponseT], ...]: ...
 
     def filter(self, *types):
         """Filter media items by type.
@@ -79,7 +95,10 @@ class MediaResponse:
         """
         return tuple(file for file in self.media if isinstance(file, types))
 
-    def filter_by_media_type(self, *media_types: str) -> tuple[Media, ...]:
+    def filter_by_media_type(
+        self,
+        *media_types: str,
+    ) -> tuple[ContentResponse[ConnectorResponseT, BinaryMedia], ...]:
         """Filter media items by MIME type string.
 
         Args:
@@ -99,32 +118,42 @@ class MediaResponse:
                                         MediaType.APPLICATION_JSON
                                         )
         """
-        return tuple(file for file in self.media if file.media_type in media_types)
+        return tuple(
+            file for file in self.media if file.content.media_type in media_types
+        )
 
     @property
-    def images(self) -> tuple[ImageContent, ...]:
+    def images(
+        self,
+    ) -> tuple[ContentResponse[ConnectorResponseT, ImageContent], ...]:
         return self.filter(ImageContent)
 
     @property
-    def videos(self) -> tuple[VideoContent, ...]:
+    def videos(
+        self,
+    ) -> tuple[ContentResponse[ConnectorResponseT, VideoContent], ...]:
         return self.filter(VideoContent)
 
     @property
-    def texts(self) -> tuple[TextContent, ...]:
+    def texts(self) -> tuple[ContentResponse[ConnectorResponseT, TextContent], ...]:
         return self.filter(TextContent)
 
     @property
-    def audios(self) -> tuple[AudioContent, ...]:
+    def audios(
+        self,
+    ) -> tuple[ContentResponse[ConnectorResponseT, AudioContent], ...]:
         return self.filter(AudioContent)
 
     @property
-    def documents(self) -> tuple[DocumentContent, ...]:
+    def documents(
+        self,
+    ) -> tuple[ContentResponse[ConnectorResponseT, DocumentContent], ...]:
         return self.filter(DocumentContent)
 
-    def __iter__(self) -> Iterator[Media]:
+    def __iter__(self) -> Iterator[ContentResponse[ConnectorResponseT, BinaryMedia]]:
         return iter(self.media)
 
-    def __getitem__(self, item) -> Media:
+    def __getitem__(self, item) -> ContentResponse[ConnectorResponseT, BinaryMedia]:
         return self.media[item]
 
     def __len__(self) -> int:

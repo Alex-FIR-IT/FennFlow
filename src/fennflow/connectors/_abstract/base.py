@@ -10,10 +10,10 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from fennflow._new_types import ConnectorExtra, Namespace, StoragePath
-    from fennflow.files.responses.base import MediaResponse
-    from fennflow.files.responses.list import ListResponse
-    from fennflow.files.responses.presigned_url import PresignedUrlResponse
     from fennflow.files.types import BinaryMedia
+    from fennflow.responses.list import ListResponse
+    from fennflow.responses.media import MediaResponse
+    from fennflow.responses.presigned_url import PresignedUrlResponse
 
 RepoExtraType = TypeVar("RepoExtraType", bound=RepoExtra)
 

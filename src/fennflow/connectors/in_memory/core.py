@@ -14,8 +14,10 @@ from fennflow.connectors.exceptions import (
     NoSuchKeyException,
 )
 from fennflow.files import ContentFactory
-from fennflow.files.responses.base import MediaResponse
-from fennflow.files.responses.list import ListResponse
+from fennflow.responses.connector_list import ConnectorListResponse
+from fennflow.responses.connector_raw import ConnectorRawResponse
+from fennflow.responses.content import ContentResponse
+from fennflow.responses.media import MediaResponse
 
 if TYPE_CHECKING:
     from typing_extensions import Self
@@ -83,30 +85,33 @@ class InMemoryConnector(AbstractConnector):
         storage_path: StoragePath,
         repo_extra: RepoExtra,
         connector_extra: ConnectorExtra = OMIT,  # noqa: ARG002
-    ) -> MediaResponse:
+    ) -> MediaResponse[None]:
 
         if storage_path not in self.storage[repo_extra["namespace"]]:
             return MediaResponse()
 
         file = self.storage[repo_extra["namespace"]][storage_path]
 
-        return MediaResponse(
-            media=(
-                ContentFactory.from_bytes(
-                    media_type=file.media_type,
-                    data=file.data,
-                    **file.get_metadata(),
-                ),
-            )
+        content_response = ContentResponse(
+            raw_response=None,
+            content=ContentFactory.from_bytes(
+                media_type=file.media_type,
+                data=file.data,
+                **file.get_metadata(),
+            ),
         )
+
+        return MediaResponse.from_content_response(response=content_response)
 
     async def delete(
         self,
         storage_path: StoragePath,
         repo_extra: RepoExtra,
         connector_extra: ConnectorExtra = OMIT,  # noqa: ARG002
-    ):
+    ) -> ConnectorRawResponse[None]:
         self.storage[repo_extra["namespace"]].pop(storage_path, None)
+
+        return ConnectorRawResponse(raw_response=None)
 
     @reraise_with(NoSuchKeyException(), catch=KeyError)
     async def copy_object(
@@ -116,9 +121,11 @@ class InMemoryConnector(AbstractConnector):
         to_storage_path: StoragePath,
         to_namespace: Namespace,
         connector_extra: ConnectorExtra = OMIT,  # noqa: ARG002
-    ):
+    ) -> ConnectorRawResponse[None]:
         file = self.storage[repo_extra["namespace"]][from_storage_path]
         self.storage[to_namespace][to_storage_path] = file
+
+        return ConnectorRawResponse(raw_response=None)
 
     @classmethod
     def drop_all(cls) -> None:
@@ -131,7 +138,7 @@ class InMemoryConnector(AbstractConnector):
         limit: int = 1000,
         continuation_token: Omittable[str] | None = OMIT,
         connector_extra: ConnectorExtra = OMIT,  # noqa: ARG002
-    ) -> ListResponse:
+    ) -> ConnectorListResponse[None]:
         filtered_storage_paths = []
         all_storage_paths = sorted(self.storage[repo_extra["namespace"]])
 
@@ -151,9 +158,10 @@ class InMemoryConnector(AbstractConnector):
         else:
             continuation_token = None
 
-        return ListResponse(
+        return ConnectorListResponse(
             storage_paths=filtered_storage_paths,
             continuation_token=continuation_token,
+            raw_response=None,
         )
 
     async def generate_presigned_url(

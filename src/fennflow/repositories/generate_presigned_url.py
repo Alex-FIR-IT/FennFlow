@@ -6,7 +6,7 @@ from fennflow._sentinel import OMIT, Omittable
 from fennflow.repositories.at import AtRepository
 
 if TYPE_CHECKING:
-    from fennflow.files.responses.presigned_url import PresignedUrlResponse
+    from fennflow.responses.presigned_url import PresignedUrlResponse
 
 
 class GeneratePresignedUrlRepository(AtRepository):

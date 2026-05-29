@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING
 
 from fennflow._query_specs.select.get_visible import GetVisibleQuerySpec
 from fennflow._sentinel import OMIT
-from fennflow.files.responses.base import MediaResponse
 from fennflow.repositories.at import AtRepository
+from fennflow.responses.media import MediaResponse
 
 if TYPE_CHECKING:
     from fennflow._new_types import ConnectorExtra

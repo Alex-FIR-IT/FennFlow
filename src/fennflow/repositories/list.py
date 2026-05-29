@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from fennflow._query_specs.select.select_visible import SelectVisibleQuerySpec
 from fennflow._sentinel import OMIT, Omittable
-from fennflow.files.responses.list import ListResponse
 from fennflow.repositories.at import AtRepository
+from fennflow.responses.list import ListResponse
 
 
 class ListRepository(AtRepository):
