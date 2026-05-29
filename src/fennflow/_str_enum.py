@@ -5,5 +5,5 @@ if sys.version_info >= (3, 11):
 else:
     from enum import Enum
 
-    class StrEnum(str, Enum):
+    class StrEnum(Enum):
         """StrEnum for python3.10."""
