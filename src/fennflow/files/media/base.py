@@ -29,7 +29,6 @@ from fennflow.files.exceptions.extension_cannot_be_guessed import (
 from fennflow.files.exceptions.filename_and_mediatype_both_none import (
     FileNameAndMediaTypeBothNoneException,
 )
-from fennflow.files.exceptions.filename_is_none import FilenameIsNoneException
 
 if TYPE_CHECKING:
     from typing_extensions import Self
