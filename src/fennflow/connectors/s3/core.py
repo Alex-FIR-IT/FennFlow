@@ -129,13 +129,16 @@ class S3Connector(AbstractConnector[S3Extra]):
         if is_given(connector_extra):
             extra.update(connector_extra)
 
-        response = await self.s3client.client.get_object(
-            Bucket=repo_extra["namespace"],
-            Key=storage_path,
-            **extra,
-        )
-        if not response:
-            return MediaResponse()
+        try:
+            response = await self.s3client.client.get_object(
+                Bucket=repo_extra["namespace"],
+                Key=storage_path,
+                **extra,
+            )
+        except ClientError as _client_error:
+            if _client_error.response["Error"]["Code"] == "NoSuchKey":
+                return MediaResponse()
+            raise
 
         async with response["Body"] as stream:
             content_response = ContentResponse(
