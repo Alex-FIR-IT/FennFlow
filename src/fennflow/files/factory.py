@@ -71,6 +71,11 @@ class ContentFactory:
             **kwargs,
         }
 
+        media_type = (
+            media_type.value if isinstance(media_type, MediaType) else media_type
+        )  # since python3.10 has no build-in StrEnum and his behavior differs,
+        # we must use str representations directly
+
         if media_type in content_registry:
             content_cls = content_registry[media_type]
         else:
