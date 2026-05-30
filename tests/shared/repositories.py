@@ -1,9 +1,8 @@
 from fennflow.repositories import (
     CreateRepository,
-    DeleteRepository,
+    DeletePrefixRepository,
     GeneratePresignedUrlRepository,
     GetRepository,
-    ListRepository,
     PutRepository,
 )
 
@@ -11,9 +10,8 @@ from fennflow.repositories import (
 class UserFiles(
     PutRepository,
     CreateRepository,
-    DeleteRepository,
+    DeletePrefixRepository,
     GetRepository,
-    ListRepository,
     GeneratePresignedUrlRepository,
 ):
     pass

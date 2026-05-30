@@ -1,5 +1,6 @@
 __all__ = [
     "CreateRepository",
+    "DeletePrefixRepository",
     "DeleteRepository",
     "GeneratePresignedUrlRepository",
     "GetRepository",
@@ -11,6 +12,7 @@ __all__ = [
 
 from .create import CreateRepository
 from .delete import DeleteRepository
+from .delete_prefix import DeletePrefixRepository
 from .fields import RepoField, S3RepoField
 from .generate_presigned_url import GeneratePresignedUrlRepository
 from .get import GetRepository
