@@ -75,6 +75,14 @@ class AtRepository(BaseRepository):
 
         return self.__class__(self._uow, new_path, repo_extra=self.repo_extra)
 
+    def _cd_root(self) -> Self:
+        """Return a new repository instance scoped to the root path."""
+        return self.__class__(
+            self._uow,
+            "",
+            repo_extra=self.repo_extra,
+        )
+
     @property
     def cwd(self) -> str:
         """Return the current working path.
