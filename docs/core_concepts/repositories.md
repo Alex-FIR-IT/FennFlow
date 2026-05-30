@@ -29,12 +29,13 @@ Available mixins:
 
 | Mixin                            | Operation                            | Participates in Saga | Backend    | Connector |
 |----------------------------------|--------------------------------------|----------------------|------------|-----------|
-| `PutRepository`                  | Upsert one or more files             | Yes                  | read+write | write     |
 | `GetRepository`                  | Download one or more files           | No (read-only)       | read       | read      |
-| `DeleteRepository`               | Delete a file                        | Yes                  | read+write | write     |
 | `ListRepository`                 | List files by prefix with pagination | No (read-only)       | read       | —         |
-| `CreateRepository`               | Upload one or more files             | Yes                  | read+write | write     |
 | `GeneratePresignedUrlRepository` | generate presigned url               | No (read-only)       | —          | read      |
+| `PutRepository`                  | Upsert one or more files             | Yes                  | read+write | write     |
+| `CreateRepository`               | Upload one or more files             | Yes                  | read+write | write     |
+| `DeleteRepository`               | Delete a file                        | Yes                  | read+write | write     |
+| `DeletePrefixRepository`         | Delete a whole prefix                | Yes                  | read+write | write     |
 
 Read-only operations (such as `GetRepository`) consult the backend before touching storage. If the
 backend has no record of a file, no network request is made.
