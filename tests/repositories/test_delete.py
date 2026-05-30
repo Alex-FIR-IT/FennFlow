@@ -47,3 +47,54 @@ async def test_delete_several_times_and_rollback(uow_cls, text_files):
         response = await uow.user_files.get(file.filename)
         assert len(response) == 1
         assert response[0].content.data == file.data
+
+
+@pytest.mark.asyncio
+async def test_delete_multiple_files(uow_cls, text_files):
+    async with uow_cls() as uow:
+        await uow.user_files.at("user/").create(*text_files)
+
+        results = await uow.user_files.at("user/").delete(
+            *[f.filename for f in text_files]
+        )
+
+        assert len(results) == len(text_files)
+        assert all(result is not None for result in results)
+
+        for file in text_files:
+            result = await uow.user_files.at("user/").get(file.filename)
+            assert len(result) == 0
+
+
+@pytest.mark.asyncio
+async def test_delete_mixed_existing_and_missing(uow_cls, text_files):
+    async with uow_cls() as uow:
+        await uow.user_files.at("user/").create(text_files[0])
+
+        results = await uow.user_files.at("user/").delete(
+            text_files[0].filename,
+            text_files[1].filename,  # does not exist
+        )
+
+        assert len(results) == 2
+        assert results[0] is not None
+        assert results[1] is None
+
+
+@pytest.mark.asyncio
+async def test_delete_zero_files(uow_cls):
+    async with uow_cls() as uow:
+        results = await uow.user_files.at("user/").delete()
+
+        assert results == []
+
+
+@pytest.mark.asyncio
+async def test_delete_all_missing(uow_cls, text_files):
+    async with uow_cls() as uow:
+        results = await uow.user_files.at("user/").delete(
+            *[f.filename for f in text_files]
+        )
+
+        assert len(results) == len(text_files)
+        assert all(result is None for result in results)
