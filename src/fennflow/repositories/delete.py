@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 from typing import TYPE_CHECKING, Any
 
 from fennflow._operations.context.delete import DeleteContext
@@ -9,6 +8,7 @@ from fennflow._operations.enums import OperationTypeEnum
 from fennflow._query_specs.select.get_visible import GetVisibleQuerySpec
 from fennflow._sentinel import OMIT
 from fennflow.backends.enums import OnConflictDoEnum
+from fennflow.repositories._helper_mixins.gather_tasks import GatherTasksHelper
 from fennflow.repositories.at import AtRepository
 from fennflow.responses.connector_raw import ConnectorRawResponse
 
@@ -21,7 +21,10 @@ if TYPE_CHECKING:
 DeleteResponse = list[ConnectorRawResponse[Any] | None]
 
 
-class DeleteRepository(AtRepository):
+class DeleteRepository(
+    AtRepository,
+    GatherTasksHelper,
+):
     """Repository mixin for deleting files from storage.
 
     Implements Saga-based deletion with automatic compensation on failure.
@@ -64,7 +67,7 @@ class DeleteRepository(AtRepository):
             operations.append(operation)
 
         await self._uow.backend.flush(operations=operations)
-        return await self.__gather_tasks(
+        return await self._gather_tasks(
             tasks=tasks,
             task_indexes=task_indexes,
             results=results,
@@ -110,14 +113,3 @@ class DeleteRepository(AtRepository):
                 session_id=self._uow._session_id,
             )
         )
-
-    async def __gather_tasks(
-        self,
-        tasks: list[Coroutine[Any, Any, ConnectorRawResponse[Any]]],
-        task_indexes: list[int],
-        results: DeleteResponse,
-    ) -> DeleteResponse:
-        gathered = await asyncio.gather(*tasks)
-        for i, result in zip(task_indexes, gathered, strict=True):
-            results[i] = result
-        return results
