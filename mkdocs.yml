@@ -44,7 +44,8 @@ plugins:
   - llmstxt:
       full_output: llms-full.txt
       markdown_description: |-
-        FennFlow is a Python S3 framework providing atomic-like file operations
+        FennFlow is a Python atomic-like agnostic object storage framework 
+        providing atomic-like file operations
         with Saga-pattern compensation, built on top of aiobotocore with
         Pydantic-powered content models and a Unit of Work abstraction.
       sections:
