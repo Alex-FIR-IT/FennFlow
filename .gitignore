@@ -10,7 +10,7 @@ wheels/
 .venv
 
 .idea
-*.env
+.env
 .notes
 site
 main.py
