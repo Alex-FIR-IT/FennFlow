@@ -17,7 +17,6 @@ from fennflow.responses.connector_list import ConnectorListResponse
 from fennflow.responses.connector_raw import ConnectorRawResponse
 from fennflow.responses.content import ContentResponse
 from fennflow.responses.media import MediaResponse
-from fennflow.responses.presigned_url import PresignedUrlResponse
 
 if TYPE_CHECKING:
     from aiobotocore.session import AioSession
@@ -242,7 +241,7 @@ class S3Connector(AbstractConnector[S3Extra]):
         repo_extra: RepoExtraType,
         expires_in: Omittable[int] = OMIT,
         connector_extra: ConnectorExtra = OMIT,
-    ) -> PresignedUrlResponse:
+    ) -> str:
         params: dict[str, Any] = {
             "ClientMethod": "get_object",
             "Params": {"Bucket": repo_extra["namespace"], "Key": storage_path},
@@ -256,4 +255,4 @@ class S3Connector(AbstractConnector[S3Extra]):
 
         url = await self.s3client.client.generate_presigned_url(**params)
 
-        return PresignedUrlResponse(url=url)
+        return url
