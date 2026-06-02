@@ -14,7 +14,6 @@ if TYPE_CHECKING:
     from fennflow.responses.connector_list import ConnectorListResponse
     from fennflow.responses.connector_raw import ConnectorRawResponse
     from fennflow.responses.media import MediaResponse
-    from fennflow.responses.presigned_url import PresignedUrlResponse
 
 RepoExtraType = TypeVar("RepoExtraType", bound=RepoExtra)
 
