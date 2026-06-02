@@ -18,7 +18,7 @@ def test_import_all_modules():
     failed = {}
     for module_name in remaining:
         try:
-            importlib.import_module(module_name)
+            __import__(module_name)
         except Exception as e:  # noqa: BLE001
             failed[module_name] = e
 
