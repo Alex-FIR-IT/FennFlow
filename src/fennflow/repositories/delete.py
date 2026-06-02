@@ -1,21 +1,20 @@
 from __future__ import annotations
 
-import asyncio
 from typing import TYPE_CHECKING, Any
 
 from fennflow._operations.context.delete import DeleteContext
 from fennflow._operations.dto import OperationRecord, Record
 from fennflow._operations.enums import OperationTypeEnum
-from fennflow._query_specs.select.get_visible import GetVisibleQuerySpec
 from fennflow._sentinel import OMIT
 from fennflow.backends.enums import OnConflictDoEnum
+from fennflow.repositories._helper_mixins import gather_tasks, visible_record
 from fennflow.repositories.at import AtRepository
 from fennflow.responses.connector_raw import ConnectorRawResponse
 
 if TYPE_CHECKING:
     from collections.abc import Coroutine
 
-    from fennflow._new_types import ConnectorExtra, StoragePath
+    from fennflow._new_types import ConnectorExtra
 
 
 DeleteResponse = list[ConnectorRawResponse[Any] | None]
@@ -51,7 +50,10 @@ class DeleteRepository(AtRepository):
 
         for task_index, path in enumerate(paths):
             storage_path = self._join_path(path)
-            record = await self.__get_visible_record(storage_path=storage_path)
+            record = await visible_record.get_visible_record(
+                repostory=self,
+                storage_path=storage_path,
+            )
 
             if record is None:
                 continue
@@ -64,7 +66,7 @@ class DeleteRepository(AtRepository):
             operations.append(operation)
 
         await self._uow.backend.flush(operations=operations)
-        return await self.__gather_tasks(
+        return await gather_tasks.gather_tasks(
             tasks=tasks,
             task_indexes=task_indexes,
             results=results,
@@ -100,24 +102,3 @@ class DeleteRepository(AtRepository):
             operation,
             on_conflict=OnConflictDoEnum.REPLACE,
         )
-
-    async def __get_visible_record(self, storage_path: StoragePath) -> Record | None:
-        return await self._uow._backend.backend_engine.execute(
-            GetVisibleQuerySpec(
-                scope=self._uow._resolved_config.backend.scope,
-                namespace=self.repo_extra["namespace"],
-                storage_path=storage_path,
-                session_id=self._uow._session_id,
-            )
-        )
-
-    async def __gather_tasks(
-        self,
-        tasks: list[Coroutine[Any, Any, ConnectorRawResponse[Any]]],
-        task_indexes: list[int],
-        results: DeleteResponse,
-    ) -> DeleteResponse:
-        gathered = await asyncio.gather(*tasks)
-        for i, result in zip(task_indexes, gathered, strict=True):
-            results[i] = result
-        return results

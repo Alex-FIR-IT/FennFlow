@@ -14,7 +14,6 @@ if TYPE_CHECKING:
     from fennflow.responses.connector_list import ConnectorListResponse
     from fennflow.responses.connector_raw import ConnectorRawResponse
     from fennflow.responses.media import MediaResponse
-    from fennflow.responses.presigned_url import PresignedUrlResponse
 
 RepoExtraType = TypeVar("RepoExtraType", bound=RepoExtra)
 
@@ -96,5 +95,5 @@ class AbstractConnector(ABC, Generic[RepoExtraType]):
         repo_extra: RepoExtraType,
         expires_in: Omittable[int] = OMIT,
         connector_extra: ConnectorExtra = OMIT,
-    ) -> PresignedUrlResponse:
+    ) -> str:
         """Generate a presigned url."""

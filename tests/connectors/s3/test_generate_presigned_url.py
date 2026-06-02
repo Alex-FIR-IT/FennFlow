@@ -19,11 +19,17 @@ async def test_generate_presigned_url_returns_content(uow_cls: type[MinioUOW]):
     async with uow_cls() as uow:
         await uow.user_files.create(file)
 
-        response = await uow.user_files.generate_presigned_url(file.filename)
+        response = await uow.user_files.generate_presigned_url(
+            file.filename,
+            "NonExistentFilename",
+        )
+        urls = tuple(response.urls)
 
-        assert isinstance(response.url, str)
+        assert isinstance(response.results, list)
+        assert len(response.results) == 2
+        assert len(urls) == 1
 
         async with httpx.AsyncClient() as client:
-            presigned_url_response = await client.get(response.url)
+            presigned_url_response = await client.get(*urls)
 
             assert presigned_url_response.content == file.data
