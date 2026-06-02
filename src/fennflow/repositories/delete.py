@@ -9,6 +9,7 @@ from fennflow._query_specs.select.get_visible import GetVisibleQuerySpec
 from fennflow._sentinel import OMIT
 from fennflow.backends.enums import OnConflictDoEnum
 from fennflow.repositories._helper_mixins.gather_tasks import GatherTasksHelper
+from fennflow.repositories._helper_mixins.visible_record import VisibleRecordHelper
 from fennflow.repositories.at import AtRepository
 from fennflow.responses.connector_raw import ConnectorRawResponse
 
@@ -24,6 +25,7 @@ DeleteResponse = list[ConnectorRawResponse[Any] | None]
 class DeleteRepository(
     AtRepository,
     GatherTasksHelper,
+    VisibleRecordHelper,
 ):
     """Repository mixin for deleting files from storage.
 
@@ -54,7 +56,7 @@ class DeleteRepository(
 
         for task_index, path in enumerate(paths):
             storage_path = self._join_path(path)
-            record = await self.__get_visible_record(storage_path=storage_path)
+            record = await self._get_visible_record(storage_path=storage_path)
 
             if record is None:
                 continue
@@ -102,14 +104,4 @@ class DeleteRepository(
         await self._uow.backend.insert(
             operation,
             on_conflict=OnConflictDoEnum.REPLACE,
-        )
-
-    async def __get_visible_record(self, storage_path: StoragePath) -> Record | None:
-        return await self._uow._backend.backend_engine.execute(
-            GetVisibleQuerySpec(
-                scope=self._uow._resolved_config.backend.scope,
-                namespace=self.repo_extra["namespace"],
-                storage_path=storage_path,
-                session_id=self._uow._session_id,
-            )
         )
