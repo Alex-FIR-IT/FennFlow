@@ -96,5 +96,5 @@ class AbstractConnector(ABC, Generic[RepoExtraType]):
         repo_extra: RepoExtraType,
         expires_in: Omittable[int] = OMIT,
         connector_extra: ConnectorExtra = OMIT,
-    ) -> PresignedUrlResponse:
+    ) -> str:
         """Generate a presigned url."""
