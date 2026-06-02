@@ -1,3 +1,4 @@
+from collections.abc import Iterator
 from dataclasses import dataclass
 
 
@@ -5,5 +6,14 @@ from dataclasses import dataclass
 class PresignedUrlResponse:
     """Response object returned by presigned URL generation."""
 
-    url: str
-    """The presigned URL string."""
+    results: list[str | None]
+    """The presigned URL strings or None corresponding to the given paths."""
+
+    @property
+    def urls(self) -> Iterator[str]:
+        """Iterator that yields presigned URL strings excluding Nones."""
+        return filter(None, self.results)
+
+    @property
+    def any_url(self) -> bool:
+        return any(self.results)
