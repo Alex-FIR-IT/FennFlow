@@ -10,16 +10,15 @@ if TYPE_CHECKING:
     from fennflow._protocols.repository import RepositoryProtocol
 
 
-class VisibleRecordHelper:
-    async def _get_visible_record(
-        self: RepositoryProtocol,
-        storage_path: StoragePath,
-    ) -> Record | None:
-        return await self._uow._backend.backend_engine.execute(
-            GetVisibleQuerySpec(
-                scope=self._uow._resolved_config.backend.scope,
-                namespace=self.repo_extra["namespace"],
-                storage_path=storage_path,
-                session_id=self._uow._session_id,
-            )
+async def get_visible_record(
+    repostory: RepositoryProtocol,
+    storage_path: StoragePath,
+) -> Record | None:
+    return await repostory._uow._backend.backend_engine.execute(
+        GetVisibleQuerySpec(
+            scope=repostory._uow._resolved_config.backend.scope,
+            namespace=repostory.repo_extra["namespace"],
+            storage_path=storage_path,
+            session_id=repostory._uow._session_id,
         )
+    )

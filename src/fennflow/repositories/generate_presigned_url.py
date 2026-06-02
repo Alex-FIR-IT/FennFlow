@@ -3,8 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from fennflow._sentinel import OMIT, Omittable
-from fennflow.repositories._helper_mixins.gather_tasks import GatherTasksHelper
-from fennflow.repositories._helper_mixins.visible_record import VisibleRecordHelper
+from fennflow.repositories._helper_mixins import gather_tasks, visible_record
 from fennflow.repositories.at import AtRepository
 from fennflow.responses.presigned_url import PresignedUrlResponse
 
@@ -12,11 +11,7 @@ if TYPE_CHECKING:
     from collections.abc import Coroutine
 
 
-class GeneratePresignedUrlRepository(
-    AtRepository,
-    VisibleRecordHelper,
-    GatherTasksHelper,
-):
+class GeneratePresignedUrlRepository(AtRepository):
     """Repository mixin for generating presigned URLs.
 
     Provides access to connector-level presigned URL generation
@@ -72,7 +67,10 @@ class GeneratePresignedUrlRepository(
         for task_idx, relative_path in enumerate(storage_paths):
             storage_path = self._join_path(relative_path)
 
-            record = await self._get_visible_record(storage_path=storage_path)
+            record = await visible_record.get_visible_record(
+                repostory=self,
+                storage_path=storage_path,
+            )
 
             if record is None:
                 continue
@@ -99,7 +97,7 @@ class GeneratePresignedUrlRepository(
         task_indexes: list[int],
         results: list[None | str],
     ) -> PresignedUrlResponse:
-        results = await self._gather_tasks(
+        results = await gather_tasks.gather_tasks(
             tasks=tasks,
             task_indexes=task_indexes,
             results=results,
