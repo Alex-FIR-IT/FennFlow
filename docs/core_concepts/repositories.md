@@ -27,15 +27,17 @@ class CrudRepository(
 
 Available mixins:
 
-| Mixin                            | Operation                            | Participates in Saga | Backend    | Connector |
-|----------------------------------|--------------------------------------|----------------------|------------|-----------|
-| `GetRepository`                  | Download one or more files           | No (read-only)       | read       | read      |
-| `ListRepository`                 | List files by prefix with pagination | No (read-only)       | read       | —         |
-| `GeneratePresignedUrlRepository` | generate presigned url               | No (read-only)       | —          | read      |
-| `PutRepository`                  | Upsert one or more files             | Yes                  | read+write | write     |
-| `CreateRepository`               | Upload one or more files             | Yes                  | read+write | write     |
-| `DeleteRepository`               | Delete a file                        | Yes                  | read+write | write     |
-| `DeletePrefixRepository`         | Delete a whole prefix                | Yes                  | read+write | write     |
+| Mixin                                  | Operation                                 | Participates in Saga | Backend    | Connector |
+|----------------------------------------|-------------------------------------------|----------------------|------------|-----------|
+| `GetPrefixRepository`                  | Download a whole prefix                   | No (read-only)       | read       | read      |
+| `GetRepository`                        | Download one or more files                | No (read-only)       | read       | read      |
+| `ListRepository`                       | List files by prefix with pagination      | No (read-only)       | read       | —         |
+| `GeneratePresignedUrlPrefixRepository` | Generate presigned url for a whole prefix | No (read-only)       | read       | read      |
+| `GeneratePresignedUrlRepository`       | Generate presigned url                    | No (read-only)       | read       | read      |
+| `PutRepository`                        | Upsert one or more files                  | Yes                  | read+write | write     |
+| `CreateRepository`                     | Upload one or more files                  | Yes                  | read+write | write     |
+| `DeleteRepository`                     | Delete a file                             | Yes                  | read+write | write     |
+| `DeletePrefixRepository`               | Delete a whole prefix                     | Yes                  | read+write | write     |
 
 Read-only operations (such as `GetRepository`) consult the backend before touching storage. If the
 backend has no record of a file, no network request is made.
