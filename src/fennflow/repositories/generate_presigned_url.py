@@ -43,7 +43,7 @@ class GeneratePresignedUrlRepository(AtRepository):
                 passed directly to the connector.
 
         Returns:
-            PresignedUrlResponse containing the generated URL.
+            PresignedUrlResponse containing the generated URLs.
 
         Raises:
             ConnectorCapabilityException: If the configured connector
