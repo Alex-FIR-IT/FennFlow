@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from fennflow._sentinel import OMIT, Omittable
-from fennflow.repositories import ListRepository
+from fennflow.repositories.list import ListRepository
 
 if TYPE_CHECKING:
     from fennflow._new_types import StoragePath
