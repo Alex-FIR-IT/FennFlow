@@ -27,15 +27,24 @@ class CrudRepository(
 
 Available mixins:
 
-| Mixin                            | Operation                            | Participates in Saga | Backend    | Connector |
-|----------------------------------|--------------------------------------|----------------------|------------|-----------|
-| `GetRepository`                  | Download one or more files           | No (read-only)       | read       | read      |
-| `ListRepository`                 | List files by prefix with pagination | No (read-only)       | read       | —         |
-| `GeneratePresignedUrlRepository` | generate presigned url               | No (read-only)       | —          | read      |
-| `PutRepository`                  | Upsert one or more files             | Yes                  | read+write | write     |
-| `CreateRepository`               | Upload one or more files             | Yes                  | read+write | write     |
-| `DeleteRepository`               | Delete a file                        | Yes                  | read+write | write     |
-| `DeletePrefixRepository`         | Delete a whole prefix                | Yes                  | read+write | write     |
+### Base Mixins
+
+| Mixin                            | Operation                            | Participates in Saga | Backend    | Connector | Supported By                     |
+|----------------------------------|--------------------------------------|----------------------|------------|-----------|----------------------------------|
+| `GetRepository`                  | Download one or more files           | No (read-only)       | read       | read      | S3Connector<br>InMemoryConnector |
+| `ListRepository`                 | List files by prefix with pagination | No (read-only)       | read       | —         | S3Connector<br>InMemoryConnector |
+| `GeneratePresignedUrlRepository` | Generate presigned URL               | No (read-only)       | read       | read      | S3Connector                      |
+| `PutRepository`                  | Upsert one or more files             | Yes                  | read+write | write     | S3Connector<br>InMemoryConnector |
+| `CreateRepository`               | Upload one or more files             | Yes                  | read+write | write     | S3Connector<br>InMemoryConnector |
+| `DeleteRepository`               | Delete a file                        | Yes                  | read+write | write     | S3Connector<br>InMemoryConnector |
+
+### Prefix Mixins
+
+| Mixin                                  | Operation                                  | Participates in Saga | Backend    | Connector | Supported By                     |
+|----------------------------------------|--------------------------------------------|----------------------|------------|-----------|----------------------------------|
+| `GetPrefixRepository`                  | Download a whole prefix                    | No (read-only)       | read       | read      | S3Connector<br>InMemoryConnector |
+| `GeneratePresignedUrlPrefixRepository` | Generate presigned URLs for a whole prefix | No (read-only)       | read       | read      | S3Connector                      |
+| `DeletePrefixRepository`               | Delete a whole prefix                      | Yes                  | read+write | write     | S3Connector<br>InMemoryConnector |
 
 Read-only operations (such as `GetRepository`) consult the backend before touching storage. If the
 backend has no record of a file, no network request is made.
