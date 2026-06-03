@@ -39,7 +39,7 @@ class DeletePrefixRepository(AtRepository):
         **Example**::
 
             async with UOW() as uow:
-                await uow.user_files.delete_prefix() # deletes all files in the bucket
+                await uow.user_files.delete_prefix("") # deletes all files in the bucket
         """
         storage_paths: list[StoragePath] = await paths.get_all_paths(
             repository=self,

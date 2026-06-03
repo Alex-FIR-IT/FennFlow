@@ -3,6 +3,7 @@ from fennflow.repositories import (
     DeletePrefixRepository,
     DeleteRepository,
     GeneratePresignedUrlRepository,
+    GetPrefixRepository,
     GetRepository,
     ListRepository,
     PutRepository,
@@ -16,6 +17,7 @@ class UserFiles(
     DeleteRepository,
     DeletePrefixRepository,
     GetRepository,
+    GetPrefixRepository,
     GeneratePresignedUrlRepository,
 ):
     pass
