@@ -51,6 +51,7 @@ dependencies = [
     "certifi>=2023.11.17",
     "sqlalchemy[asyncio]>=2.0.0",
     "aiosqlite>=0.20.0",
+    "asyncio-atexit>=1.0.1",
 ]
 
 
