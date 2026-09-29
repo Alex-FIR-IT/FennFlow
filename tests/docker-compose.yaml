@@ -1,13 +1,13 @@
 services:
   minio:
-    image: minio/minio
-    command: server /data --console-address ":9001"
+    image: localstack/localstack:4.14.0
     ports:
-      - "9000:9000"   # S3 API
-      - "9001:9001"   # Web console
+      - "9000:4566"   # S3 API
+      - "4510-4559:4510-4559"
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
+      SERVICES: s3
     volumes:
       - minio_data:/data
 
