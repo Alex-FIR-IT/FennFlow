@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import asyncio
-import atexit
 from typing import TYPE_CHECKING
+
+import asyncio_atexit
 
 from fennflow.backends.sqlalchemy._enums import Dialect
 
@@ -34,7 +34,7 @@ class EngineManager:
 
     def _register_engine(self, url: DatabaseUrl, schema: Schema, engine) -> None:
         self._engine_cache[(url, schema)] = engine
-        atexit.register(lambda: asyncio.run(engine.dispose()))
+        asyncio_atexit.register(engine.dispose)
 
     @staticmethod
     def _create_async_engine(

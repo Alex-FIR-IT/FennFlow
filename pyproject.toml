@@ -51,6 +51,7 @@ dependencies = [
     "certifi>=2023.11.17",
     "sqlalchemy[asyncio]>=2.0.0",
     "aiosqlite>=0.20.0",
+    "asyncio-atexit>=1.0.1",
 ]
 
 
@@ -162,3 +163,7 @@ skip-magic-trailing-comma = false
 
 [tool.bandit.tests]
 skips = ["B101", "B105", "B106"]
+
+[[tool.mypy.overrides]]
+module = ["asyncio_atexit.*"]
+ignore_missing_imports = true
