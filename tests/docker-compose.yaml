@@ -1,15 +1,12 @@
 services:
-  minio:
+  s3:
     image: localstack/localstack:4.14.0
     ports:
-      - "9000:4566"   # S3 API
-      - "4510-4559:4510-4559"
+      - "9000:4566"
     environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
       SERVICES: s3
-    volumes:
-      - minio_data:/data
-
-volumes:
-  minio_data:
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:4566/_localstack/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
