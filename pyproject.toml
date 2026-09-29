@@ -163,3 +163,7 @@ skip-magic-trailing-comma = false
 
 [tool.bandit.tests]
 skips = ["B101", "B105", "B106"]
+
+[[tool.mypy.overrides]]
+module = ["asyncio_atexit.*"]
+ignore_missing_imports = true
