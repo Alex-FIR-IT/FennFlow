@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from fennflow._query_specs.delete.delete_scope import DeleteScopeQuerySpec
 from fennflow._query_specs.insert.insert import InsertQuerySpec
+from fennflow._query_specs.insert.outbox import InsertOutboxQuerySpec
 from fennflow._query_specs.select.count import CountQuerySpec
 from fennflow._query_specs.select.get_by_storage_path import GetByStoragePathQuerySpec
 from fennflow._query_specs.select.get_visible import GetVisibleQuerySpec
@@ -17,15 +18,25 @@ from fennflow.backends.sqlalchemy._query_flows.get_by_storage_path import (
     GetByStoragePathFlow,
 )
 from fennflow.backends.sqlalchemy._query_flows.get_visible import GetVisibleFlow
-from fennflow.backends.sqlalchemy._query_flows.insert.core import InsertFlow
+from fennflow.backends.sqlalchemy._query_flows.insert.core import (
+    InsertFlow,
+    InsertOutboxFlow,
+)
 from fennflow.backends.sqlalchemy._query_flows.is_empty import IsEmptyFlow
 from fennflow.backends.sqlalchemy._query_flows.merge.core import MergeFlow
 from fennflow.backends.sqlalchemy._query_flows.select_visible import SelectVisibleFlow
 
 if TYPE_CHECKING:
-    from fennflow.backends.sqlalchemy._adapter import RecordOrmAdapter
+    from fennflow._query_specs.base import BaseQuerySpec
+    from fennflow.backends.sqlalchemy._adapter import (
+        OutboxRecordOrmAdapter,
+        RecordOrmAdapter,
+    )
     from fennflow.backends.sqlalchemy._base import AsyncSession
     from fennflow.backends.sqlalchemy._enums import Dialect
+    from fennflow.backends.sqlalchemy._query_flows.base import (
+        BaseSqlalchemyBackendQueryFlow,
+    )
     from fennflow.backends.sqlalchemy._types import (
         QueryFlowRegistryType,
     )
@@ -39,7 +50,10 @@ class SqlalchemyBackendFactory:
         session: AsyncSession,
         dialect: Dialect | str,
         adapter: RecordOrmAdapter,
+        outbox_adapter: OutboxRecordOrmAdapter,
     ) -> QueryFlowRegistryType:
+        outbox_spec_to_flow = ((InsertOutboxQuerySpec, InsertOutboxFlow),)
+
         spec_to_flow = (
             (SelectVisibleQuerySpec, SelectVisibleFlow),
             (GetByStoragePathQuerySpec, GetByStoragePathFlow),
@@ -50,7 +64,7 @@ class SqlalchemyBackendFactory:
             (DeleteScopeQuerySpec, DeleteScopeFlow),
             (CountQuerySpec, CountFlow),
         )
-        return {
+        registry: dict[type[BaseQuerySpec], BaseSqlalchemyBackendQueryFlow] = {
             query_spec: flow(
                 config=config,
                 session=session,
@@ -59,6 +73,16 @@ class SqlalchemyBackendFactory:
             )
             for query_spec, flow in spec_to_flow
         }
+
+        for query_spec, flow in outbox_spec_to_flow:
+            registry[query_spec] = flow(
+                config=config,
+                session=session,
+                dialect=dialect,
+                adapter=outbox_adapter,
+            )
+
+        return registry
 
     @classmethod
     def from_config(
