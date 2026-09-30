@@ -21,6 +21,10 @@ def create_outbox_table(
     dialect: str | Dialect,
     schema: str | None = None,
 ):
+    table_name = "outbox"
+
+    if table_name in _MODEL_CACHE:
+        return _MODEL_CACHE[table_name]
 
     from ._base import (
         AbstractOutboxTable,
@@ -31,14 +35,15 @@ def create_outbox_table(
     if schema and dialect != Dialect.SQLITE:
         table_args.append({"schema": schema})
 
-    return type(
+    _MODEL_CACHE[table_name] = type(
         "OutboxTable",
         (AbstractOutboxTable,),
         {
-            "__tablename__": "outbox",
+            "__tablename__": table_name,
             "__table_args__": tuple(table_args),
         },
     )
+    return _MODEL_CACHE[table_name]
 
 
 def create_operation_record_model(
