@@ -38,10 +38,7 @@ async def run(
                     flow.session.add(orm_instance)
 
         case OnConflictDoEnum.RAISE:
-            stmt = insert(model).values(
-                tuple(orm_model.model_dump() for orm_model in orm_instances)
-            )
-            await flow.session.execute(stmt)
+            flow.session.add_all(orm_instances)
         case _:
             raise AssertionError(
                 f"Unhandled conflict strategy: {query_spec.on_conflict}",
