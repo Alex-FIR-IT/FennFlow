@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import logging
 from contextlib import suppress
 from typing import TYPE_CHECKING, TypeVar
+
+from sqlalchemy.exc import PendingRollbackError
 
 from fennflow._query_specs.dispatcher import Dispatcher
 from fennflow.backends._abstract.core import AbstractBackend
@@ -16,6 +19,8 @@ if TYPE_CHECKING:
 
     from ..._query_specs.base import BaseQuerySpec
     from ._base import AsyncSession
+
+logger = logging.getLogger(__name__)
 
 ReturnType = TypeVar("ReturnType")
 
@@ -84,7 +89,14 @@ class SqlalchemyBackend(AbstractBackend):
     async def commit(
         self,
     ):
-        await self.session.commit()
+        try:
+            await self.session.commit()
+        except PendingRollbackError:
+            logger.info(
+                "Cannot commit changes",
+                exc_info=True,
+                stack_info=True,
+            )
 
     async def rollback(
         self,
