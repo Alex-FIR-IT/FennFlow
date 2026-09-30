@@ -11,9 +11,9 @@ if TYPE_CHECKING:
 
 
 def get_update_fields(
-        insert_stmt: Insert,
-        model: type[AbstractOperationRecordModel],
-        ) -> dict:
+    insert_stmt: Insert,
+    model: type[AbstractOperationRecordModel],
+) -> dict:
     """Returns fields required to update an operation.
 
         **Example**::
@@ -42,4 +42,4 @@ def get_update_fields(
         col.name: insert_stmt.excluded[col.name]
         for col in model.__table__.columns
         if col.name not in unique_constraint and not col.primary_key
-        }
+    }
