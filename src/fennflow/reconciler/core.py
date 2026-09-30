@@ -7,6 +7,7 @@ from fennflow._decorators import reraise_with
 from fennflow._operations.dto import OperationRecord
 from fennflow._operations.enums import OperationStatusEnum, OperationTypeEnum
 from fennflow._query_specs.insert.insert import InsertQuerySpec
+from fennflow._query_specs.insert.outbox import InsertOutboxQuerySpec
 from fennflow._query_specs.select.is_empty import IsEmptyQuerySpec
 from fennflow.backends.enums import OnConflictDoEnum
 from fennflow.reconciler.enums import ReconcileStrategyEnum
@@ -100,7 +101,7 @@ class Reconciler:
         strategy: ReconcileStrategyEnum,
         batch_size: int,
         backend_scope: BackendScope,
-    ) -> None:
+    ) -> int:
         """Reconcile all registered repository fields against the connector.
 
         Iterates over each ``RepoField``, lists its objects from the connector
@@ -114,6 +115,8 @@ class Reconciler:
             batch_size: Number of objects to fetch per page from the connector.
             backend_scope: Scope to assign to inserted records in the backend.
 
+        Returns:
+            int: The count of files that are added into the session_buffer
         Raises:
             ReconcileFailedException: If any error occurs during reconciliation.
         """
@@ -121,23 +124,32 @@ class Reconciler:
             strategy=strategy,
             backend_scope=backend_scope,
         ):
-            return
+            return 0
 
         for repo in self.uow_fields:
             on_conflict = reconcile_to_on_conflict_strategy[strategy]
 
             async for page in self._iter_pages(repo, batch_size=batch_size):
+                operations = tuple(
+                    self._records_from_page(
+                        session_id=session_id,
+                        page=page,
+                        repo_extra=repo.repo_extra,
+                        backend_scope=backend_scope,
+                    )
+                )
+
                 await self.backend.backend_engine.execute(
                     InsertQuerySpec.from_operations(
-                        operations=self._records_from_page(
-                            session_id=session_id,
-                            page=page,
-                            repo_extra=repo.repo_extra,
-                            backend_scope=backend_scope,
-                        ),
+                        operations=operations,
                         on_conflict=on_conflict,
                     )
                 )
+                await self.backend.backend_engine.execute(
+                    InsertOutboxQuerySpec.from_operations(operations)
+                )
+
+        return len(self.backend.session_buffer)
 
     async def _should_reconcile(
         self,
