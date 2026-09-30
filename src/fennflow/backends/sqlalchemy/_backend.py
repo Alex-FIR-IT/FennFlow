@@ -6,9 +6,10 @@ from typing import TYPE_CHECKING, TypeVar
 from fennflow._query_specs.dispatcher import Dispatcher
 from fennflow.backends._abstract.core import AbstractBackend
 
-from ._adapter import RecordOrmAdapter
+from ..._operations.dto import Record
+from ._adapter import OutboxRecordOrmAdapter, RecordOrmAdapter
 from ._engine_manager import engine_manager
-from ._model import create_all, create_operation_record_model
+from ._model import create_all, create_operation_record_model, create_outbox_table
 
 if TYPE_CHECKING:
     from fennflow.backends.sqlalchemy.config import SqlalchemyBackendConfig
@@ -39,7 +40,18 @@ class SqlalchemyBackend(AbstractBackend):
             schema=config.db_schema,
             dialect=self._engine.dialect.name,
         )
-        self._adapter = RecordOrmAdapter(orm_model=self._orm_model)
+        self._outbox_model = create_outbox_table(
+            schema=config.db_schema,
+            dialect=self._engine.dialect.name,
+        )
+        self._adapter = RecordOrmAdapter(
+            orm_model=self._orm_model,
+            dto=Record,
+        )
+        self._outbox_adapter = OutboxRecordOrmAdapter(
+            self._outbox_model,
+            dto=Record,
+        )
 
         self._session_maker = async_sessionmaker(
             self._engine,
@@ -95,6 +107,7 @@ class SqlalchemyBackend(AbstractBackend):
                 session=self.session,
                 adapter=self._adapter,
                 dialect=self._engine.dialect.name,
+                outbox_adapter=self._outbox_adapter,
             ),
         )
 
