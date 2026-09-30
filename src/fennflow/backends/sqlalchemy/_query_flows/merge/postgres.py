@@ -6,13 +6,13 @@ from fennflow._shared import unique_constraint
 from fennflow.backends.sqlalchemy._query_flows.utils.postgres import get_update_fields
 
 if TYPE_CHECKING:
-    from fennflow._query_specs.insert.insert import InsertQuerySpec
+    from fennflow._query_specs.update.merge import MergeQuerySpec
     from fennflow.backends.sqlalchemy._query_flows.merge.core import MergeFlow
 
 
 async def run(
     flow: MergeFlow,
-    query_spec: InsertQuerySpec,
+    query_spec: MergeQuerySpec,
 ) -> None:
     from fennflow.backends.sqlalchemy._base import pg_insert
 

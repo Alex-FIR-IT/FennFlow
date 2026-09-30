@@ -1,4 +1,3 @@
-
 from fennflow._base_pydantic_config import BasePydanticConfig
 
 

@@ -123,7 +123,14 @@ class UnitOfWork:
             if exc_type is not None or not self._auto_commit:
                 await self.rollback()
             elif self._auto_commit:
-                await self.commit()
+                try:
+                    await self.commit()
+                except Exception:
+                    logger.exception(
+                        "Unexpected exception occurred.",
+                        extra={"session_id": self._session_id},
+                    )
+                    await self.rollback()
         finally:
             await self._cleanup()
 

@@ -68,6 +68,14 @@ class Record:
     def is_put_type(self) -> bool:
         return self.operation_type == OperationTypeEnum.PUT
 
+    @property
+    def aggregate_id(self) -> str:
+        return f"{self.scope}|||{self.namespace}|||{self.storage_path}"
+
+    @property
+    def aggregate_type(self) -> str:
+        return "StorageObject"
+
     def generate_tmp_path(self) -> StoragePath:
         return TmpPathBuilder.from_record(self)
 

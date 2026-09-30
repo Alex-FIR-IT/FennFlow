@@ -7,14 +7,17 @@ from fennflow.backends.sqlalchemy._query_flows.utils.agnostic_upsert import upse
 
 if TYPE_CHECKING:
     from fennflow._query_specs.insert.insert import InsertQuerySpec
-    from fennflow.backends.sqlalchemy._query_flows.insert.core import InsertFlow
+    from fennflow._query_specs.insert.outbox import InsertOutboxQuerySpec
+    from fennflow.backends.sqlalchemy._query_flows.insert.core import (
+        InsertFlow,
+        InsertOutboxFlow,
+    )
 
 
 async def run(
-    flow: InsertFlow,
-    query_spec: InsertQuerySpec,
+    flow: InsertFlow | InsertOutboxFlow,
+    query_spec: InsertQuerySpec | InsertOutboxQuerySpec,
 ) -> None:
-    from fennflow.backends.sqlalchemy._base import insert
 
     records = query_spec.records
     model = flow.adapter.orm_model
@@ -35,10 +38,7 @@ async def run(
                     flow.session.add(orm_instance)
 
         case OnConflictDoEnum.RAISE:
-            stmt = insert(model).values(
-                tuple(orm_model.model_dump() for orm_model in orm_instances)
-            )
-            await flow.session.execute(stmt)
+            flow.session.add_all(orm_instances)
         case _:
             raise AssertionError(
                 f"Unhandled conflict strategy: {query_spec.on_conflict}",

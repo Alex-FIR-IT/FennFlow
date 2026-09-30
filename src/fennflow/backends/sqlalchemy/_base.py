@@ -1,8 +1,12 @@
-
 import uuid
+from datetime import datetime, timezone
+from typing import Any
+
+from sqlalchemy import JSON
 
 from fennflow._datetime import AwareDatetime, now
 from fennflow._new_types import BackendScope, Namespace, StoragePath
+from fennflow.backends.sqlalchemy._enums import OutboxStatus
 
 try:
     from sqlalchemy import (
@@ -122,4 +126,49 @@ class AbstractOperationRecordModel(BaseSqlalchemyModel):
     error: Mapped[str | None] = mapped_column(
         Text,
         nullable=True,
+    )
+
+
+class AbstractOutboxTable(BaseSqlalchemyModel):
+    __abstract__ = True
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        Uuid,
+        primary_key=True,
+        default=uuid.uuid4,
+    )
+
+    event_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid, unique=True, comment="metadata.operation_id"
+    )
+
+    aggregate_type: Mapped[str] = mapped_column(String(50), nullable=False)
+    aggregate_id: Mapped[str] = mapped_column(
+        String(255),
+        nullable=False,
+        comment="metadata.score|||metadata.namespace|||metadata.storage_path",
+    )
+    event_type: Mapped[str] = mapped_column(
+        String(50), nullable=False, comment="metadata.operation_type"
+    )
+
+    payload: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False)
+
+    status: Mapped[OutboxStatus] = mapped_column(
+        String(63),
+        default=OutboxStatus.PENDING,
+        nullable=False,
+        index=True,
+    )
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
     )

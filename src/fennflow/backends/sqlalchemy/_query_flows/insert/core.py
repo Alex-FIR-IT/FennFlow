@@ -5,6 +5,7 @@ from dataclasses import dataclass
 
 from fennflow._fallback_registry import FallbackRegistry
 from fennflow._query_specs.insert.insert import InsertQuerySpec
+from fennflow._query_specs.insert.outbox import InsertOutboxQuerySpec
 from fennflow.backends.sqlalchemy._enums import Dialect
 from fennflow.backends.sqlalchemy._query_flows.base import (
     BaseSqlalchemyBackendQueryFlow,
@@ -38,3 +39,12 @@ class InsertFlow(BaseSqlalchemyBackendQueryFlow[InsertQuerySpec, None]):
     ) -> None:
         flow = fallback_registry[self.dialect]
         return await flow(self, query_spec)
+
+
+@dataclass(slots=True)
+class InsertOutboxFlow(BaseSqlalchemyBackendQueryFlow[InsertOutboxQuerySpec, None]):
+    async def run(
+        self,
+        query_spec: InsertOutboxQuerySpec,
+    ):
+        return await db_agnostic.run(self, query_spec)

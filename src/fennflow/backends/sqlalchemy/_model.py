@@ -10,9 +10,40 @@ if TYPE_CHECKING:
 
     from sqlalchemy.ext.asyncio import AsyncEngine
 
-    from fennflow.backends.sqlalchemy._base import AbstractOperationRecordModel
+    from fennflow.backends.sqlalchemy._base import (
+        AbstractOperationRecordModel,
+    )
 
 _MODEL_CACHE: dict[str, type[AbstractOperationRecordModel]] = {}
+
+
+def create_outbox_table(
+    dialect: str | Dialect,
+    schema: str | None = None,
+):
+    table_name = "outbox"
+
+    if table_name in _MODEL_CACHE:
+        return _MODEL_CACHE[table_name]
+
+    from ._base import (
+        AbstractOutboxTable,
+    )
+
+    table_args: list[Any] = []
+
+    if schema and dialect != Dialect.SQLITE:
+        table_args.append({"schema": schema})
+
+    _MODEL_CACHE[table_name] = type(
+        "OutboxTable",
+        (AbstractOutboxTable,),
+        {
+            "__tablename__": table_name,
+            "__table_args__": tuple(table_args),
+        },
+    )
+    return _MODEL_CACHE[table_name]
 
 
 def create_operation_record_model(

@@ -4,18 +4,19 @@ from fennflow._operations.dto import Record
 from fennflow._query_specs.select.get_by_storage_path import GetByStoragePathQuerySpec
 from fennflow.backends.sqlalchemy._query_flows.base import (
     BaseSqlalchemyBackendQueryFlow,
-    )
+)
 
 
 @dataclass(slots=True)
 class GetByStoragePathFlow(
     BaseSqlalchemyBackendQueryFlow[GetByStoragePathQuerySpec, Record | None],
-    ):
+):
     async def run(
-            self,
-            query_spec: GetByStoragePathQuerySpec,
-            ) -> Record | None:
+        self,
+        query_spec: GetByStoragePathQuerySpec,
+    ) -> Record | None:
         from fennflow.backends.sqlalchemy._base import select
+
         model = self.adapter.orm_model
         stmt = (
             select(model)
@@ -23,7 +24,7 @@ class GetByStoragePathFlow(
                 model.scope == query_spec.scope,
                 model.namespace == query_spec.namespace,
                 model.storage_path == query_spec.storage_path,
-                )
+            )
             .limit(1)
         )
         result = await self.session.execute(stmt)

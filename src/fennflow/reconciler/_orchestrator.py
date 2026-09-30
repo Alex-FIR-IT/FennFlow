@@ -66,7 +66,7 @@ class ReconcileOrchestrator:
             backend=uow.backend,
         )
 
-        await reconciler.reconcile(
+        inserted_records_count = await reconciler.reconcile(
             session_id=uow._session_id,
             batch_size=uow._resolved_config.reconcile.batch_size,
             strategy=uow._resolved_config.reconcile.strategy,
@@ -74,7 +74,9 @@ class ReconcileOrchestrator:
         )
 
         logger.debug(
-            "Finished reconciliation.",
+            f"Finished reconciliation for {inserted_records_count} records.",
+            "They are placed in the session_buffer "
+            "and will be added into the database after commit.",
             extra=self._log_extra(uow=uow),
         )
 

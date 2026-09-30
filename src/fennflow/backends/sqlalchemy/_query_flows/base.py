@@ -7,7 +7,7 @@ from fennflow._query_specs._types import QuerySpecT_contra, ReturnType_co
 from fennflow._query_specs.protocols import HasRunMethodProtocol
 
 if TYPE_CHECKING:
-    from fennflow.backends.sqlalchemy._adapter import RecordOrmAdapter
+    from fennflow.backends.sqlalchemy._adapter import AdapterProtocol
     from fennflow.backends.sqlalchemy._base import AsyncSession
     from fennflow.backends.sqlalchemy._enums import Dialect
     from fennflow.backends.sqlalchemy.config import SqlalchemyBackendConfig
@@ -17,8 +17,8 @@ if TYPE_CHECKING:
 class BaseSqlalchemyBackendQueryFlow(
     HasRunMethodProtocol[QuerySpecT_contra, ReturnType_co],
     Generic[QuerySpecT_contra, ReturnType_co],
-    ):
+):
     config: SqlalchemyBackendConfig
     session: AsyncSession
-    adapter: RecordOrmAdapter
+    adapter: AdapterProtocol
     dialect: Dialect | str
