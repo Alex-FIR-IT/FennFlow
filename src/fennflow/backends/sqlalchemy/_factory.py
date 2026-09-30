@@ -11,6 +11,7 @@ from fennflow._query_specs.select.get_visible import GetVisibleQuerySpec
 from fennflow._query_specs.select.is_empty import IsEmptyQuerySpec
 from fennflow._query_specs.select.select_visible import SelectVisibleQuerySpec
 from fennflow._query_specs.update.merge import MergeQuerySpec
+from fennflow._query_specs.update.outbox import MergeOutboxQuerySpec
 from fennflow.backends.sqlalchemy._backend import SqlalchemyBackend
 from fennflow.backends.sqlalchemy._query_flows.count import CountFlow
 from fennflow.backends.sqlalchemy._query_flows.delete_scope import DeleteScopeFlow
@@ -23,7 +24,10 @@ from fennflow.backends.sqlalchemy._query_flows.insert.core import (
     InsertOutboxFlow,
 )
 from fennflow.backends.sqlalchemy._query_flows.is_empty import IsEmptyFlow
-from fennflow.backends.sqlalchemy._query_flows.merge.core import MergeFlow
+from fennflow.backends.sqlalchemy._query_flows.merge.core import (
+    MergeFlow,
+    MergeOutboxFlow,
+)
 from fennflow.backends.sqlalchemy._query_flows.select_visible import SelectVisibleFlow
 
 if TYPE_CHECKING:
@@ -52,7 +56,10 @@ class SqlalchemyBackendFactory:
         adapter: RecordOrmAdapter,
         outbox_adapter: OutboxRecordOrmAdapter,
     ) -> QueryFlowRegistryType:
-        outbox_spec_to_flow = ((InsertOutboxQuerySpec, InsertOutboxFlow),)
+        outbox_spec_to_flow = (
+            (InsertOutboxQuerySpec, InsertOutboxFlow),
+            (MergeOutboxQuerySpec, MergeOutboxFlow),
+        )
 
         spec_to_flow = (
             (SelectVisibleQuerySpec, SelectVisibleFlow),
