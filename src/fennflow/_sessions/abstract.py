@@ -27,3 +27,6 @@ class AbstractSessionBuffer(ABC):
 
     @abstractmethod
     def clear(self) -> None: ...
+
+    @abstractmethod
+    def __len__(self) -> int: ...

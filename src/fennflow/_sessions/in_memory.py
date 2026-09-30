@@ -55,3 +55,6 @@ class InMemorySessionBuffer(AbstractSessionBuffer):
 
     def _set(self, operation: OperationRecord) -> None:
         self._operations[operation.record.storage_path] = operation
+
+    def __len__(self) -> int:
+        return len(self._operations)
