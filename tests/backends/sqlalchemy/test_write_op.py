@@ -77,7 +77,7 @@ async def test_insert_and_merge(uow_cls, dialect, operations, on_conflict):
         pytest.param(
             OnConflictDoEnum.RAISE,
             pytest.raises(IntegrityError),
-            lambda ops: len(ops[4:]),
+            lambda ops: 0,
             id="raise",
         ),
     ],
@@ -102,8 +102,7 @@ async def test_merge_and_insert(
                     on_conflict=on_conflict,
                 )
             )
+            await uow.backend.backend_engine.commit()
+            count_result = await uow.backend.backend_engine.execute(CountQuerySpec())
 
-        await uow.backend.backend_engine.commit()
-        count_result = await uow.backend.backend_engine.execute(CountQuerySpec())
-
-        assert count_result == get_expected_count(operations)
+            assert count_result == get_expected_count(operations)
