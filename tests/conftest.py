@@ -11,6 +11,12 @@ from fennflow.files import TextContent
 from tests.shared.constants import NAMESPACE, PYTEST_USE_MINIO, SCOPE
 from tests.shared.uows import MinioUOW, TestUOW
 from tests.utils import reset_state
+# import logging
+# logging.basicConfig(
+#     level=logging.INFO,
+#     format="%(asctime)s [%(levelname)s] %(message)s",
+#     datefmt="%Y-%m-%d %H:%M:%S"
+# )
 
 params = [TestUOW]
 ids = ["sqlite_in_memory"]
