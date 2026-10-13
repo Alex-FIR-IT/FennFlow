@@ -28,17 +28,17 @@ The [reconciler](../core_concepts/reconciler.md) also writes events: every file 
 
 ## Table schema
 
-| Column           | Type                   | Notes                                                                 |
-| ---------------- | ---------------------- | --------------------------------------------------------------------- |
-| `id`             | `UUID`                 | Primary key, generated per outbox row.                                |
-| `event_id`       | `UUID`, unique         | Equals the operation's `operation_id`. Use it to deduplicate.         |
-| `aggregate_type` | `VARCHAR(50)`          | Type of entity the event is about.                                    |
-| `aggregate_id`   | `VARCHAR(255)`         | Deterministic hash of `scope`, `namespace` and `storage_path`.        |
-| `event_type`     | `VARCHAR(50)`          | The operation type that produced the event.                           |
-| `payload`        | `JSON`                 | Snapshot of the operation record, see [Payload](#payload).            |
+| Column           | Type                   | Notes                                                                  |
+| ---------------- |------------------------|------------------------------------------------------------------------|
+| `id`             | `UUID`                 | Primary key, generated per outbox row.                                 |
+| `event_id`       | `UUID`, unique         | Equals the operation's `operation_id`. Use it to deduplicate.          |
+| `aggregate_type` | `VARCHAR(50)`          | Type of entity the event is about.                                     |
+| `aggregate_id`   | `VARCHAR(64)`          | Sha256 of `scope`, `namespace` and `storage_path`.                     |
+| `event_type`     | `VARCHAR(50)`          | The operation type that produced the event.                            |
+| `payload`        | `JSON`                 | Snapshot of the operation record, see [Payload](#payload).             |
 | `status`         | `VARCHAR(63)`, indexed | Delivery status: `pending`, `failed` or `sent`. Defaults to `pending`. |
-| `created_at`     | `TIMESTAMPTZ`          | Set on insert (UTC).                                                  |
-| `updated_at`     | `TIMESTAMPTZ`          | Set on insert, refreshed on every update (UTC).                       |
+| `created_at`     | `TIMESTAMPTZ`          | Set on insert (UTC).                                                   |
+| `updated_at`     | `TIMESTAMPTZ`          | Set on insert, refreshed on every update (UTC).                        |
 
 `status` is stored as a plain string rather than a native database enum, so adding a status never requires an enum migration.
 
