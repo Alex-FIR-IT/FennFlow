@@ -139,17 +139,17 @@ class AbstractOutboxTable(BaseSqlalchemyModel):
     )
 
     event_id: Mapped[uuid.UUID] = mapped_column(
-        Uuid, unique=True, comment="metadata.operation_id"
+        Uuid, unique=True, comment="payload.operation_id"
     )
 
     aggregate_type: Mapped[str] = mapped_column(String(50), nullable=False)
     aggregate_id: Mapped[str] = mapped_column(
-        String(255),
+        String(64),
         nullable=False,
-        comment="metadata.score|||metadata.namespace|||metadata.storage_path",
+        comment="sha256('{payload.scope}|||{payload.namespace}|||{payload.storage_path}')",
     )
     event_type: Mapped[str] = mapped_column(
-        String(50), nullable=False, comment="metadata.operation_type"
+        String(50), nullable=False, comment="payload.operation_type"
     )
 
     payload: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False)

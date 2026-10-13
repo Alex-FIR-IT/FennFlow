@@ -26,9 +26,7 @@ storage contains at any given moment — including files left behind by crashed 
 
 ## Saga: how operations reach consistency
 
-FennFlow does not use distributed transactions or the Outbox pattern. The Outbox pattern requires a separate process to
-relay messages, which adds infrastructure dependency.
-Instead, FennFlow uses a Saga-like flow driven entirely by the backend.
+FennFlow uses a Saga-like flow driven entirely by the backend.
 
 Saga is a pattern for managing multi-step operations without distributed transactions. Each step is executed
 independently and paired with a compensation action that can undo it. If any step fails, compensations are run in

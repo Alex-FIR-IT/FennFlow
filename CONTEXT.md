@@ -41,4 +41,3 @@ See llms-full.txt for full architecture documentation.
 
 - SQLAlchemy Unit of Work pattern
 - Saga pattern (microservices compensation)
-- NOT an Outbox pattern implementation (by design — no relay process)

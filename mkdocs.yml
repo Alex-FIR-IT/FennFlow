@@ -64,6 +64,7 @@ plugins:
           - core_concepts/reconciler.md
         Advanced Features:
           - advanced_features/reconciler.md
+          - advanced_features/outbox.md
         Examples:
           - examples/setup.md
           - examples/base_upload.md
@@ -88,6 +89,7 @@ nav:
       - Reconciler: core_concepts/reconciler.md
   - Advanced Features:
       - Reconciler: advanced_features/reconciler.md
+      - OutboxTable: advanced_features/outbox.md
   - Examples:
       - Setup: examples/setup.md
       - Base Upload: examples/base_upload.md
