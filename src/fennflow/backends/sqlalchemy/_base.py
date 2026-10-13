@@ -144,7 +144,7 @@ class AbstractOutboxTable(BaseSqlalchemyModel):
 
     aggregate_type: Mapped[str] = mapped_column(String(50), nullable=False)
     aggregate_id: Mapped[str] = mapped_column(
-        String(255),
+        String(32),
         nullable=False,
         comment="metadata.scope|||metadata.namespace|||metadata.storage_path",
     )
