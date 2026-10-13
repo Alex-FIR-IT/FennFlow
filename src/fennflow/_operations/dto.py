@@ -3,7 +3,7 @@ from __future__ import annotations
 import datetime
 import uuid
 from dataclasses import dataclass, field
-from hashlib import md5
+from hashlib import sha256
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 from fennflow._datetime import AwareDatetime, now
@@ -71,7 +71,7 @@ class Record:
 
     @property
     def aggregate_id(self) -> str:
-        return md5(
+        return sha256(
             f"{self.scope}|||{self.namespace}|||{self.storage_path}".encode()
         ).hexdigest()
 

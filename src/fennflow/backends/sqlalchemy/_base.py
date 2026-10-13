@@ -144,9 +144,9 @@ class AbstractOutboxTable(BaseSqlalchemyModel):
 
     aggregate_type: Mapped[str] = mapped_column(String(50), nullable=False)
     aggregate_id: Mapped[str] = mapped_column(
-        String(32),
+        String(64),
         nullable=False,
-        comment="md5('{payload.scope}|||{payload.namespace}|||{payload.storage_path}')",
+        comment="sha256('{payload.scope}|||{payload.namespace}|||{payload.storage_path}')",
     )
     event_type: Mapped[str] = mapped_column(
         String(50), nullable=False, comment="payload.operation_type"
