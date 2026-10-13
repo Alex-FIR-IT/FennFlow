@@ -7,6 +7,7 @@ class Dialect(StrEnum):
 
 
 class OutboxStatus(StrEnum):
+    CREATED = "created"
     PENDING = "pending"
     FAILED = "failed"
     SENT = "sent"
