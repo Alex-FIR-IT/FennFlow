@@ -4,7 +4,7 @@ FennFlow writes an event to an **outbox table** whenever a file is inserted, upd
 
 !!! note "The outbox is not part of the Saga flow"
 
-    FennFlow never reads the outbox. SSOT and Saga compensation are driven entirely by backend metadata, as described in [Core Concepts — Overview](../core_concepts/overview.md). The outbox is a one-way integration point: FennFlow writes, your infrastructure reads.
+    FennFlow never reads the outbox. SSOT and Saga compensation are driven entirely by backend metadata, as described in [Core Concepts — Overview](../overview.md). The outbox is a one-way integration point: FennFlow writes, your infrastructure reads.
 
 The outbox works out of the box and is not configurable: there is nothing to enable and no custom table to supply.
 
