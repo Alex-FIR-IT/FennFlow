@@ -16,6 +16,23 @@ async def test_simple_put(uow_cls, text_files):
 
 
 @pytest.mark.asyncio
+async def test_simple_put_with_russian_filename(uow_cls, text_files):
+    async with uow_cls() as uow:
+        filename = "Какое-то_название.txt"
+        file = TextContent(
+                data=b"hi",
+                filename=filename,
+            )
+
+        await uow.user_files.at("user/").put(
+            file
+        )
+
+        response = await uow.user_files.at("user/").get(filename)
+        assert response[0].content.data == file.data
+
+
+@pytest.mark.asyncio
 async def test_upsert(uow_cls, text_files):
     async with uow_cls() as uow:
         await uow.user_files.at("user/").put(text_files[0])

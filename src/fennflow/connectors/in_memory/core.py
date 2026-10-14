@@ -99,6 +99,7 @@ class InMemoryConnector(AbstractConnector):
             content=ContentFactory.from_bytes(
                 media_type=file.media_type,
                 data=file.data,
+                storage_path=storage_path,
                 **file.get_metadata(),
             ),
         )

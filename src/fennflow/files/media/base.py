@@ -128,7 +128,7 @@ class BaseContent(BaseModel, ABC):
 
     def get_metadata(self, exclude: set | None = None) -> dict:
         excluded_set = exclude or set()
-        excluded_set.update({"data", "media_type", "extra_metadata"})
+        excluded_set.update({"data", "media_type", "extra_metadata", "filename"})
 
         metadata = self.model_dump(
             exclude_unset=True,

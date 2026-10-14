@@ -118,6 +118,24 @@ class TestFromBytes:
         result = ContentFactory.from_bytes(MediaType.TEXT_PLAIN, b"text")
         assert result.media_type == MediaType.TEXT_PLAIN
 
+    def test_both_filename_and_storage_path_are_set(self):
+        with pytest.raises(ValueError):
+            ContentFactory.from_bytes(
+                media_type=MediaType.TEXT_PLAIN,
+                data=b"data",
+                filename="filename.txt",
+                storage_path="folder/filename1.txt"
+            )
+
+    def test_identical_filename_and_storage_path_are_set(self):
+        file = ContentFactory.from_bytes(
+            media_type=MediaType.TEXT_PLAIN,
+            data=b"data",
+            filename="filename.txt",
+            storage_path="folder/filename.txt"
+        )
+        assert file.filename == "filename.txt"
+
 
 # ---------------------------------------------------------------------------
 # ContentFactory.from_url
