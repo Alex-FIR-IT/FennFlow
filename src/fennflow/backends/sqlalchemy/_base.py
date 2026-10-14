@@ -156,7 +156,7 @@ class AbstractOutboxTable(BaseSqlalchemyModel):
 
     status: Mapped[OutboxStatus] = mapped_column(
         String(63),
-        default=OutboxStatus.PENDING,
+        default=OutboxStatus.CREATED,
         nullable=False,
         index=True,
     )
