@@ -65,6 +65,21 @@ class ContentFactory:
             from fennflow.files import MediaType
             content = ContentFactory.from_bytes(MediaType.TEXT_PLAIN, b"Hello, World!")
         """
+        storage_path = kwargs.pop("storage_path", None)
+
+        if storage_path is not None:
+            if (
+                kwargs.get("filename") is not None
+                and kwargs["filename"] != Path(storage_path).name
+            ):
+                raise ValueError(
+                    "Got both filename and storage_path and they are different! "
+                    "Cannot determine which filename to use. "
+                    "You need to omit one of them."
+                )
+
+            kwargs["filename"] = Path(storage_path).name
+
         payload = {
             "media_type": media_type,
             "data": data,

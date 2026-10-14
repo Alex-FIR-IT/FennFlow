@@ -144,6 +144,7 @@ class S3Connector(AbstractConnector[S3Extra]):
                 content=ContentFactory.from_bytes(
                     media_type=response["ContentType"],
                     data=await stream.read(),
+                    storage_path=storage_path,
                     **response.get("Metadata", {}),
                 ),
                 raw_response=response,
