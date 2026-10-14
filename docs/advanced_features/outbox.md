@@ -72,13 +72,14 @@ UUIDs inside the payload are serialized as hex without dashes, while the `event_
 
 `status` describes the state of *delivery to your broker*, not of the file operation (that is `payload["status"]`). It is unrelated to the `PENDING` state of operations inside a session.
 
-| Value     | Meaning                                       |
-| --------- | --------------------------------------------- |
-| `pending` | Written by FennFlow, not yet delivered.       |
-| `failed`  | A delivery attempt failed.                    |
-| `sent`    | Delivered.                                    |
+| Value     | Meaning                                 |
+|-----------|-----------------------------------------|
+| `created` | Written by FennFlow, not yet delivered. |
+| `pending` | Outbox service took task to process.    |
+| `failed`  | A delivery attempt failed.              |
+| `sent`    | Delivered.                              |
 
-FennFlow only ever writes `pending`. Moving a row to `sent` or `failed` is the job of whatever consumes the table.
+FennFlow only ever writes `created`. Moving a row to `pending`, `sent` or `failed` is the job of whatever consumes the table.
 
 ## Event types
 
